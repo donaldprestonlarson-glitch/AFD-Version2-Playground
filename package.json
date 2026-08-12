@@ -15,5 +15,8 @@
     "bcryptjs": "^2.4.3",
     "cors": "^2.8.5",
     "express-rate-limit": "^7.2.0"
+  },
+  "engines": {
+    "node": "20.x"
   }
 }
