@@ -101,10 +101,20 @@ input,textarea,select{width:100%;padding:12px;border-radius:10px;border:1px soli
   </div>
 </section>
 
-<div class="filters" id="browse">
+<div class="filters" id="browse" style="align-items:center">
   <button class="chip active" onclick="filterCity('All',this)">All Alberta</button>
   <button class="chip" onclick="filterCity('Edmonton',this)">Edmonton</button>
   <button class="chip" onclick="filterCity('Calgary',this)">Calgary</button>
+  <div style="display:flex;gap:8px;margin-left:12px;align-items:center;flex-wrap:wrap;border-left:1px solid var(--border);padding-left:12px">
+    <select id="filterGender" onchange="loadUsers()" style="width:auto;margin:0;padding:6px 10px;border-radius:20px;background:var(--card);border:1px solid var(--border);color:var(--text);font-size:13px">
+      <option value="All">Everyone</option>
+      <option value="Woman">Women</option>
+      <option value="Man">Men</option>
+    </select>
+    <select id="filterAgeMin" onchange="loadUsers()" style="width:auto;margin:0;padding:6px 8px;border-radius:20px;background:var(--card);border:1px solid var(--border);color:var(--text);font-size:13px"><option value="">Min Age</option><option value="18">18</option><option value="25">25</option><option value="30">30</option><option value="35">35</option><option value="40">40</option><option value="45">45</option><option value="50">50</option></select>
+    <span style="color:var(--muted)">-</span>
+    <select id="filterAgeMax" onchange="loadUsers()" style="width:auto;margin:0;padding:6px 8px;border-radius:20px;background:var(--card);border:1px solid var(--border);color:var(--text);font-size:13px"><option value="">Max Age</option><option value="30">30</option><option value="35">35</option><option value="40">40</option><option value="45">45</option><option value="50">50</option><option value="60">60</option><option value="99">99</option></select>
+  </div>
   <span style="margin-left:auto;color:var(--muted);font-size:13px" id="count"></span>
 </div>
 
@@ -125,7 +135,7 @@ input,textarea,select{width:100%;padding:12px;border-radius:10px;border:1px soli
 <div class="modal" id="signupModal"><div class="modal-box">
   <h3>Join Actually Free — It's Free</h3>
   <p style="color:var(--muted);font-size:13px">No credit card. Ever.</p>
-  <input id="s_name" placeholder="Your name"><input id="s_email" placeholder="Email" type="email"><input id="s_pass" placeholder="Password" type="password"><input id="s_age" placeholder="Age" type="number" min="18"><select id="s_city"><option value="Edmonton">Edmonton</option><option value="Calgary">Calgary</option></select><textarea id="s_bio" placeholder="Short bio"></textarea>
+  <input id="s_name" placeholder="Your name"><input id="s_email" placeholder="Email" type="email"><input id="s_pass" placeholder="Password" type="password"><div style="display:flex;gap:8px"><input id="s_age" placeholder="Age" type="number" min="18" style="flex:1"><select id="s_gender" style="flex:1"><option value="Man">I am a Man</option><option value="Woman">I am a Woman</option><option value="Other">Non-binary</option></select></div><select id="s_city"><option value="Edmonton">Edmonton</option><option value="Calgary">Calgary</option></select><textarea id="s_bio" placeholder="Short bio"></textarea>
   <div class="photo-upload"><b style="color:var(--teal)">Up to 4 photos</b> — free & cloud hosted<div class="photo-grid" id="s_preview"></div><input type="file" id="s_photos" accept="image/*" multiple><div style="font-size:11px;color:var(--muted);margin-top:6px">Hold Ctrl to pick 4 at once — JPG/PNG up to 5MB each</div></div>
   <div style="display:flex;gap:10px;margin-top:14px"><button class="btn btn-primary" style="flex:1" onclick="doSignup()">Create Account</button><button class="btn btn-ghost" onclick="closeModals()">Cancel</button></div><div id="s_msg" style="margin-top:10px;font-size:13px;color:var(--teal)"></div>
 </div></div>
@@ -194,9 +204,15 @@ document.getElementById('e_photos')?.addEventListener('change', e=>{
 });
 
 async function loadUsers(){
+  const gender = document.getElementById('filterGender')?.value || 'All';
+  const ageMin = document.getElementById('filterAgeMin')?.value || '';
+  const ageMax = document.getElementById('filterAgeMax')?.value || '';
   const cityParam=activeCity==='All'?'':`city=${activeCity}`;
   const myParam=currentUser?`myId=${currentUser.id}`:'';
-  const q=[cityParam, myParam].filter(Boolean).join('&');
+  const genderParam=gender!=='All'?`gender=${gender}`:'';
+  const ageMinParam=ageMin?`ageMin=${ageMin}`:'';
+  const ageMaxParam=ageMax?`ageMax=${ageMax}`:'';
+  const q=[cityParam, myParam, genderParam, ageMinParam, ageMaxParam].filter(Boolean).join('&');
   const url='/api/users'+(q?'?'+q:'');
   const res=await fetch(url); users=await res.json();
   document.getElementById('count').innerText=users.length+' singles in '+(activeCity==='All'?'Alberta':activeCity);
@@ -205,7 +221,7 @@ async function loadUsers(){
     if(i===3){ const ad=document.createElement('div'); ad.className='ad'; ad.innerHTML='Advertisement<br>This is how we stay free'; grid.appendChild(ad); }
     const d=document.createElement('div'); d.className='card'; d.onclick=()=>openProfile(u.id);
     const photo=u.photo_url|| (u.photos&&u.photos[0]) || ''; const av=photo?`<div class="avatar"><img src="${photo}"></div>`:`<div class="avatar">${u.name[0]}</div>`;
-    d.innerHTML=`<div class="online"></div><div style="display:flex;gap:12px;align-items:center">${av}<div><b>${u.name}, ${u.age}</b><div style="color:var(--muted);font-size:13px">${u.city} - ${u.photos?.length||0} photos</div></div></div><p style="margin:12px 0;color:var(--muted);font-size:14px;min-height:40px">${(u.bio||'').slice(0,90)}...</p><button class="btn btn-primary" style="width:100%" onclick="event.stopPropagation();openChat(${u.id},'${u.name.replace(/'/g,"\\'")}')">Message Free</button>`;
+    d.innerHTML=`<div class="online"></div><div style="display:flex;gap:12px;align-items:center">${av}<div><b>${u.name}, ${u.age}</b><div style="color:var(--muted);font-size:13px">${u.gender||''} • ${u.city} - ${u.photos?.length||0} photos</div></div></div><p style="margin:12px 0;color:var(--muted);font-size:14px;min-height:40px">${(u.bio||'').slice(0,90)}...</p><button class="btn btn-primary" style="width:100%" onclick="event.stopPropagation();openChat(${u.id},'${u.name.replace(/'/g,"\\'")}')">Message Free</button>`;
     grid.appendChild(d);
   });
 }
