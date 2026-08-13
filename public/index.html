@@ -54,6 +54,7 @@ input,textarea,select{width:100%;padding:12px;border-radius:10px;border:1px soli
 <header>
   <div class="logo">Actually Free <span>DATING</span> <span class="sub">Always Will Be</span> <span class="badge">AFD • EDM • YYC</span></div>
   <nav>
+    <button class="btn btn-ghost" id="inboxTopBtn" style="display:none;position:relative" onclick="openInboxTop()">Messages <span id="inboxBadge" style="display:none;position:absolute;top:-6px;right:-6px;background:#ef4444;color:white;border-radius:50%;width:18px;height:18px;font-size:11px;align-items:center;justify-content:center">0</span></button>
     <span id="navUser" style="color:var(--muted);font-size:13px;display:none"></span>
     <button class="btn btn-ghost" id="editBtn" style="display:none" onclick="openEdit()">Edit Profile</button>
     <button class="btn btn-ghost" id="loginBtn" onclick="openModal('login')">Log In</button>
@@ -140,8 +141,12 @@ function authHeaders(){ return token ? { 'Authorization':'Bearer '+token } : {};
 function handleAuth(u){
   currentUser=u; token=u.token||token; if(token) localStorage.setItem('afd_token', token);
   document.getElementById('navUser').innerText='Hi, '+u.name; document.getElementById('navUser').style.display='block';
-  document.getElementById('editBtn').style.display='inline-block'; document.getElementById('logoutBtn').style.display='inline-block';
+  document.getElementById('editBtn').style.display='inline-block'; 
+  document.getElementById('logoutBtn').style.display='inline-block';
+  document.getElementById('inboxTopBtn').style.display='inline-block';
   document.getElementById('loginBtn').style.display='none'; document.getElementById('joinBtn').style.display='none';
+  checkInbox(); 
+  setInterval(checkInbox, 5000);
 }
 
 function logout(){ localStorage.removeItem('afd_token'); location.reload(); }
@@ -290,6 +295,27 @@ async function showInbox(){
       inboxDiv.appendChild(row);
     });
   }catch(e){ inboxDiv.innerHTML='Inbox error: '+e.message; }
+}
+
+
+function openInboxTop(){
+  document.getElementById('chat').classList.add('open');
+  showInbox();
+}
+async function checkInbox(){
+  if(!currentUser) return;
+  try{
+    const res=await fetch(`/api/inbox/${currentUser.id}`);
+    const items=await res.json();
+    const badge=document.getElementById('inboxBadge');
+    if(items.length){
+      badge.innerText=items.length;
+      badge.style.display='flex';
+      document.getElementById('inboxTopBtn').innerHTML=`Messages <span id="inboxBadge" style="display:flex;position:absolute;top:-6px;right:-6px;background:#ef4444;color:white;border-radius:50%;width:18px;height:18px;font-size:11px;align-items:center;justify-content:center">${items.length}</span>`;
+    } else {
+      badge.style.display='none';
+    }
+  }catch{}
 }
 
 loadUsers();
