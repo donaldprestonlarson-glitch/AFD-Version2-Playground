@@ -267,7 +267,7 @@ async function doSignup(){
 async function doUpdate(){
   const msg=document.getElementById('e_msg'); msg.innerText='Saving...';
   const fd=new FormData();
-  fd.append('name',e_name.value); fd.append('age',e_age.value); fd.append('city',e_city.value); fd.append('bio',e_bio.value);
+  fd.append('name',e_name.value); fd.append('age',e_age.value); fd.append('gender',document.getElementById('e_gender').value); fd.append('city',e_city.value); fd.append('bio',e_bio.value);
   fd.append('keepPhotos', JSON.stringify(editKeepPhotos));
   eNewFiles.forEach(f=>fd.append('photos',f));
   const res=await fetch('/api/update-profile',{method:'POST',headers:authHeaders(),body:fd});
@@ -277,6 +277,16 @@ async function doUpdate(){
 async function doLogin(){
   const res=await fetch('/api/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:l_email.value,password:l_pass.value})});
   const j=await res.json(); if(j.error){ l_msg.innerText=j.error; return; } handleAuth(j); closeModals(); 
+}
+async function deleteMyAccount(){
+  if(!confirm('Delete your account? This removes your profile, photos & messages. You can re-join anytime.')) return;
+  if(!confirm('Are you sure? This cannot be undone.')) return;
+  try{
+    const res=await fetch('/api/delete-account',{method:'POST',headers:{'Content-Type':'application/json', ...authHeaders()}});
+    const j=await res.json();
+    alert(j.message||'Account deleted');
+    logout();
+  }catch(e){ alert('Delete failed: '+e.message); }
 }
 let chatInterval=null;
 function openChat(id,name){
