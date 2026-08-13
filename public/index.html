@@ -278,6 +278,17 @@ async function doLogin(){
   const res=await fetch('/api/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:l_email.value,password:l_pass.value})});
   const j=await res.json(); if(j.error){ l_msg.innerText=j.error; return; } handleAuth(j); closeModals(); 
 }
+async function deleteMyAccount(){
+  if(!confirm('Delete your account? This removes your profile, photos & messages. You can re-join anytime.')) return;
+  if(!confirm('Are you sure? This cannot be undone.')) return;
+  try{
+    const res=await fetch('/api/delete-account',{method:'POST',headers:{'Content-Type':'application/json', ...authHeaders()}});
+    const j=await res.json();
+    if(j.error) throw new Error(j.error);
+    alert(j.message||'Account deleted');
+    logout();
+  }catch(e){ alert('Delete failed: '+(e.message||'Unknown')); }
+}
 let chatInterval=null;
 function openChat(id,name){
   if(!currentUser){ openModal('login'); return; }
