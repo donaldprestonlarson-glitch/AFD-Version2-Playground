@@ -1,4 +1,3 @@
-
 import express from 'express';
 import Database from 'better-sqlite3';
 import multer from 'multer';
@@ -8,6 +7,8 @@ import fs from 'fs';
 import cors from 'cors';
 import rateLimit from 'express-rate-limit';
 import { fileURLToPath } from 'url';
+import { v2 as cloudinary } from 'cloudinary';
+import { CloudinaryStorage } from 'multer-storage-cloudinary';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -15,13 +16,31 @@ const __dirname = path.dirname(__filename);
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+// --- CLOUDINARY FREE CLOUD STORAGE CONFIG ---
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME || 'x4ftsrre',
+  api_key: process.env.CLOUDINARY_API_KEY || '673733629386681',
+  api_secret: process.env.CLOUDINARY_API_SECRET || '9RKGJT2WmnGFGBa7gBmVCOaCPpw'
+});
+
+const storage = new CloudinaryStorage({
+  cloudinary: cloudinary,
+  params: {
+    folder: 'actuallyfreedating',
+    allowed_formats: ['jpg', 'png', 'jpeg', 'webp'],
+    transformation: [{ width: 600, height: 600, crop: 'limit', quality: 'auto' }]
+  },
+});
+
+const upload = multer({ storage: storage, limits: { fileSize: 5*1024*1024 } });
+// --- END CLOUDINARY ---
+
 // Setup
 app.use(cors());
 app.use(express.json());
 app.use(express.static('public'));
-app.use('/uploads', express.static('uploads'));
+// Note: We don't need local /uploads anymore, photos are in cloud!
 
-if (!fs.existsSync('uploads')) fs.mkdirSync('uploads');
 if (!fs.existsSync('data')) fs.mkdirSync('data');
 
 // DB - SQLite file that persists
@@ -63,8 +82,6 @@ if (count === 0) {
   console.log('Seeded 4 demo users - password: test123');
 }
 
-const upload = multer({ dest: 'uploads/', limits: { fileSize: 5*1024*1024 } });
-
 const limiter = rateLimit({ windowMs: 15*60*1000, max: 200 });
 app.use('/api/', limiter);
 
@@ -88,7 +105,7 @@ app.post('/api/signup', upload.single('photo'), async (req, res) => {
     const existing = db.prepare('SELECT id FROM users WHERE email=?').get(email);
     if (existing) return res.status(400).json({error:'Email already used'});
     const hash = await bcrypt.hash(password, 10);
-    const photo = req.file ? `/uploads/${req.file.filename}` : '';
+    const photo = req.file ? req.file.path : ''; // This is now a Cloudinary URL!
     const info = db.prepare('INSERT INTO users (email,password_hash,name,age,city,bio,photo) VALUES (?,?,?,?,?,?,?)')
       .run(email, hash, name, parseInt(age), city, bio||'', photo);
     res.json({ id: info.lastInsertRowid, message: 'Created - 100% free, always will be' });
@@ -107,7 +124,6 @@ app.get('/api/messages/:userId', (req,res)=>{
   const userId = parseInt(req.params.userId);
   const otherId = parseInt(req.query.with);
   if (!otherId) {
-    // inbox - latest per conversation
     const msgs = db.prepare(`
       SELECT m.*, u.name as other_name FROM messages m
       JOIN users u ON u.id = CASE WHEN m.from_id=? THEN m.to_id ELSE m.from_id END
@@ -129,7 +145,12 @@ app.post('/api/messages', (req,res)=>{
   res.json({ id: info.lastInsertRowid });
 });
 
+// Extra route for standalone photo upload
+app.post('/api/upload-photo', upload.single('photo'), (req, res) => {
+  res.json({ url: req.file.path });
+});
+
 // Fallback to index
 app.get('*', (req,res)=> res.sendFile(path.join(__dirname,'public','index.html')));
 
-app.listen(PORT, ()=> console.log(`AFD running on port ${PORT} - Actually Free, Always Will Be`));
+app.listen(PORT, ()=> console.log(`AFD running on port ${PORT} - Actually Free, Always Will Be - Photos on Cloudinary Cloud`));
