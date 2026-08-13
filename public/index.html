@@ -47,7 +47,23 @@ input,textarea,select{width:100%;padding:12px;border-radius:10px;border:1px soli
 .chat.open{display:flex}.chat-head{padding:14px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between}
 .chat-body{height:300px;overflow:auto;padding:14px;display:flex;flex-direction:column;gap:8px}
 .msg{max-width:80%;padding:8px 12px;border-radius:12px;font-size:14px}.me{align-self:flex-end;background:var(--teal);color:#001211}.them{align-self:flex-start;background:var(--card);border:1px solid var(--border)}
-@media(max-width:800px){.hero{grid-template-columns:1fr}}
+@media(max-width:800px){
+  .hero{grid-template-columns:1fr}
+  header{padding:8px 12px;gap:8px;flex-wrap:wrap}
+  .logo{font-size:15px;flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .logo .sub{display:none}
+  .badge{display:none}
+  nav{width:100%;justify-content:flex-end;gap:6px;flex-wrap:wrap}
+  nav .btn{padding:8px 12px;font-size:13px}
+  #navUser{display:none !important}
+  .chat{left:0;right:0;bottom:0;width:100%;max-width:100%;border-radius:16px 16px 0 0;max-height:85vh;max-height:85dvh}
+  .chat-body{height:50vh;max-height:50dvh}
+  #chatInput{font-size:16px}
+}
+@media(max-width:380px){
+  .logo{font-size:14px}
+  nav .btn{padding:7px 10px;font-size:12px}
+}
 </style>
 </head>
 <body>
@@ -317,6 +333,28 @@ async function checkInbox(){
     }
   }catch{}
 }
+
+
+// Fix keyboard covering input on mobile
+if(window.visualViewport){
+  const chatEl=document.getElementById('chat');
+  const updateChatPos=()=>{
+    const vh=window.visualViewport.height;
+    const off=window.innerHeight - vh;
+    if(off>100){ // keyboard open
+      chatEl.style.bottom=off+'px';
+      chatEl.style.maxHeight=(vh*0.9)+'px';
+    } else {
+      chatEl.style.bottom='0px';
+      chatEl.style.maxHeight='85dvh';
+    }
+  };
+  window.visualViewport.addEventListener('resize', updateChatPos);
+  window.visualViewport.addEventListener('scroll', updateChatPos);
+}
+document.getElementById('chatInput')?.addEventListener('focus', ()=>{
+  setTimeout(()=>{ document.getElementById('chatBody').scrollTop=document.getElementById('chatBody').scrollHeight; }, 300);
+});
 
 loadUsers();
 </script>
