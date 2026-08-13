@@ -258,7 +258,7 @@ function openEdit(){
 async function doSignup(){
   const msg=document.getElementById('s_msg'); msg.innerText='Creating...';
   const fd=new FormData();
-  fd.append('name',s_name.value); fd.append('email',s_email.value); fd.append('password',s_pass.value); fd.append('age',s_age.value); fd.append('gender',document.getElementById('s_gender').value); fd.append('city',s_city.value); fd.append('bio',s_bio.value);
+  fd.append('name',s_name.value); fd.append('email',s_email.value); fd.append('password',s_pass.value); fd.append('age',s_age.value); fd.append('city',s_city.value); fd.append('bio',s_bio.value);
   sFiles.forEach(f=>fd.append('photos',f));
   const res=await fetch('/api/signup',{method:'POST',body:fd});
   const j=await res.json(); msg.innerText=j.message||j.error||'Done';
@@ -267,7 +267,7 @@ async function doSignup(){
 async function doUpdate(){
   const msg=document.getElementById('e_msg'); msg.innerText='Saving...';
   const fd=new FormData();
-  fd.append('name',e_name.value); fd.append('age',e_age.value); fd.append('gender',document.getElementById('e_gender').value); fd.append('city',e_city.value); fd.append('bio',e_bio.value);
+  fd.append('name',e_name.value); fd.append('age',e_age.value); fd.append('city',e_city.value); fd.append('bio',e_bio.value);
   fd.append('keepPhotos', JSON.stringify(editKeepPhotos));
   eNewFiles.forEach(f=>fd.append('photos',f));
   const res=await fetch('/api/update-profile',{method:'POST',headers:authHeaders(),body:fd});
@@ -277,6 +277,17 @@ async function doUpdate(){
 async function doLogin(){
   const res=await fetch('/api/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:l_email.value,password:l_pass.value})});
   const j=await res.json(); if(j.error){ l_msg.innerText=j.error; return; } handleAuth(j); closeModals(); 
+}
+async function deleteMyAccount(){
+  if(!confirm('Delete your account? This removes your profile, photos & messages. You can re-join anytime.')) return;
+  if(!confirm('Are you sure? This cannot be undone.')) return;
+  try{
+    const res=await fetch('/api/delete-account',{method:'POST',headers:{'Content-Type':'application/json', ...authHeaders()}});
+    const j=await res.json();
+    if(j.error) throw new Error(j.error);
+    alert(j.message||'Account deleted');
+    logout();
+  }catch(e){ alert('Delete failed: '+(e.message||'Unknown')); }
 }
 let chatInterval=null;
 function openChat(id,name){
