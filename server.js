@@ -19,8 +19,16 @@ const PORT = process.env.PORT || 3000;
 const JWT_SECRET = process.env.JWT_SECRET || 'afd-secret-always-free';
 const ADMIN_PASS = process.env.ADMIN_PASS || 'AFD-Admin-2026!';
 
+const DATA_DIR = path.join(__dirname, 'data');
+if(!fs.existsSync(DATA_DIR)) fs.mkdirSync(DATA_DIR, {recursive:true});
+const USERS_FILE = path.join(DATA_DIR, 'users.json');
+const MSGS_FILE = path.join(DATA_DIR, 'messages.json');
+
+function loadJson(file, def){ try{ if(fs.existsSync(file)) return JSON.parse(fs.readFileSync(file,'utf8')); }catch(e){ console.error('load fail',file,e.message);} return def; }
+function saveJson(file, data){ try{ fs.writeFileSync(file, JSON.stringify(data, null, 2)); }catch(e){ console.error('save fail', file, e.message); } }
+
 const hasCloudinary = !!(process.env.CLOUDINARY_CLOUD_NAME && process.env.CLOUDINARY_API_KEY && process.env.CLOUDINARY_API_SECRET);
-console.log('Cloudinary configured:', hasCloudinary);
+console.log('Cloudinary:', hasCloudinary, 'DataDir:', DATA_DIR);
 
 let storage;
 if(hasCloudinary){
@@ -37,12 +45,12 @@ app.use(cors());
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
-let users = [
+let users = loadJson(USERS_FILE, [
   { id: 1, name: 'Sarah', age: 28, city: 'Edmonton', bio: 'Love hiking in River Valley! Actually free is refreshing!', email: 'sarah.e@example.com', password: '$2a$10$demo', photos: [], created: new Date().toISOString() },
   { id: 2, name: 'Mike', age: 32, city: 'Calgary', bio: 'Calgary born, love Flames and mountains.', email: 'mike.c@example.com', password: '$2a$10$demo', photos: [], created: new Date().toISOString() }
-];
-let messages = [];
-let nextId = 100;
+]);
+let messages = loadJson(MSGS_FILE, []);
+let nextId = Math.max(100, ...users.map(u=>u.id), 0) + 1;
 
 function getFileUrl(file){ return hasCloudinary ? file.path : '/uploads/'+file.filename; }
 function safeUser(u){ return { id: u.id, name: u.name, age: u.age, city: u.city, bio: u.bio, photo_url: u.photos?.[0]||null, photos: u.photos||[], created: u.created }; }
@@ -73,7 +81,7 @@ app.post('/api/signup', (req,res,next)=>{ upload.array('photos',4)(req,res,(err)
     const hashed=await bcrypt.hash(password,10);
     const photoUrls=(req.files||[]).map(f=>getFileUrl(f));
     const u={ id: nextId++, name, email, password:hashed, age:parseInt(age)||25, city:city||'Edmonton', bio:bio||'', photos:photoUrls, created:new Date().toISOString() };
-    users.push(u);
+    users.push(u); saveJson(USERS_FILE, users);
     const token=jwt.sign({id:u.id},JWT_SECRET,{expiresIn:'30d'});
     res.json({message:'Account created! Free forever!', token, ...safeUser(u)});
   }catch(e){ console.error(e); res.status(500).json({error:e.message}); }
@@ -106,11 +114,11 @@ app.post('/api/update-profile', (req,res,next)=>{ upload.array('photos',4)(req,r
     if(keepPhotos){ try{ keep=JSON.parse(keepPhotos); }catch{ keep=u.photos||[]; } } else keep=u.photos||[];
     const newUrls=(req.files||[]).map(f=>getFileUrl(f));
     u.photos=[...keep, ...newUrls].slice(0,4);
+    saveJson(USERS_FILE, users);
     res.json({message:'Updated!', ...safeUser(u)});
   }catch(e){ res.status(500).json({error:e.message}); }
 });
 
-// NEW: USER SELF-DELETE
 app.post('/api/delete-account', (req,res)=>{
   try{
     const tokenHdr=req.headers.authorization?.split(' ')[1];
@@ -119,22 +127,44 @@ app.post('/api/delete-account', (req,res)=>{
     const id=d.id;
     users=users.filter(u=>u.id!==id);
     messages=messages.filter(m=>m.from_id!==id && m.to_id!==id);
-    console.log('User self-deleted', id);
+    saveJson(USERS_FILE, users); saveJson(MSGS_FILE, messages);
     res.json({message:'Your account has been deleted. You are welcome back anytime!'});
   }catch(e){ res.status(500).json({error:e.message}); }
 });
 
+// MESSAGES - PERSISTENT
 app.get('/api/messages/:myId', (req,res)=>{
   const myId=parseInt(req.params.myId);
   const withId=parseInt(req.query.with);
+  if(!withId) return res.json([]);
   const filtered=messages.filter(m=> (m.from_id===myId&&m.to_id===withId)||(m.from_id===withId&&m.to_id===myId));
-  res.json(filtered.slice(-100));
+  res.json(filtered.slice(-200));
 });
+
+app.get('/api/inbox/:myId', (req,res)=>{
+  const myId=parseInt(req.params.myId);
+  const convMap={};
+  messages.forEach(m=>{
+    if(m.from_id===myId||m.to_id===myId){
+      const other = m.from_id===myId ? m.to_id : m.from_id;
+      if(!convMap[other] || new Date(m.at) > new Date(convMap[other].at)){
+        convMap[other]=m;
+      }
+    }
+  });
+  const inbox = Object.entries(convMap).map(([otherId, lastMsg])=>{
+    const u=users.find(x=>x.id==otherId);
+    return { otherId: parseInt(otherId), name: u?.name||'Deleted', photo: u?.photos?.[0]||null, lastMsg: lastMsg.text, at: lastMsg.at };
+  }).sort((a,b)=> new Date(b.at)-new Date(a.at));
+  res.json(inbox);
+});
+
 app.post('/api/messages', (req,res)=>{
   const { from_id, to_id, text }=req.body;
   if(!text) return res.status(400).json({error:'No text'});
-  const msg={ id:messages.length+1, from_id, to_id, text, at:new Date().toISOString() };
-  messages.push(msg);
+  const msg={ id: messages.length+1, from_id: parseInt(from_id), to_id: parseInt(to_id), text, at:new Date().toISOString() };
+  messages.push(msg); saveJson(MSGS_FILE, messages);
+  console.log('Message saved', msg);
   res.json(msg);
 });
 
@@ -148,6 +178,7 @@ app.post('/api/admin/delete/:id', checkAdmin, (req,res)=>{
   const id=parseInt(req.params.id);
   users=users.filter(u=>u.id!==id);
   messages=messages.filter(m=>m.from_id!==id&&m.to_id!==id);
+  saveJson(USERS_FILE, users); saveJson(MSGS_FILE, messages);
   res.json({message:'User deleted'});
 });
 app.post('/api/admin/remove-photo', checkAdmin, (req,res)=>{
@@ -155,9 +186,10 @@ app.post('/api/admin/remove-photo', checkAdmin, (req,res)=>{
   const u=users.find(x=>x.id===parseInt(userId));
   if(!u) return res.status(404).json({error:'User not found'});
   u.photos=(u.photos||[]).filter(p=>p!==photoUrl);
+  saveJson(USERS_FILE, users);
   res.json({message:'Photo removed', photos:u.photos});
 });
 
 app.get('/admin', (req,res)=> res.sendFile(path.join(__dirname,'public','admin.html')));
 
-app.listen(PORT, ()=> console.log(`AFD Live on ${PORT} - self-delete enabled`));
+app.listen(PORT, ()=> console.log(`AFD Live persistent on ${PORT} - users:${users.length} msgs:${messages.length}`));
