@@ -129,7 +129,7 @@ input,textarea,select{width:100%;padding:12px;border-radius:10px;border:1px soli
 <!-- LOGIN -->
 <div class="modal" id="loginModal"><div class="modal-box"><h3>Welcome back</h3><input id="l_email" placeholder="Email" type="email"><input id="l_pass" placeholder="Password" type="password"><div style="display:flex;gap:10px;margin-top:14px"><button class="btn btn-primary" style="flex:1" onclick="doLogin()">Log In</button><button class="btn btn-ghost" onclick="closeModals()">Cancel</button></div><div style="margin-top:10px;font-size:12px;color:var(--muted)">Demo: sarah.e@example.com / test123</div><div id="l_msg" style="margin-top:10px;font-size:13px;color:var(--teal)"></div></div></div>
 
-<div class="chat" id="chat"><div class="chat-head"><b id="chatName">Messages</b><span style="cursor:pointer" onclick="closeChat()">X</span></div><div style="padding:8px 12px;background:var(--teal2);font-size:11px;text-align:center">This conversation is 100% FREE. Always will be.</div><div class="chat-body" id="chatBody"></div><div style="padding:10px;display:flex;gap:8px"><input id="chatInput" placeholder="Type a message..." style="margin:0"><button class="btn btn-primary" onclick="sendMsg()">Send</button></div></div>
+<div class="chat" id="chat"><div class="chat-head"><b id="chatName">Messages</b><div><span id="inboxBtn" style="cursor:pointer;margin-right:12px;font-size:12px;color:var(--teal)" onclick="showInbox()">Inbox</span><span style="cursor:pointer" onclick="closeChat()">X</span></div></div><div id="inboxView" style="display:none;max-height:300px;overflow:auto;padding:8px"></div><div id="chatView"><div style="padding:8px 12px;background:var(--teal2);font-size:11px;text-align:center">This conversation is 100% FREE. Always will be.</div><div class="chat-body" id="chatBody"></div><div style="padding:10px;display:flex;gap:8px"><input id="chatInput" placeholder="Type a message..." style="margin:0" onkeydown="if(event.key==='Enter')sendMsg()"><button class="btn btn-primary" onclick="sendMsg()">Send</button></div></div></div>
 
 <script>
 let users=[], currentUser=null, token=null, activeCity='All', chatWith=null, viewingUser=null;
@@ -237,24 +237,61 @@ async function doLogin(){
   const res=await fetch('/api/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:l_email.value,password:l_pass.value})});
   const j=await res.json(); if(j.error){ l_msg.innerText=j.error; return; } handleAuth(j); closeModals(); 
 }
+let chatInterval=null;
 function openChat(id,name){
   if(!currentUser){ openModal('login'); return; }
   if(currentUser.id===id){ alert('That is you!'); return; }
-  chatWith=id; document.getElementById('chatName').innerText=name; document.getElementById('chat').classList.add('open'); loadChat();
+  chatWith=id; document.getElementById('chatName').innerText=name; 
+  document.getElementById('chat').classList.add('open');
+  document.getElementById('chatView').style.display='block';
+  document.getElementById('inboxView').style.display='none';
+  loadChat();
+  if(chatInterval) clearInterval(chatInterval);
+  chatInterval=setInterval(loadChat, 2000);
 }
-function closeChat(){ document.getElementById('chat').classList.remove('open'); chatWith=null; }
+function closeChat(){ document.getElementById('chat').classList.remove('open'); chatWith=null; if(chatInterval) clearInterval(chatInterval); }
 async function loadChat(){
-  if(!chatWith) return;
-  const res=await fetch(`/api/messages/${currentUser.id}?with=${chatWith}`); const msgs=await res.json();
-  const body=document.getElementById('chatBody'); body.innerHTML='';
-  msgs.forEach(m=>{ const d=document.createElement('div'); d.className='msg '+(m.from_id===currentUser.id?'me':'them'); d.innerText=m.text; body.appendChild(d); });
-  body.scrollTop=body.scrollHeight;
+  if(!chatWith||!currentUser) return;
+  try{
+    const res=await fetch(`/api/messages/${currentUser.id}?with=${chatWith}`); 
+    const msgs=await res.json();
+    const body=document.getElementById('chatBody'); 
+    if(!msgs.length){ body.innerHTML='<div style="color:var(--muted);font-size:13px;text-align:center;padding:20px">No messages yet. Say hi — it is free!</div>'; return; }
+    body.innerHTML='';
+    msgs.forEach(m=>{ const d=document.createElement('div'); d.className='msg '+(m.from_id===currentUser.id?'me':'them'); d.innerText=m.text; body.appendChild(d); });
+    body.scrollTop=body.scrollHeight;
+  }catch(e){ console.log('chat load err',e); }
 }
 async function sendMsg(){
-  const t=document.getElementById('chatInput').value.trim(); if(!t) return;
-  await fetch('/api/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({from_id:currentUser.id,to_id:chatWith,text:t})});
-  document.getElementById('chatInput').value=''; loadChat();
+  const input=document.getElementById('chatInput');
+  const t=input.value.trim(); if(!t||!chatWith) return;
+  input.value='';
+  try{
+    await fetch('/api/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({from_id:currentUser.id,to_id:chatWith,text:t})});
+    loadChat();
+  }catch(e){ alert('Send failed: '+e.message); }
 }
+async function showInbox(){
+  if(!currentUser) return;
+  const inboxDiv=document.getElementById('inboxView');
+  const chatView=document.getElementById('chatView');
+  if(inboxDiv.style.display==='block'){ inboxDiv.style.display='none'; chatView.style.display='block'; return; }
+  inboxDiv.style.display='block'; chatView.style.display='none';
+  inboxDiv.innerHTML='Loading inbox...';
+  try{
+    const res=await fetch(`/api/inbox/${currentUser.id}`);
+    const items=await res.json();
+    if(!items.length){ inboxDiv.innerHTML='<div style="padding:20px;color:var(--muted);text-align:center">No messages yet. Browse and message someone!</div>'; return; }
+    inboxDiv.innerHTML='';
+    items.forEach(it=>{
+      const row=document.createElement('div'); row.style.cssText='display:flex;gap:10px;align-items:center;padding:10px;border-bottom:1px solid var(--border);cursor:pointer';
+      row.onclick=()=>openChat(it.otherId, it.name);
+      row.innerHTML=`<div class="avatar" style="width:36px;height:36px;font-size:14px">${it.photo?`<img src="${it.photo}">`:it.name[0]}</div><div style="flex:1"><b style="font-size:13px">${it.name}</b><div style="font-size:12px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:180px">${it.lastMsg}</div></div><div style="font-size:10px;color:var(--muted)">${new Date(it.at).toLocaleTimeString()}</div>`;
+      inboxDiv.appendChild(row);
+    });
+  }catch(e){ inboxDiv.innerHTML='Inbox error: '+e.message; }
+}
+
 loadUsers();
 </script>
 </body>
