@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Admin — Actually Free Dating</title>
+<style>
+:root{--bg:#0a0f14;--card:#141c23;--card2:#1c2732;--teal:#14b8a6;--border:#23323f;--text:#e6f0ef;--muted:#8aa0a8}
+*{box-sizing:border-box;font-family:system-ui}body{background:var(--bg);color:var(--text);margin:0;padding:16px}
+.card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:14px;margin-bottom:12px;display:flex;gap:14px;align-items:center}
+img{width:64px;height:64px;border-radius:10px;object-fit:cover;background:var(--card2)}
+.btn{border:0;padding:8px 12px;border-radius:8px;font-weight:700;cursor:pointer}
+.btn-del{background:#ef4444;color:white}.btn-rem{background:#f59e0b;color:black}.btn{margin-left:6px}
+input{padding:10px;border-radius:8px;border:1px solid var(--border);background:var(--bg);color:white}
+.grid{max-width:900px;margin:0 auto}
+.photos{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+.photo-wrap{position:relative}
+.photo-wrap button{position:absolute;top:-6px;right:-6px;font-size:10px;padding:4px 6px;border-radius:20px}
+</style>
+</head>
+<body>
+<div class="grid">
+<h2>AFD Admin Panel — Delete Nudes / Bad Users</h2>
+<div style="margin:12px 0"><input id="pass" placeholder="Admin password" type="password" style="width:260px"><button class="btn" style="background:var(--teal)" onclick="load()">Login / Refresh</button><span id="count" style="color:var(--muted);margin-left:12px"></span></div>
+<div id="list"></div>
+</div>
+<script>
+let adminPass='';
+async function load(){
+  adminPass=document.getElementById('pass').value;
+  localStorage.setItem('afd_admin_pass', adminPass);
+  const res=await fetch('/api/admin/users?pass='+encodeURIComponent(adminPass));
+  if(!res.ok){ alert('Wrong password'); return; }
+  const users=await res.json();
+  document.getElementById('count').innerText=users.length+' users';
+  const list=document.getElementById('list'); list.innerHTML='';
+  users.forEach(u=>{
+    const div=document.createElement('div'); div.className='card';
+    const photosHtml = (u.photos||[]).map(p=>`<div class="photo-wrap"><img src="${p}"><button class="btn btn-rem" onclick="removePhoto(${u.id},'${p}')">✕</button></div>`).join('') || '<span style="color:#8aa0a8">No photo</span>';
+    div.innerHTML=`<div style="flex:1"><b>${u.name}, ${u.age}</b> — ${u.city} — ${u.email}<br><small style="color:var(--muted)">${(u.bio||'').slice(0,80)}</small><div class="photos">${photosHtml}</div></div><div><button class="btn btn-del" onclick="del(${u.id})">DELETE USER</button></div>`;
+    list.appendChild(div);
+  });
+}
+async function del(id){
+  if(!confirm('DELETE user '+id+'? This blocks them forever.')) return;
+  await fetch('/api/admin/delete/'+id,{method:'POST', headers:{'x-admin-pass':adminPass}});
+  load();
+}
+async function removePhoto(userId, url){
+  if(!confirm('Remove this photo?')) return;
+  await fetch('/api/admin/remove-photo',{method:'POST',headers:{'Content-Type':'application/json','x-admin-pass':adminPass},body:JSON.stringify({userId, photoUrl:url})});
+  load();
+}
+window.onload=()=>{ const p=localStorage.getItem('afd_admin_pass'); if(p){ document.getElementById('pass').value=p; load(); } };
+</script>
+</body>
+</html>
