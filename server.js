@@ -26,7 +26,7 @@ const MSGS_FILE = path.join(DATA_DIR, 'messages.json');
 const BLOCKS_FILE = path.join(DATA_DIR, 'blocks.json');
 
 function loadJson(file, def){ try{ if(fs.existsSync(file)) return JSON.parse(fs.readFileSync(file,'utf8')); }catch(e){} return def; }
-function saveJson(file, data){ try{ fs.writeFileSync(file, JSON.stringify(data, null, 2)); }catch(e){} }
+function saveJson(file, data){ try{ fs.writeFileSync(file, JSON.stringify(data, null, 2)); }catch(e){ console.log('save err', e.message); } }
 
 const hasCloudinary = !!(process.env.CLOUDINARY_CLOUD_NAME && process.env.CLOUDINARY_API_KEY && process.env.CLOUDINARY_API_SECRET);
 
@@ -46,25 +46,34 @@ app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
 let users = loadJson(USERS_FILE, [
-  { id: 1, name: 'Sarah', age: 28, city: 'Edmonton', bio: 'Love hiking in River Valley! Actually free is refreshing!', email: 'sarah.e@example.com', password: '$2a$10$demo', photos: [], created: new Date().toISOString() },
-  { id: 2, name: 'Mike', age: 32, city: 'Calgary', bio: 'Calgary born, love Flames and mountains.', email: 'mike.c@example.com', password: '$2a$10$demo', photos: [], created: new Date().toISOString() }
+  { id: 1, name: 'Sarah', age: 28, city: 'Edmonton', gender: 'Woman', bio: 'Love hiking in River Valley! Actually free is refreshing!', email: 'sarah.e@example.com', password: '$2a$10$demo', photos: [], created: new Date().toISOString() },
+  { id: 2, name: 'Mike', age: 32, city: 'Calgary', gender: 'Man', bio: 'Calgary born, love Flames and mountains.', email: 'mike.c@example.com', password: '$2a$10$demo', photos: [], created: new Date().toISOString() }
 ]);
 let messages = loadJson(MSGS_FILE, []);
-let blocks = loadJson(BLOCKS_FILE, {}); // { userId: [blockedId1, blockedId2] }
+let blocks = loadJson(BLOCKS_FILE, {});
 let nextId = Math.max(100, ...users.map(u=>u.id), 0) + 1;
 
 function getFileUrl(file){ return hasCloudinary ? file.path : '/uploads/'+file.filename; }
-function safeUser(u){ return { id: u.id, name: u.name, age: u.age, city: u.city, bio: u.bio, photo_url: u.photos?.[0]||null, photos: u.photos||[], created: u.created }; }
+function safeUser(u){ return { id: u.id, name: u.name, age: u.age, city: u.city, gender: u.gender||'Man', bio: u.bio, photo_url: u.photos?.[0]||null, photos: u.photos||[], created: u.created }; }
 function getBlockedFor(userId){ return blocks[userId] || []; }
-function isBlocked(a,b){ // a blocked b OR b blocked a -> hide
-  return (blocks[a]||[]).includes(b) || (blocks[b]||[]).includes(a);
-}
+function isBlocked(a,b){ return (blocks[a]||[]).includes(b) || (blocks[b]||[]).includes(a); }
+
+// Migrate old users without gender
+let migrated=false;
+users.forEach(u=>{ if(!u.gender){ u.gender = ['sarah','emma','jess','lisa','anna'].some(n=>u.name.toLowerCase().includes(n)) ? 'Woman' : 'Man'; migrated=true; } });
+if(migrated) saveJson(USERS_FILE, users);
 
 app.get('/api/users', (req,res)=>{
   const city=req.query.city;
   const myId = parseInt(req.query.myId||0);
+  const gender = req.query.gender;
+  const ageMin = parseInt(req.query.ageMin||0);
+  const ageMax = parseInt(req.query.ageMax||0);
   let list=users;
   if(city) list=list.filter(u=>u.city===city);
+  if(gender && gender!=='All') list=list.filter(u=> (u.gender||'Man')===gender);
+  if(ageMin) list=list.filter(u=> (u.age||25) >= ageMin);
+  if(ageMax) list=list.filter(u=> (u.age||25) <= ageMax);
   if(myId){
     const myBlocks = getBlockedFor(myId);
     list = list.filter(u=> u.id!==myId && !myBlocks.includes(u.id) && !(blocks[u.id]||[]).includes(myId));
@@ -85,12 +94,12 @@ app.get('/api/me', (req,res)=>{
 
 app.post('/api/signup', (req,res,next)=>{ upload.array('photos',4)(req,res,(err)=>{ if(err) return res.status(400).json({error: err.message}); next(); }); }, async (req,res)=>{
   try{
-    const { name, email, password, age, city, bio } = req.body;
+    const { name, email, password, age, city, bio, gender } = req.body;
     if(!name||!email||!password) return res.status(400).json({error:'Missing fields'});
     if(users.find(u=>u.email.toLowerCase()===email.toLowerCase())) return res.status(400).json({error:'Email already used'});
     const hashed=await bcrypt.hash(password,10);
     const photoUrls=(req.files||[]).map(f=>getFileUrl(f));
-    const u={ id: nextId++, name, email, password:hashed, age:parseInt(age)||25, city:city||'Edmonton', bio:bio||'', photos:photoUrls, created:new Date().toISOString() };
+    const u={ id: nextId++, name, email, password:hashed, age:parseInt(age)||25, city:city||'Edmonton', gender: gender||'Man', bio:bio||'', photos:photoUrls, created:new Date().toISOString() };
     users.push(u); saveJson(USERS_FILE, users);
     const token=jwt.sign({id:u.id},JWT_SECRET,{expiresIn:'30d'});
     res.json({message:'Account created! Free forever!', token, ...safeUser(u)});
@@ -115,10 +124,11 @@ app.post('/api/update-profile', (req,res,next)=>{ upload.array('photos',4)(req,r
     const d=jwt.verify(tokenHdr,JWT_SECRET);
     const u=users.find(x=>x.id===d.id);
     if(!u) return res.status(404).json({error:'Not found'});
-    const { name, age, city, bio, keepPhotos }=req.body;
+    const { name, age, city, bio, keepPhotos, gender }=req.body;
     if(name) u.name=name;
     if(age) u.age=parseInt(age);
     if(city) u.city=city;
+    if(gender) u.gender=gender;
     if(bio!==undefined) u.bio=bio;
     let keep=[];
     if(keepPhotos){ try{ keep=JSON.parse(keepPhotos); }catch{ keep=u.photos||[]; } } else keep=u.photos||[];
@@ -144,7 +154,6 @@ app.post('/api/delete-account', (req,res)=>{
   }catch(e){ res.status(500).json({error:e.message}); }
 });
 
-// BLOCK / UNBLOCK
 app.post('/api/block', (req,res)=>{
   try{
     const tokenHdr=req.headers.authorization?.split(' ')[1];
@@ -159,7 +168,6 @@ app.post('/api/block', (req,res)=>{
       blocks[myId]=blocks[myId].filter(x=>x!==tid);
     }else{
       if(!blocks[myId].includes(tid)) blocks[myId].push(tid);
-      // also delete messages between them
       messages=messages.filter(m=>!((m.from_id===myId&&m.to_id===tid)||(m.from_id===tid&&m.to_id===myId)));
     }
     saveJson(BLOCKS_FILE, blocks); saveJson(MSGS_FILE, messages);
@@ -206,7 +214,7 @@ app.get('/api/inbox/:myId', (req,res)=>{
   res.json(inbox);
 });
 
-app.post('/api/messages', (req,res)=>{
+app.post('/api/messages', async (req,res)=>{
   const { from_id, to_id, text }=req.body;
   const fid=parseInt(from_id), tid=parseInt(to_id);
   if(!text) return res.status(400).json({error:'No text'});
@@ -240,4 +248,4 @@ app.post('/api/admin/remove-photo', checkAdmin, (req,res)=>{
 
 app.get('/admin', (req,res)=> res.sendFile(path.join(__dirname,'public','admin.html')));
 
-app.listen(PORT, ()=> console.log(`AFD with BLOCK on ${PORT}`));
+app.listen(PORT, ()=> console.log(`AFD Filter+Block v2 on ${PORT}`));
