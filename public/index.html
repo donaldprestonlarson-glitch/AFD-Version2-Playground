@@ -22,19 +22,22 @@ nav{display:flex;gap:18px;align-items:center}
 .chip{padding:8px 16px;border-radius:100px;border:1px solid var(--border);background:var(--card);color:var(--muted);cursor:pointer}
 .chip.active{background:var(--teal2);color:white;border-color:var(--teal2)}
 .grid{max-width:1100px;margin:0 auto;padding:20px;display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:16px}
-.card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:16px;position:relative;overflow:hidden}
+.card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:16px;position:relative;overflow:hidden;cursor:pointer;transition:transform .15s, border-color .15s}
+.card:hover{transform:translateY(-3px);border-color:var(--teal2)}
 .avatar{width:56px;height:56px;border-radius:50%;background:linear-gradient(135deg,var(--teal2),var(--teal));display:flex;align-items:center;justify-content:center;font-weight:800;font-size:20px;overflow:hidden}
 .avatar img{width:100%;height:100%;object-fit:cover}
+.avatar.big{width:140px;height:140px;font-size:48px;border:4px solid var(--teal2)}
 .online{width:10px;height:10px;background:#22c55e;border-radius:50%;position:absolute;top:18px;right:18px;box-shadow:0 0 0 3px var(--card)}
 .ad{background:repeating-linear-gradient(45deg,#141c23,#141c23 10px,#17202a 10px,#17202a 20px);border:1px dashed var(--border);border-radius:16px;display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:12px;letter-spacing:.5px;text-align:center;padding:20px}
-.modal{position:fixed;inset:0;background:rgba(0,0,0,.6);display:none;align-items:center;justify-content:center;z-index:100;padding:20px}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.7);display:none;align-items:center;justify-content:center;z-index:100;padding:20px}
 .modal.open{display:flex}
-.modal-box{background:var(--card2);border:1px solid var(--border);border-radius:16px;width:100%;max-width:440px;padding:20px;max-height:92vh;overflow:auto}
+.modal-box{background:var(--card2);border:1px solid var(--border);border-radius:16px;width:100%;max-width:460px;padding:20px;max-height:92vh;overflow:auto}
+.modal-box.wide{max-width:560px}
 input,textarea,select{width:100%;padding:12px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);margin-top:8px}
 .photo-upload{margin-top:12px;border:2px dashed var(--border);border-radius:12px;padding:14px;text-align:center;background:var(--bg)}
-.photo-upload.dragover{border-color:var(--teal);background:#11201e}
 .photo-preview{width:96px;height:96px;border-radius:50%;margin:10px auto;background:var(--card);overflow:hidden;display:none;border:3px solid var(--teal2)}
 .photo-preview img{width:100%;height:100%;object-fit:cover}
+.profile-photo{width:100%;max-height:420px;object-fit:cover;border-radius:14px;background:var(--bg)}
 .chat{position:fixed;bottom:20px;right:20px;width:360px;max-width:92vw;background:var(--card2);border:1px solid var(--border);border-radius:16px;display:none;flex-direction:column;z-index:90;box-shadow:0 20px 50px rgba(0,0,0,.5)}
 .chat.open{display:flex}.chat-head{padding:14px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between}
 .chat-body{height:300px;overflow:auto;padding:14px;display:flex;flex-direction:column;gap:8px}
@@ -61,7 +64,7 @@ input,textarea,select{width:100%;padding:12px;border-radius:10px;border:1px soli
     </div>
     <p style="font-size:13px;margin-top:12px">Launch cities: Edmonton & Calgary. Expanding soon. 100% free, supported by simple ads.</p>
   </div>
-  <div class="card">
+  <div class="card" style="cursor:default">
     <h3 style="margin-bottom:8px">Why Actually Free?</h3>
     <ul style="color:var(--muted);padding-left:18px;display:grid;gap:8px">
       <li>Free to message — always</li>
@@ -82,6 +85,16 @@ input,textarea,select{width:100%;padding:12px;border-radius:10px;border:1px soli
 
 <div class="grid" id="grid"></div>
 
+<!-- PROFILE VIEW MODAL -->
+<div class="modal" id="profileModal"><div class="modal-box wide">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px"><h3 id="pv_name">Profile</h3><span style="cursor:pointer;font-size:22px" onclick="closeModals()">✕</span></div>
+  <img id="pv_photo" class="profile-photo" style="display:none">
+  <div id="pv_noPhoto" class="avatar big" style="margin:0 auto 12px;display:none"></div>
+  <div style="margin:12px 0"><b id="pv_age_city" style="color:var(--muted)"></b></div>
+  <p id="pv_bio" style="white-space:pre-wrap;color:var(--text);background:var(--bg);padding:12px;border-radius:10px;border:1px solid var(--border)"></p>
+  <div style="display:flex;gap:10px;margin-top:16px"><button class="btn btn-primary" style="flex:1" onclick="messageFromProfile()">Message Free</button><button class="btn btn-ghost" onclick="closeModals()">Close</button></div>
+</div></div>
+
 <!-- SIGNUP WITH PHOTO -->
 <div class="modal" id="signupModal"><div class="modal-box">
   <h3>Join Actually Free — It's Free</h3>
@@ -91,15 +104,13 @@ input,textarea,select{width:100%;padding:12px;border-radius:10px;border:1px soli
   <input id="s_pass" placeholder="Password" type="password">
   <input id="s_age" placeholder="Age" type="number" min="18">
   <select id="s_city"><option value="Edmonton">Edmonton</option><option value="Calgary">Calgary</option></select>
-  <textarea id="s_bio" placeholder="Short bio"></textarea>
-
+  <textarea id="s_bio" placeholder="Short bio — what should people know?"></textarea>
   <div class="photo-upload" id="photoDrop">
     <div style="font-size:13px;color:var(--muted)"><b style="color:var(--teal)">Add a photo</b> — free & hosted on cloud</div>
     <div class="photo-preview" id="photoPreview"><img id="previewImg"></div>
     <input type="file" id="s_photo" accept="image/*" style="margin-top:10px">
     <div style="font-size:11px;color:var(--muted);margin-top:6px">JPG, PNG up to 5MB — stays free forever</div>
   </div>
-
   <div style="display:flex;gap:10px;margin-top:14px"><button class="btn btn-primary" style="flex:1" onclick="doSignup()">Create Account</button><button class="btn btn-ghost" onclick="closeModals()">Cancel</button></div>
   <div id="s_msg" style="margin-top:10px;font-size:13px;color:var(--teal)"></div>
 </div></div>
@@ -120,9 +131,8 @@ input,textarea,select{width:100%;padding:12px;border-radius:10px;border:1px soli
 </div>
 
 <script>
-let users=[], currentUser=null, activeCity='All', chatWith=null;
+let users=[], currentUser=null, activeCity='All', chatWith=null, viewingUser=null;
 
-// Photo preview
 const photoInput = document.getElementById('s_photo');
 if(photoInput){
   photoInput.addEventListener('change', e=>{
@@ -143,13 +153,39 @@ async function loadUsers(){
     users.forEach((u,i)=>{
       if(i===3){ const ad=document.createElement('div'); ad.className='ad'; ad.innerHTML='Advertisement<br>This is how we stay free<br><small>Local Edmonton/Calgary business</small>'; grid.appendChild(ad); }
       const d=document.createElement('div'); d.className='card';
+      d.onclick=()=>openProfile(u.id);
       const photo = u.photo_url || u.photo || u.avatar || '';
       const avatarHtml = photo ? `<div class="avatar"><img src="${photo}" onerror="this.parentElement.innerHTML='${u.name[0]}'"></div>` : `<div class="avatar">${u.name[0]}</div>`;
-      d.innerHTML=`<div class="online"></div><div style="display:flex;gap:12px;align-items:center">${avatarHtml}<div><b>${u.name}, ${u.age}</b><div style="color:var(--muted);font-size:13px">${u.city} • Online now</div></div></div><p style="margin:12px 0;color:var(--muted);font-size:14px;min-height:40px">${(u.bio||'New here — say hi, it\'s free!').slice(0,120)}</p><button class="btn btn-primary" style="width:100%" onclick="openChat(${u.id},'${u.name.replace(/'/g,"\\'")}')">Message Free</button>`;
+      d.innerHTML=`<div class="online"></div><div style="display:flex;gap:12px;align-items:center">${avatarHtml}<div><b>${u.name}, ${u.age}</b><div style="color:var(--muted);font-size:13px">${u.city} • Online now</div></div></div><p style="margin:12px 0;color:var(--muted);font-size:14px;min-height:40px">${(u.bio||'New here — say hi, it\'s free!').slice(0,90)}...</p><button class="btn btn-primary" style="width:100%" onclick="event.stopPropagation();openChat(${u.id},'${u.name.replace(/'/g,"\\'")}')">Message Free</button>`;
       grid.appendChild(d);
     });
   }catch(e){ console.log(e); }
 }
+
+function openProfile(id){
+  const u = users.find(x=>x.id==id);
+  if(!u) return;
+  viewingUser=u;
+  document.getElementById('pv_name').innerText = `${u.name}, ${u.age}`;
+  document.getElementById('pv_age_city').innerText = `${u.city} • Online now • ${u.age} years`;
+  document.getElementById('pv_bio').innerText = u.bio || 'No bio yet — but says hi!';
+  const photo = u.photo_url || u.photo || u.avatar || '';
+  const imgEl = document.getElementById('pv_photo');
+  const noEl = document.getElementById('pv_noPhoto');
+  if(photo){
+    imgEl.src=photo; imgEl.style.display='block'; noEl.style.display='none';
+  }else{
+    imgEl.style.display='none'; noEl.innerText=u.name[0]; noEl.style.display='flex';
+  }
+  document.getElementById('profileModal').classList.add('open');
+}
+
+function messageFromProfile(){
+  if(!viewingUser) return;
+  closeModals();
+  setTimeout(()=>openChat(viewingUser.id, viewingUser.name),200);
+}
+
 function filterCity(city,el){ activeCity=city; document.querySelectorAll('.chip').forEach(c=>c.classList.remove('active')); el.classList.add('active'); loadUsers(); }
 function openModal(t){ document.getElementById(t+'Modal').classList.add('open'); }
 function closeModals(){ document.querySelectorAll('.modal').forEach(m=>m.classList.remove('open')); }
