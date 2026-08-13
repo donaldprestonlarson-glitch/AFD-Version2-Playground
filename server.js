@@ -88,10 +88,12 @@ let messages = loadJson(MSGS_FILE, []);
 let blocks = loadJson(BLOCKS_FILE, {});
 let nextId = Math.max(100, ...users.map(u=>u.id), 0) + 1;
 
-function getFileUrl(file){ return hasCloudinary ? file.path : '/uploads/'+file.filename; }
+function getFileUrl(file){ if(hasCloudinary){ return file.path || file.secure_url || file.url; } return '/uploads/'+file.filename; }
 function safeUser(u){ 
   let photos = u.photos;
-  if(typeof photos === 'string'){ try{ photos = JSON.parse(photos); }catch{ photos=[]; } }
+  if(typeof photos === 'string'){ try{ photos = JSON.parse(photos); if(typeof photos==='string') photos=JSON.parse(photos); }catch{ photos=[]; } }
+  if(!Array.isArray(photos)) photos=[];
+  photos=photos.filter(p=> typeof p==='string' && p.length>5);
   return { id: u.id, name: u.name, age: u.age, city: u.city, gender: u.gender||'Man', bio: u.bio, photo_url: (photos?.[0]||null), photos: photos||[], created: u.created }; 
 }
 function getBlockedFor(userId){ return blocks[userId] || []; }
