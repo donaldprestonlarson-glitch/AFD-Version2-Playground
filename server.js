@@ -23,12 +23,12 @@ const DATA_DIR = path.join(__dirname, 'data');
 if(!fs.existsSync(DATA_DIR)) fs.mkdirSync(DATA_DIR, {recursive:true});
 const USERS_FILE = path.join(DATA_DIR, 'users.json');
 const MSGS_FILE = path.join(DATA_DIR, 'messages.json');
+const BLOCKS_FILE = path.join(DATA_DIR, 'blocks.json');
 
-function loadJson(file, def){ try{ if(fs.existsSync(file)) return JSON.parse(fs.readFileSync(file,'utf8')); }catch(e){ console.error('load fail',file,e.message);} return def; }
-function saveJson(file, data){ try{ fs.writeFileSync(file, JSON.stringify(data, null, 2)); }catch(e){ console.error('save fail', file, e.message); } }
+function loadJson(file, def){ try{ if(fs.existsSync(file)) return JSON.parse(fs.readFileSync(file,'utf8')); }catch(e){} return def; }
+function saveJson(file, data){ try{ fs.writeFileSync(file, JSON.stringify(data, null, 2)); }catch(e){} }
 
 const hasCloudinary = !!(process.env.CLOUDINARY_CLOUD_NAME && process.env.CLOUDINARY_API_KEY && process.env.CLOUDINARY_API_SECRET);
-console.log('Cloudinary:', hasCloudinary, 'DataDir:', DATA_DIR);
 
 let storage;
 if(hasCloudinary){
@@ -50,15 +50,25 @@ let users = loadJson(USERS_FILE, [
   { id: 2, name: 'Mike', age: 32, city: 'Calgary', bio: 'Calgary born, love Flames and mountains.', email: 'mike.c@example.com', password: '$2a$10$demo', photos: [], created: new Date().toISOString() }
 ]);
 let messages = loadJson(MSGS_FILE, []);
+let blocks = loadJson(BLOCKS_FILE, {}); // { userId: [blockedId1, blockedId2] }
 let nextId = Math.max(100, ...users.map(u=>u.id), 0) + 1;
 
 function getFileUrl(file){ return hasCloudinary ? file.path : '/uploads/'+file.filename; }
 function safeUser(u){ return { id: u.id, name: u.name, age: u.age, city: u.city, bio: u.bio, photo_url: u.photos?.[0]||null, photos: u.photos||[], created: u.created }; }
+function getBlockedFor(userId){ return blocks[userId] || []; }
+function isBlocked(a,b){ // a blocked b OR b blocked a -> hide
+  return (blocks[a]||[]).includes(b) || (blocks[b]||[]).includes(a);
+}
 
 app.get('/api/users', (req,res)=>{
   const city=req.query.city;
+  const myId = parseInt(req.query.myId||0);
   let list=users;
   if(city) list=list.filter(u=>u.city===city);
+  if(myId){
+    const myBlocks = getBlockedFor(myId);
+    list = list.filter(u=> u.id!==myId && !myBlocks.includes(u.id) && !(blocks[u.id]||[]).includes(myId));
+  }
   res.json(list.map(safeUser).reverse());
 });
 
@@ -69,7 +79,7 @@ app.get('/api/me', (req,res)=>{
     const d=jwt.verify(token,JWT_SECRET);
     const u=users.find(x=>x.id===d.id);
     if(!u) return res.status(404).json({error:'Not found'});
-    res.json({...safeUser(u), email:u.email});
+    res.json({...safeUser(u), email:u.email, blocked: getBlockedFor(u.id)});
   }catch{ res.status(401).json({error:'Bad token'}); }
 });
 
@@ -84,7 +94,7 @@ app.post('/api/signup', (req,res,next)=>{ upload.array('photos',4)(req,res,(err)
     users.push(u); saveJson(USERS_FILE, users);
     const token=jwt.sign({id:u.id},JWT_SECRET,{expiresIn:'30d'});
     res.json({message:'Account created! Free forever!', token, ...safeUser(u)});
-  }catch(e){ console.error(e); res.status(500).json({error:e.message}); }
+  }catch(e){ res.status(500).json({error:e.message}); }
 });
 
 app.post('/api/login', async (req,res)=>{
@@ -95,7 +105,7 @@ app.post('/api/login', async (req,res)=>{
   if(u.password.startsWith('$2')){ try{ ok=await bcrypt.compare(password,u.password)||ok; }catch{} }
   if(!ok) return res.status(400).json({error:'Wrong password'});
   const token=jwt.sign({id:u.id},JWT_SECRET,{expiresIn:'30d'});
-  res.json({token, ...safeUser(u), email:u.email});
+  res.json({token, ...safeUser(u), email:u.email, blocked: getBlockedFor(u.id)});
 });
 
 app.post('/api/update-profile', (req,res,next)=>{ upload.array('photos',4)(req,res,(err)=>{ if(err) return res.status(400).json({error:err.message}); next(); }); }, async (req,res)=>{
@@ -127,16 +137,52 @@ app.post('/api/delete-account', (req,res)=>{
     const id=d.id;
     users=users.filter(u=>u.id!==id);
     messages=messages.filter(m=>m.from_id!==id && m.to_id!==id);
-    saveJson(USERS_FILE, users); saveJson(MSGS_FILE, messages);
+    delete blocks[id];
+    Object.keys(blocks).forEach(k=>{ blocks[k]=blocks[k].filter(b=>b!==id); });
+    saveJson(USERS_FILE, users); saveJson(MSGS_FILE, messages); saveJson(BLOCKS_FILE, blocks);
     res.json({message:'Your account has been deleted. You are welcome back anytime!'});
   }catch(e){ res.status(500).json({error:e.message}); }
 });
 
-// MESSAGES - PERSISTENT
+// BLOCK / UNBLOCK
+app.post('/api/block', (req,res)=>{
+  try{
+    const tokenHdr=req.headers.authorization?.split(' ')[1];
+    if(!tokenHdr) return res.status(401).json({error:'Login first'});
+    const d=jwt.verify(tokenHdr,JWT_SECRET);
+    const myId=d.id;
+    const { targetId, action } = req.body;
+    const tid=parseInt(targetId);
+    if(!tid || tid===myId) return res.status(400).json({error:'Invalid'});
+    if(!blocks[myId]) blocks[myId]=[];
+    if(action==='unblock'){
+      blocks[myId]=blocks[myId].filter(x=>x!==tid);
+    }else{
+      if(!blocks[myId].includes(tid)) blocks[myId].push(tid);
+      // also delete messages between them
+      messages=messages.filter(m=>!((m.from_id===myId&&m.to_id===tid)||(m.from_id===tid&&m.to_id===myId)));
+    }
+    saveJson(BLOCKS_FILE, blocks); saveJson(MSGS_FILE, messages);
+    res.json({blocked: blocks[myId]});
+  }catch(e){ res.status(500).json({error:e.message}); }
+});
+
+app.get('/api/blocks', (req,res)=>{
+  try{
+    const tokenHdr=req.headers.authorization?.split(' ')[1];
+    if(!tokenHdr) return res.status(401).json({error:'Login first'});
+    const d=jwt.verify(tokenHdr,JWT_SECRET);
+    const list=blocks[d.id]||[];
+    const blockedUsers=list.map(id=>{ const u=users.find(x=>x.id===id); return u ? {id: u.id, name: u.name, city: u.city, photo: u.photos?.[0]||null} : {id, name:'Deleted'}; });
+    res.json(blockedUsers);
+  }catch(e){ res.status(500).json({error:e.message}); }
+});
+
 app.get('/api/messages/:myId', (req,res)=>{
   const myId=parseInt(req.params.myId);
   const withId=parseInt(req.query.with);
   if(!withId) return res.json([]);
+  if(isBlocked(myId, withId)) return res.json([]);
   const filtered=messages.filter(m=> (m.from_id===myId&&m.to_id===withId)||(m.from_id===withId&&m.to_id===myId));
   res.json(filtered.slice(-200));
 });
@@ -147,6 +193,7 @@ app.get('/api/inbox/:myId', (req,res)=>{
   messages.forEach(m=>{
     if(m.from_id===myId||m.to_id===myId){
       const other = m.from_id===myId ? m.to_id : m.from_id;
+      if(isBlocked(myId, other)) return;
       if(!convMap[other] || new Date(m.at) > new Date(convMap[other].at)){
         convMap[other]=m;
       }
@@ -161,10 +208,11 @@ app.get('/api/inbox/:myId', (req,res)=>{
 
 app.post('/api/messages', (req,res)=>{
   const { from_id, to_id, text }=req.body;
+  const fid=parseInt(from_id), tid=parseInt(to_id);
   if(!text) return res.status(400).json({error:'No text'});
-  const msg={ id: messages.length+1, from_id: parseInt(from_id), to_id: parseInt(to_id), text, at:new Date().toISOString() };
+  if(isBlocked(fid, tid)) return res.status(403).json({error:'Blocked'});
+  const msg={ id: messages.length+1, from_id: fid, to_id: tid, text, at:new Date().toISOString() };
   messages.push(msg); saveJson(MSGS_FILE, messages);
-  console.log('Message saved', msg);
   res.json(msg);
 });
 
@@ -192,4 +240,4 @@ app.post('/api/admin/remove-photo', checkAdmin, (req,res)=>{
 
 app.get('/admin', (req,res)=> res.sendFile(path.join(__dirname,'public','admin.html')));
 
-app.listen(PORT, ()=> console.log(`AFD Live persistent on ${PORT} - users:${users.length} msgs:${messages.length}`));
+app.listen(PORT, ()=> console.log(`AFD with BLOCK on ${PORT}`));
