@@ -135,7 +135,7 @@ input,textarea,select{width:100%;padding:12px;border-radius:10px;border:1px soli
 <div class="modal" id="signupModal"><div class="modal-box">
   <h3>Join Actually Free — It's Free</h3>
   <p style="color:var(--muted);font-size:13px">No credit card. Ever.</p>
-  <input id="s_name" placeholder="Your name"><input id="s_email" placeholder="Email" type="email"><input id="s_pass" placeholder="Password" type="password"><div style="display:flex;gap:8px"><input id="s_age" placeholder="Age" type="number" min="18" style="flex:1"><select id="s_gender" style="flex:1"><option value="Man">I am a Man</option><option value="Woman">I am a Woman</option><option value="Other">Non-binary</option></select></div><select id="s_city"><option value="Edmonton">Edmonton</option><option value="Calgary">Calgary</option></select><textarea id="s_bio" placeholder="Short bio"></textarea>
+  <input id="s_name" placeholder="Your name"><input id="s_email" placeholder="Email" type="email"><input id="s_pass" placeholder="Password" type="password"><div style="display:flex;gap:8px"><input id="s_age" placeholder="Age" type="number" min="18" style="flex:1"><select id="s_gender" style="flex:1"><option value="Man">I am a Man</option><option value="Woman">I am a Woman</option></select></div><select id="s_city"><option value="Edmonton">Edmonton</option><option value="Calgary">Calgary</option></select><textarea id="s_bio" placeholder="Short bio"></textarea>
   <div class="photo-upload"><b style="color:var(--teal)">Up to 4 photos</b> — free & cloud hosted<div class="photo-grid" id="s_preview"></div><input type="file" id="s_photos" accept="image/*" multiple><div style="font-size:11px;color:var(--muted);margin-top:6px">Hold Ctrl to pick 4 at once — JPG/PNG up to 5MB each</div></div>
   <div style="display:flex;gap:10px;margin-top:14px"><button class="btn btn-primary" style="flex:1" onclick="doSignup()">Create Account</button><button class="btn btn-ghost" onclick="closeModals()">Cancel</button></div><div id="s_msg" style="margin-top:10px;font-size:13px;color:var(--teal)"></div>
 </div></div>
@@ -258,7 +258,7 @@ function openEdit(){
 async function doSignup(){
   const msg=document.getElementById('s_msg'); msg.innerText='Creating...';
   const fd=new FormData();
-  fd.append('name',s_name.value); fd.append('email',s_email.value); fd.append('password',s_pass.value); fd.append('age',s_age.value); fd.append('city',s_city.value); fd.append('bio',s_bio.value);
+  fd.append('name',s_name.value); fd.append('email',s_email.value); fd.append('password',s_pass.value); fd.append('age',s_age.value); fd.append('gender',document.getElementById('s_gender').value); fd.append('city',s_city.value); fd.append('bio',s_bio.value);
   sFiles.forEach(f=>fd.append('photos',f));
   const res=await fetch('/api/signup',{method:'POST',body:fd});
   const j=await res.json(); msg.innerText=j.message||j.error||'Done';
@@ -267,7 +267,7 @@ async function doSignup(){
 async function doUpdate(){
   const msg=document.getElementById('e_msg'); msg.innerText='Saving...';
   const fd=new FormData();
-  fd.append('name',e_name.value); fd.append('age',e_age.value); fd.append('city',e_city.value); fd.append('bio',e_bio.value);
+  fd.append('name',e_name.value); fd.append('age',e_age.value); fd.append('gender',document.getElementById('e_gender').value); fd.append('city',e_city.value); fd.append('bio',e_bio.value);
   fd.append('keepPhotos', JSON.stringify(editKeepPhotos));
   eNewFiles.forEach(f=>fd.append('photos',f));
   const res=await fetch('/api/update-profile',{method:'POST',headers:authHeaders(),body:fd});
