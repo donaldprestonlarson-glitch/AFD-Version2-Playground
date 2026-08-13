@@ -24,22 +24,12 @@ console.log('Cloudinary configured:', hasCloudinary);
 
 let storage;
 if(hasCloudinary){
-  cloudinary.config({
-    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-    api_key: process.env.CLOUDINARY_API_KEY,
-    api_secret: process.env.CLOUDINARY_API_SECRET
-  });
-  storage = new CloudinaryStorage({
-    cloudinary,
-    params: { folder: 'afd', allowed_formats: ['jpg','jpeg','png','webp'], transformation: [{ width: 800, height: 800, crop: 'limit' }, { quality: 'auto' }] }
-  });
+  cloudinary.config({ cloud_name: process.env.CLOUDINARY_CLOUD_NAME, api_key: process.env.CLOUDINARY_API_KEY, api_secret: process.env.CLOUDINARY_API_SECRET });
+  storage = new CloudinaryStorage({ cloudinary, params: { folder: 'afd', allowed_formats: ['jpg','jpeg','png','webp'], transformation: [{ width: 800, height: 800, crop: 'limit' }, { quality: 'auto' }] } });
 }else{
   const uploadDir = path.join(__dirname, 'public', 'uploads');
   if(!fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir, {recursive:true});
-  storage = multer.diskStorage({
-    destination: (req,file,cb)=> cb(null, uploadDir),
-    filename: (req,file,cb)=> cb(null, Date.now()+'-'+file.originalname.replace(/[^a-zA-Z0-9.]/g,'_'))
-  });
+  storage = multer.diskStorage({ destination: (req,file,cb)=> cb(null, uploadDir), filename: (req,file,cb)=> cb(null, Date.now()+'-'+file.originalname.replace(/[^a-zA-Z0-9.]/g,'_')) });
 }
 const upload = multer({ storage, limits: { fileSize: 5*1024*1024 }, fileFilter: (req,file,cb)=>{ if(file.mimetype.startsWith('image/')) cb(null,true); else cb(new Error('Only images')); } });
 
@@ -54,14 +44,8 @@ let users = [
 let messages = [];
 let nextId = 100;
 
-function getFileUrl(file){
-  if(hasCloudinary) return file.path;
-  return '/uploads/'+file.filename;
-}
-
-function safeUser(u){
-  return { id: u.id, name: u.name, age: u.age, city: u.city, bio: u.bio, photo_url: u.photos?.[0]||null, photos: u.photos||[], created: u.created };
-}
+function getFileUrl(file){ return hasCloudinary ? file.path : '/uploads/'+file.filename; }
+function safeUser(u){ return { id: u.id, name: u.name, age: u.age, city: u.city, bio: u.bio, photo_url: u.photos?.[0]||null, photos: u.photos||[], created: u.created }; }
 
 app.get('/api/users', (req,res)=>{
   const city=req.query.city;
@@ -81,15 +65,9 @@ app.get('/api/me', (req,res)=>{
   }catch{ res.status(401).json({error:'Bad token'}); }
 });
 
-app.post('/api/signup', (req,res,next)=>{
-  upload.array('photos',4)(req,res,(err)=>{
-    if(err){ console.error('Upload error',err); return res.status(400).json({error: err.message}); }
-    next();
-  });
-}, async (req,res)=>{
+app.post('/api/signup', (req,res,next)=>{ upload.array('photos',4)(req,res,(err)=>{ if(err) return res.status(400).json({error: err.message}); next(); }); }, async (req,res)=>{
   try{
     const { name, email, password, age, city, bio } = req.body;
-    console.log('Signup attempt', email, 'files', req.files?.length);
     if(!name||!email||!password) return res.status(400).json({error:'Missing fields'});
     if(users.find(u=>u.email.toLowerCase()===email.toLowerCase())) return res.status(400).json({error:'Email already used'});
     const hashed=await bcrypt.hash(password,10);
@@ -97,7 +75,6 @@ app.post('/api/signup', (req,res,next)=>{
     const u={ id: nextId++, name, email, password:hashed, age:parseInt(age)||25, city:city||'Edmonton', bio:bio||'', photos:photoUrls, created:new Date().toISOString() };
     users.push(u);
     const token=jwt.sign({id:u.id},JWT_SECRET,{expiresIn:'30d'});
-    console.log('Created user', u.id);
     res.json({message:'Account created! Free forever!', token, ...safeUser(u)});
   }catch(e){ console.error(e); res.status(500).json({error:e.message}); }
 });
@@ -113,12 +90,7 @@ app.post('/api/login', async (req,res)=>{
   res.json({token, ...safeUser(u), email:u.email});
 });
 
-app.post('/api/update-profile', (req,res,next)=>{
-  upload.array('photos',4)(req,res,(err)=>{
-    if(err) return res.status(400).json({error:err.message});
-    next();
-  });
-}, async (req,res)=>{
+app.post('/api/update-profile', (req,res,next)=>{ upload.array('photos',4)(req,res,(err)=>{ if(err) return res.status(400).json({error:err.message}); next(); }); }, async (req,res)=>{
   try{
     const tokenHdr=req.headers.authorization?.split(' ')[1];
     if(!tokenHdr) return res.status(401).json({error:'Login first'});
@@ -135,6 +107,20 @@ app.post('/api/update-profile', (req,res,next)=>{
     const newUrls=(req.files||[]).map(f=>getFileUrl(f));
     u.photos=[...keep, ...newUrls].slice(0,4);
     res.json({message:'Updated!', ...safeUser(u)});
+  }catch(e){ res.status(500).json({error:e.message}); }
+});
+
+// NEW: USER SELF-DELETE
+app.post('/api/delete-account', (req,res)=>{
+  try{
+    const tokenHdr=req.headers.authorization?.split(' ')[1];
+    if(!tokenHdr) return res.status(401).json({error:'Login first'});
+    const d=jwt.verify(tokenHdr,JWT_SECRET);
+    const id=d.id;
+    users=users.filter(u=>u.id!==id);
+    messages=messages.filter(m=>m.from_id!==id && m.to_id!==id);
+    console.log('User self-deleted', id);
+    res.json({message:'Your account has been deleted. You are welcome back anytime!'});
   }catch(e){ res.status(500).json({error:e.message}); }
 });
 
@@ -174,4 +160,4 @@ app.post('/api/admin/remove-photo', checkAdmin, (req,res)=>{
 
 app.get('/admin', (req,res)=> res.sendFile(path.join(__dirname,'public','admin.html')));
 
-app.listen(PORT, ()=> console.log(`AFD Live on ${PORT} - hasCloudinary=${hasCloudinary} - Ready!`));
+app.listen(PORT, ()=> console.log(`AFD Live on ${PORT} - self-delete enabled`));
