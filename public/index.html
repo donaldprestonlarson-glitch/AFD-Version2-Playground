@@ -119,7 +119,11 @@ input,textarea,select{width:100%;padding:12px;border-radius:10px;border:1px soli
   <input id="e_name" placeholder="Your name"><input id="e_age" placeholder="Age" type="number"><select id="e_city"><option value="Edmonton">Edmonton</option><option value="Calgary">Calgary</option></select><textarea id="e_bio" placeholder="Bio"></textarea>
   <div style="margin-top:10px"><b style="font-size:13px">Your photos (tap X to remove, then Save)</b><div class="photo-grid" id="e_existing"></div></div>
   <div class="photo-upload"><b style="color:var(--teal)">Add more photos</b><div class="photo-grid" id="e_preview"></div><input type="file" id="e_photos" accept="image/*" multiple></div>
-  <div style="display:flex;gap:10px;margin-top:14px"><button class="btn btn-primary" style="flex:1" onclick="doUpdate()">Save — Still Free</button><button class="btn btn-ghost" onclick="closeModals()">Cancel</button></div><div id="e_msg" style="margin-top:10px;font-size:13px;color:var(--teal)"></div>
+  <div style="display:flex;gap:10px;margin-top:14px"><button class="btn btn-primary" style="flex:1" onclick="doUpdate()">Save — Still Free</button><button class="btn btn-ghost" onclick="closeModals()">Cancel</button></div>
+<div style="margin-top:18px;border-top:1px solid #23323f;padding-top:14px">
+<button class="btn" style="width:100%;background:#1a0f0f;border:1px solid #3f1f1f;color:#f87171" onclick="deleteMyAccount()">Delete My Account</button>
+<div style="font-size:11px;color:#8aa0a8;text-align:center;margin-top:6px">Removes profile, photos & messages. You can re-join anytime.</div>
+</div><div id="e_msg" style="margin-top:10px;font-size:13px;color:var(--teal)"></div>
 </div></div>
 
 <!-- LOGIN -->
