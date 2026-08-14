@@ -136,9 +136,7 @@ app.get('/api/users', async (req,res)=>{
       if(ageMin) list=list.filter(u=> (u.age||25) >= ageMin);
       if(ageMax) list=list.filter(u=> (u.age||25) <= ageMax);
       if(myId){
-        const myBlocks = getBlockedFor(myId);
-        const myBlocks = getBlockedFor(myId);
-        list = list.filter(u=> u.id!==myId && !myBlocks.includes(u.id) && !(blocks[u.id]||[]).includes(myId));
+        const myBlocks = getBlockedFor(myId);        list = list.filter(u=> u.id!==myId && !myBlocks.includes(u.id) && !(blocks[u.id]||[]).includes(myId));
       }
     }
     res.json(list.map(safeUser));
