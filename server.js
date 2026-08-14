@@ -275,7 +275,7 @@ app.post('/api/block', async (req,res)=>{
       if(!blocks[myId]) blocks[myId]=[];
       if(action==='unblock'){ blocks[myId]=blocks[myId].filter(x=>x!==tid); }
       else{ if(!blocks[myId].includes(tid)) blocks[myId].push(tid); }
-      saveJson(BLOCKS_FILE, blocks);
+      saveJson(BLOCKS_FILE, blocks); saveJson(MSGS_FILE, messages);
       return res.json({blocked: blocks[myId]});
     }
   }catch(e){ res.status(500).json({error:e.message}); }
