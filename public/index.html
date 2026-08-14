@@ -275,7 +275,7 @@ async function doUpdate(){
   const j=await res.json(); msg.innerText=j.message||j.error||'Updated!';
   if(!j.error){ currentUser={...currentUser,...j}; localStorage.setItem('afd_token', token); setTimeout(()=>{closeModals();loadUsers();},600); }
 }
-async function doLogin(){
+async async function doLogin(){
   const res=await fetch('/api/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:l_email.value,password:l_pass.value})});
   const j=await res.json(); if(j.error){ l_msg.innerText=j.error; return; } handleAuth(j); closeModals(); 
 }
