@@ -55,7 +55,7 @@ input,textarea,select{width:100%;padding:12px;border-radius:10px;border:1px soli
   .badge{display:none}
   nav{width:100%;justify-content:flex-end;gap:6px;flex-wrap:wrap}
   nav .btn{padding:8px 12px;font-size:13px}
-  #navUser{display:none !important}
+  #navUser{display:block !important;width:100%;text-align:right;font-size:12px;color:var(--teal) !important;margin-bottom:2px;order:-1}
   .chat{left:0;right:0;bottom:0;width:100%;max-width:100%;border-radius:16px 16px 0 0;max-height:85vh;max-height:85dvh}
   .chat-body{height:50vh;max-height:50dvh}
   #chatInput{font-size:16px}
@@ -128,7 +128,7 @@ input,textarea,select{width:100%;padding:12px;border-radius:10px;border:1px soli
   <div class="thumbs" id="pv_thumbs"></div>
   <div style="margin:12px 0"><b id="pv_age_city" style="color:var(--muted)"></b></div>
   <p id="pv_bio" style="white-space:pre-wrap;background:var(--bg);padding:12px;border-radius:10px;border:1px solid var(--border)"></p>
-  <div style="display:flex;gap:10px;margin-top:16px"><button class="btn btn-primary" style="flex:1" onclick="messageFromProfile()">Message Free</button><button class="btn btn-ghost" onclick="closeModals()">Close</button><button class="btn btn-ghost" style="color:#f87171" onclick="blockUser()">Block</button></div>
+  <div style="display:flex;gap:10px;margin-top:16px"><button class="btn btn-primary" style="flex:1" onclick="messageFromProfile()">Message Free</button><button class="btn btn-ghost" onclick="closeModals()">Close</button><button class="btn btn-ghost" style="color:#f87171" onclick="reportUser()">Report</button></div>
 </div></div>
 
 <!-- SIGNUP -->
@@ -417,7 +417,6 @@ document.getElementById('chatInput')?.addEventListener('focus', ()=>{
 });
 
 loadUsers();
-setInterval(loadUsers, 15000);
 </script>
 </body>
 </html>
