@@ -128,7 +128,7 @@ input,textarea,select{width:100%;padding:12px;border-radius:10px;border:1px soli
   <div class="thumbs" id="pv_thumbs"></div>
   <div style="margin:12px 0"><b id="pv_age_city" style="color:var(--muted)"></b></div>
   <p id="pv_bio" style="white-space:pre-wrap;background:var(--bg);padding:12px;border-radius:10px;border:1px solid var(--border)"></p>
-  <div style="display:flex;gap:10px;margin-top:16px"><button class="btn btn-primary" style="flex:1" onclick="messageFromProfile()">Message Free</button><button class="btn btn-ghost" onclick="closeModals()">Close</button><button class="btn btn-ghost" style="color:#f87171" onclick="blockUser()">Block</button><button class="btn btn-ghost" style="color:#f87171" onclick="reportUser()">Report</button></div>
+  <div style="display:flex;gap:10px;margin-top:16px"><button class="btn btn-primary" style="flex:1" onclick="messageFromProfile()">Message Free</button><button class="btn btn-ghost" onclick="closeModals()">Close</button><button class="btn btn-ghost" style="color:#f87171" onclick="blockUser()">Block</button></div>
 </div></div>
 
 <!-- SIGNUP -->
@@ -418,7 +418,6 @@ document.getElementById('chatInput')?.addEventListener('focus', ()=>{
 
 loadUsers();
 setInterval(loadUsers, 15000);
-setInterval(()=>{ if(currentUser) checkInbox(); }, 5000);
 </script>
 </body>
 </html>
