@@ -127,8 +127,7 @@ app.get('/api/users', async (req,res)=>{
         const myBlocks=br.rows.map(x=>x.blocked_id);
         const br2=await pool.query('SELECT user_id FROM blocks WHERE blocked_id=$1', [myId]);
         const blockedBy=br2.rows.map(x=>x.user_id);
-        // EMERGENCY: temporarily show all except self, ignore blocks to fix disappear issue
-        list=list.filter(u=> u.id!==myId);
+        list=list.filter(u=> u.id!==myId && !myBlocks.includes(u.id) && !blockedBy.includes(u.id));
       }
     }else{
       list=users;
@@ -138,7 +137,8 @@ app.get('/api/users', async (req,res)=>{
       if(ageMax) list=list.filter(u=> (u.age||25) <= ageMax);
       if(myId){
         const myBlocks = getBlockedFor(myId);
-        list = list.filter(u=> u.id!==myId); // EMERGENCY no block filter
+        const myBlocks = getBlockedFor(myId);
+        list = list.filter(u=> u.id!==myId && !myBlocks.includes(u.id) && !(blocks[u.id]||[]).includes(myId));
       }
     }
     res.json(list.map(safeUser));
@@ -283,42 +283,7 @@ app.post('/api/block', async (req,res)=>{
 });
 
 
-// EMERGENCY FIX - public, no auth needed for one deploy - clears corrupted blocks
-app.get('/api/fix-everything', async (req,res)=>{
-  try{
-    let msg=[];
-    if(useDb){
-      await pool.query('DELETE FROM blocks');
-      msg.push('DB blocks cleared');
-      // also log how many blocks were there
-      const c=await pool.query('SELECT COUNT(*) FROM blocks');
-      msg.push('Blocks count after: '+c.rows[0].count);
-    }else{
-      Object.keys(blocks).forEach(k=>blocks[k]=[]);
-      saveJson(BLOCKS_FILE, blocks);
-      msg.push('File blocks cleared');
-    }
-    res.json({message: 'FIXED: '+msg.join(', '), useDb, blocksCleared:true});
-  }catch(e){ res.status(500).json({error:e.message, useDb}); }
-});
 
-// Also add debug endpoint to see why profiles disappear
-app.get('/api/debug', async (req,res)=>{
-  try{
-    const tokenHdr=req.headers.authorization?.split(' ')[1];
-    let myId=null, myBlocks=[], blockedBy=[];
-    if(tokenHdr){
-      try{ const d=jwt.verify(tokenHdr,JWT_SECRET); myId=d.id;
-        if(useDb){
-          const br=await pool.query('SELECT blocked_id FROM blocks WHERE user_id=$1',[myId]); myBlocks=br.rows.map(x=>x.blocked_id);
-          const br2=await pool.query('SELECT user_id FROM blocks WHERE blocked_id=$1',[myId]); blockedBy=br2.rows.map(x=>x.user_id);
-        } else { myBlocks=getBlockedFor(myId); }
-      }catch{}
-    }
-    let totalUsers=0;
-    if(useDb){ const r=await pool.query('SELECT COUNT(*) FROM users'); totalUsers=parseInt(r.rows[0].count); }
-    else totalUsers=users.length;
-    res.json({useDb, myId, myBlocks, blockedBy, totalUsers, totalBlocks: myBlocks.length+blockedBy.length});
   }catch(e){ res.status(500).json({error:e.message}); }
 });
 
@@ -427,4 +392,5 @@ app.post('/api/admin/delete/:id', checkAdmin, async (req,res)=>{
 });
 
 app.get('/admin', (req,res)=> res.sendFile(path.join(__dirname,'public','admin.html')));
+console.log('EMERGENCY FIX: useDb forced to', useDb);
 app.listen(PORT, ()=> console.log(`AFD FREE+DB ready on ${PORT} - useDb=${useDb}`));
