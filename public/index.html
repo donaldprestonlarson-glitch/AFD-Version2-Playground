@@ -150,7 +150,7 @@ input,textarea,select{width:100%;padding:12px;border-radius:10px;border:1px soli
   <div style="display:flex;gap:10px;margin-top:14px"><button class="btn btn-primary" style="flex:1" onclick="doUpdate()">Save — Still Free</button><button class="btn btn-ghost" onclick="closeModals()">Cancel</button></div>
 <div id="blockedList" style="margin-top:18px;display:none"><b style="font-size:13px">Blocked users</b><div id="blockedItems" style="margin-top:8px;display:grid;gap:6px"></div></div>
 <div style="margin-top:18px;border-top:1px solid #23323f;padding-top:14px">
-<button class="btn" style="width:100%;background:#1a0f0f;border:1px solid #3f1f1f;color:#f87171" onclick="deleteMyAccount()">Delete My Account</button>
+<button class="btn" style="width:100%;background:#1a0f0f;border:1px solid #3f1f1f;color:#f87171" onclick="deleteMyAccount2()">Delete My Account</button>
 <div style="font-size:11px;color:#8aa0a8;text-align:center;margin-top:6px">Removes profile, photos & messages. You can re-join anytime.</div>
 </div><div id="e_msg" style="margin-top:10px;font-size:13px;color:var(--teal)"></div>
 </div></div>
@@ -347,6 +347,29 @@ async function blockUser(){
     closeModals(); loadUsers(); checkInbox();
   }catch(e){ alert('Block failed: '+e.message); }
 }
+function deleteMyAccount(){
+  if(!confirm('Delete your account? This removes your profile, photos & messages. You can re-join anytime.')) return;
+  if(!confirm('Are you sure? This cannot be undone.')) return;
+  try{
+    fetch('/api/delete-account',{method:'POST',headers:{'Content-Type':'application/json', ...authHeaders()}}).then(r=>r.json()).then(j=>{
+      if(j.error) throw new Error(j.error);
+      alert(j.message||'Account deleted');
+      logout();
+    }).catch(e=>alert('Delete failed: '+(e.message||'Unknown')));
+  }catch(e){ alert('Delete failed: '+(e.message||'Unknown')); }
+}
+async function deleteMyAccount2(){
+  if(!confirm('Delete your account? This removes your profile, photos & messages. You can re-join anytime.')) return;
+  if(!confirm('Are you sure? This cannot be undone.')) return;
+  try{
+    const res=await fetch('/api/delete-account',{method:'POST',headers:{'Content-Type':'application/json', ...authHeaders()}});
+    const j=await res.json();
+    if(j.error) throw new Error(j.error);
+    alert(j.message||'Account deleted');
+    logout();
+  }catch(e){ alert('Delete failed: '+(e.message||'Unknown')); }
+}
+
 async function loadBlocked(){
   try{
     const res=await fetch('/api/blocks',{headers:authHeaders()});
