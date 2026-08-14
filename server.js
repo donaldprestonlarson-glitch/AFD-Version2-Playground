@@ -275,9 +275,25 @@ app.post('/api/block', async (req,res)=>{
       if(!blocks[myId]) blocks[myId]=[];
       if(action==='unblock'){ blocks[myId]=blocks[myId].filter(x=>x!==tid); }
       else{ if(!blocks[myId].includes(tid)) blocks[myId].push(tid); }
-      saveJson(BLOCKS_FILE, blocks); saveJson(MSGS_FILE, messages);
+      saveJson(BLOCKS_FILE, blocks);
       return res.json({blocked: blocks[myId]});
     }
+  }catch(e){ res.status(500).json({error:e.message}); }
+});
+
+
+app.post('/api/admin/clear-blocks', checkAdmin, async (req,res)=>{
+  try{
+    if(useDb){ await pool.query('DELETE FROM blocks'); }
+    else { Object.keys(blocks).forEach(k=>blocks[k]=[]); saveJson(BLOCKS_FILE, blocks); }
+    res.json({message:'All blocks cleared - profiles should show again'});
+  }catch(e){ res.status(500).json({error:e.message}); }
+});
+app.get('/api/admin/clear-blocks', checkAdmin, async (req,res)=>{
+  try{
+    if(useDb){ await pool.query('DELETE FROM blocks'); }
+    else { Object.keys(blocks).forEach(k=>blocks[k]=[]); saveJson(BLOCKS_FILE, blocks); }
+    res.json({message:'All blocks cleared - profiles should show again'});
   }catch(e){ res.status(500).json({error:e.message}); }
 });
 
@@ -386,4 +402,14 @@ app.post('/api/admin/delete/:id', checkAdmin, async (req,res)=>{
 });
 
 app.get('/admin', (req,res)=> res.sendFile(path.join(__dirname,'public','admin.html')));
+
+// Auto-heal corrupted blocks
+try{
+  if(!useDb && blocks){
+    let corrupted=false;
+    Object.values(blocks).forEach(arr=>{ if(arr && arr.length>30) corrupted=true; });
+    if(corrupted){ console.log('Corrupted blocks detected - clearing'); Object.keys(blocks).forEach(k=>blocks[k]=[]); saveJson(BLOCKS_FILE, blocks); }
+  }
+}catch(e){ console.log('heal error', e.message); }
+
 app.listen(PORT, ()=> console.log(`AFD FREE+DB ready on ${PORT} - useDb=${useDb}`));
