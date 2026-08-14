@@ -268,13 +268,13 @@ app.post('/api/block', async (req,res)=>{
     if(!tid || tid===myId) return res.status(400).json({error:'Invalid'});
     if(useDb){
       if(action==='unblock'){ await pool.query('DELETE FROM blocks WHERE user_id=$1 AND blocked_id=$2', [myId, tid]); }
-      else{ await pool.query('INSERT INTO blocks(user_id,blocked_id) VALUES($1,$2) ON CONFLICT DO NOTHING', [myId, tid]); }
+      else{ await pool.query('INSERT INTO blocks(user_id,blocked_id) VALUES($1,$2) ON CONFLICT DO NOTHING', [myId, tid]); await pool.query('DELETE FROM messages WHERE (from_id=$1 AND to_id=$2) OR (from_id=$2 AND to_id=$1)', [myId, tid]); }
       const br=await pool.query('SELECT blocked_id FROM blocks WHERE user_id=$1', [myId]);
       return res.json({blocked: br.rows.map(x=>x.blocked_id)});
     }else{
       if(!blocks[myId]) blocks[myId]=[];
       if(action==='unblock'){ blocks[myId]=blocks[myId].filter(x=>x!==tid); }
-      else{ if(!blocks[myId].includes(tid)) blocks[myId].push(tid); }
+      else{ if(!blocks[myId].includes(tid)) blocks[myId].push(tid); messages=messages.filter(m=>!((m.from_id===myId&&m.to_id===tid)||(m.from_id===tid&&m.to_id===myId))); }
       saveJson(BLOCKS_FILE, blocks); saveJson(MSGS_FILE, messages);
       return res.json({blocked: blocks[myId]});
     }
