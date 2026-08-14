@@ -143,34 +143,6 @@ app.get('/api/users', async (req,res)=>{
   }catch(e){ res.status(500).json({error:e.message}); }
 });
 
-
-app.get('/api/debug', async (req,res)=>{
-  try{
-    let totalUsers=0, myId=null, myBlocks=[], blockedBy=[], allIds=[];
-    if(useDb){
-      const r=await pool.query('SELECT COUNT(*) as c FROM users');
-      totalUsers=parseInt(r.rows[0].c);
-      const tokenHdr=req.headers.authorization?.split(' ')[1];
-      if(tokenHdr){
-        try{ const d=jwt.verify(tokenHdr,JWT_SECRET); myId=d.id;
-          const br=await pool.query('SELECT blocked_id FROM blocks WHERE user_id=$1', [myId]); myBlocks=br.rows.map(x=>x.blocked_id);
-          const br2=await pool.query('SELECT user_id FROM blocks WHERE blocked_id=$1', [myId]); blockedBy=br2.rows.map(x=>x.user_id);
-        }catch(e){}
-      }
-      const ru=await pool.query('SELECT id FROM users');
-      allIds=ru.rows.map(x=>x.id);
-    }else{
-      totalUsers=users.length;
-      const tokenHdr=req.headers.authorization?.split(' ')[1];
-      if(tokenHdr){
-        try{ const d=jwt.verify(tokenHdr,JWT_SECRET); myId=d.id; myBlocks=blocks[myId]||[]; blockedBy=Object.keys(blocks).filter(k=> (blocks[k]||[]).includes(myId)).map(x=>parseInt(x)); }catch(e){}
-      }
-      allIds=users.map(u=>u.id);
-    }
-    res.json({useDb, totalUsers, myId, myBlocks, blockedBy, allIds});
-  }catch(e){ res.status(500).json({error:e.message, useDb}); }
-});
-
 app.get('/api/me', async (req,res)=>{
   const token=req.headers.authorization?.split(' ')[1];
   if(!token) return res.status(401).json({error:'No token'});
