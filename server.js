@@ -280,11 +280,6 @@ app.post('/api/block', async (req,res)=>{
   }catch(e){ res.status(500).json({error:e.message}); }
 });
 
-
-
-  }catch(e){ res.status(500).json({error:e.message}); }
-});
-
 app.get('/api/blocks', async (req,res)=>{
   try{
     const tokenHdr=req.headers.authorization?.split(' ')[1];
