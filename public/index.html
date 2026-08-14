@@ -144,7 +144,7 @@ input,textarea,select{width:100%;padding:12px;border-radius:10px;border:1px soli
 <!-- EDIT PROFILE -->
 <div class="modal" id="editModal"><div class="modal-box">
   <h3>Edit Profile — 4 Photos Max</h3>
-  <input id="e_name" placeholder="Your name"><input id="e_age" placeholder="Age" type="number"><div style="display:flex;gap:8px"><select id="e_gender" style="flex:1"><option value="Man">Man</option><option value="Woman">Woman</option></select><select id="e_city" style="flex:1"><option value="Edmonton">Edmonton</option><option value="Calgary">Calgary</option></select><textarea id="e_bio" placeholder="Bio"></textarea>
+  <input id="e_name" placeholder="Your name"><input id="e_age" placeholder="Age" type="number"><select id="e_city"><option value="Edmonton">Edmonton</option><option value="Calgary">Calgary</option></select><textarea id="e_bio" placeholder="Bio"></textarea>
   <div style="margin-top:10px"><b style="font-size:13px">Your photos (tap X to remove, then Save)</b><div class="photo-grid" id="e_existing"></div></div>
   <div class="photo-upload"><b style="color:var(--teal)">Add more photos</b><div class="photo-grid" id="e_preview"></div><input type="file" id="e_photos" accept="image/*" multiple></div>
   <div style="display:flex;gap:10px;margin-top:14px"><button class="btn btn-primary" style="flex:1" onclick="doUpdate()">Save — Still Free</button><button class="btn btn-ghost" onclick="closeModals()">Cancel</button></div>
@@ -259,7 +259,7 @@ function openEdit(){
 async function doSignup(){
   const msg=document.getElementById('s_msg'); msg.innerText='Creating...';
   const fd=new FormData();
-  fd.append('name',s_name.value); fd.append('email',s_email.value); fd.append('password',s_pass.value); fd.append('age',s_age.value); fd.append('gender',document.getElementById('s_gender').value); fd.append('city',s_city.value); fd.append('bio',s_bio.value);
+  fd.append('name',s_name.value); fd.append('email',s_email.value); fd.append('password',s_pass.value); fd.append('age',s_age.value); fd.append('city',s_city.value); fd.append('bio',s_bio.value);
   sFiles.forEach(f=>fd.append('photos',f));
   const res=await fetch('/api/signup',{method:'POST',body:fd});
   const j=await res.json(); msg.innerText=j.message||j.error||'Done';
@@ -268,14 +268,14 @@ async function doSignup(){
 async function doUpdate(){
   const msg=document.getElementById('e_msg'); msg.innerText='Saving...';
   const fd=new FormData();
-  fd.append('name',e_name.value); fd.append('age',e_age.value); fd.append('city',e_city.value); fd.append('gender',document.getElementById('e_gender').value); fd.append('bio',e_bio.value);
+  fd.append('name',e_name.value); fd.append('age',e_age.value); fd.append('city',e_city.value); fd.append('bio',e_bio.value);
   fd.append('keepPhotos', JSON.stringify(editKeepPhotos));
   eNewFiles.forEach(f=>fd.append('photos',f));
   const res=await fetch('/api/update-profile',{method:'POST',headers:authHeaders(),body:fd});
   const j=await res.json(); msg.innerText=j.message||j.error||'Updated!';
   if(!j.error){ currentUser={...currentUser,...j}; localStorage.setItem('afd_token', token); setTimeout(()=>{closeModals();loadUsers();},600); }
 }
-async async function doLogin(){
+async function doLogin(){
   const res=await fetch('/api/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:l_email.value,password:l_pass.value})});
   const j=await res.json(); if(j.error){ l_msg.innerText=j.error; return; } handleAuth(j); closeModals(); 
 }
