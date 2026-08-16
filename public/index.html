@@ -18,18 +18,15 @@ nav{display:flex;gap:10px;align-items:center}
 .hero h1{font-size: clamp(32px,5vw,54px);line-height:.95;letter-spacing:-1.5px}
 .hero h1 em{color:var(--teal);font-style:normal}
 .hero p{color:var(--muted);margin:16px 0 22px;font-size:18px}
-.filters{max-width:1100px;margin:0 auto;padding:12px 20px;display:flex;gap:10px;flex-wrap:wrap;position:sticky;top:56px;z-index:40;background:rgba(10,15,20,.92);backdrop-filter:blur(10px);border-bottom:1px solid var(--border)}
+.filters{max-width:1100px;margin:20px auto;padding:0 20px;display:flex;gap:10px;flex-wrap:wrap}
 .chip{padding:8px 16px;border-radius:100px;border:1px solid var(--border);background:var(--card);color:var(--muted);cursor:pointer}
 .chip.active{background:var(--teal2);color:white;border-color:var(--teal2)}
 .grid{max-width:1100px;margin:0 auto;padding:20px;display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:16px}
 .card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:16px;position:relative;overflow:hidden;cursor:pointer;transition:.15s}
 .card:hover{transform:translateY(-3px);border-color:var(--teal2)}
-.card.pinned{border-color:var(--teal);box-shadow:0 0 0 1px var(--teal)}
-.card.pinned::before{content:'★ PINNED';position:absolute;top:8px;left:10px;background:var(--teal);color:#001211;font-size:10px;font-weight:800;padding:2px 7px;border-radius:20px}
-.avatar{width:64px;height:64px;border-radius:14px;background:#0a0f14;border:1px solid #23323f;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:20px;overflow:hidden}
-.avatar img{width:100%;height:100%;object-fit:contain}
-.avatar.big{width:140px;height:140px;font-size:48px;border:4px solid #0f766e;border-radius:16px;background:#0a0f14}
-.avatar.big img{object-fit:contain}
+.avatar{width:56px;height:56px;border-radius:50%;background:linear-gradient(135deg,var(--teal2),var(--teal));display:flex;align-items:center;justify-content:center;font-weight:800;font-size:20px;overflow:hidden}
+.avatar img{width:100%;height:100%;object-fit:cover}
+.avatar.big{width:140px;height:140px;font-size:48px;border:4px solid var(--teal2)}
 .online{width:10px;height:10px;background:#22c55e;border-radius:50%;position:absolute;top:18px;right:18px;box-shadow:0 0 0 3px var(--card)}
 .ad{background:repeating-linear-gradient(45deg,#141c23,#141c23 10px,#17202a 10px,#17202a 20px);border:1px dashed var(--border);border-radius:16px;display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:12px;text-align:center;padding:20px}
 .modal{position:fixed;inset:0;background:rgba(0,0,0,.7);display:none;align-items:center;justify-content:center;z-index:100;padding:20px}
@@ -39,16 +36,16 @@ nav{display:flex;gap:10px;align-items:center}
 input,textarea,select{width:100%;padding:12px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);margin-top:8px}
 .photo-upload{margin-top:12px;border:2px dashed var(--border);border-radius:12px;padding:14px;text-align:center;background:var(--bg)}
 .photo-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:10px 0}
-.photo-slot{aspect-ratio:1;border:2px dashed #23323f;border-radius:10px;display:flex;align-items:center;justify-content:center;overflow:hidden;background:#0a0f14;position:relative}
-.photo-slot img{width:100%;height:100%;object-fit:contain}
+.photo-slot{aspect-ratio:1;border:2px dashed var(--border);border-radius:10px;display:flex;align-items:center;justify-content:center;overflow:hidden;background:var(--bg);position:relative}
+.photo-slot img{width:100%;height:100%;object-fit:cover}
 .photo-slot .remove{position:absolute;top:2px;right:2px;background:#ef4444;color:white;border:0;border-radius:50%;width:22px;height:22px;cursor:pointer}
-.profile-photo{width:100%;max-height:420px;object-fit:contain;border-radius:14px;background:#0a0f14;border:1px solid var(--border)}
-.thumbs{display:flex;gap:10px;margin-top:12px;overflow:auto;padding-bottom:4px}
-.thumbs img{width:84px;height:84px;border-radius:12px;object-fit:contain;cursor:pointer;border:2px solid #23323f;background:#0a0f14;padding:2px}
-.thumbs img.active{border-color:#14b8a6;box-shadow:0 0 10px rgba(20,184,166,.3)}
+.profile-photo{width:100%;max-height:460px;object-fit:cover;border-radius:14px;background:var(--bg)}
+.thumbs{display:flex;gap:8px;margin-top:10px;overflow:auto}
+.thumbs img{width:72px;height:72px;border-radius:10px;object-fit:cover;cursor:pointer;border:2px solid transparent}
+.thumbs img.active{border-color:var(--teal)}
 .chat{position:fixed;bottom:20px;right:20px;width:360px;max-width:92vw;background:var(--card2);border:1px solid var(--border);border-radius:16px;display:none;flex-direction:column;z-index:90;box-shadow:0 20px 50px rgba(0,0,0,.5)}
 .chat.open{display:flex}.chat-head{padding:14px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between}
-.chat-body{height:300px;overflow:auto;padding:14px;display:flex;flex-direction:column;gap:8px;resize:vertical;min-height:200px;max-height:60vh}
+.chat-body{height:300px;overflow:auto;padding:14px;display:flex;flex-direction:column;gap:8px}
 .msg{max-width:80%;padding:8px 12px;border-radius:12px;font-size:14px}.me{align-self:flex-end;background:var(--teal);color:#001211}.them{align-self:flex-start;background:var(--card);border:1px solid var(--border)}
 @media(max-width:800px){
   .hero{grid-template-columns:1fr}
@@ -62,12 +59,35 @@ input,textarea,select{width:100%;padding:12px;border-radius:10px;border:1px soli
   
   .chat{left:0;right:0;bottom:0;width:100%;max-width:100%;border-radius:16px 16px 0 0;max-height:85vh;max-height:85dvh}
   .chat-body{height:50vh;max-height:50dvh}
-  #chatInput{font-size:16px;resize:vertical;min-height:44px;max-height:150px}
+  #chatInput{font-size:16px}
 }
 @media(max-width:380px){
   .logo{font-size:14px}
   nav .btn{padding:7px 10px;font-size:12px}
 }
+
+.filters{max-width:1100px;margin:0 auto;padding:8px 20px;display:flex;gap:8px;flex-wrap:wrap;position:sticky;z-index:39;background:rgba(10,15,20,.95);backdrop-filter:blur(10px);border-bottom:1px solid var(--border);top:60px}
+.filters.logged-in{top:92px !important}
+.card.pinned{border:2px solid #14b8a6 !important;box-shadow:0 0 25px rgba(20,184,166,.35) !important;background:linear-gradient(135deg,#141c23,#0f2a26) !important}
+.card.pinned::before{content:'★ PINNED HOST';position:absolute;top:8px;left:8px;background:#14b8a6;color:#001211;font-size:9px;font-weight:900;padding:3px 8px;border-radius:20px;z-index:2}
+.pinned-section{max-width:1100px;margin:16px auto 0;padding:0 20px}
+.pinned-label{color:#14b8a6;font-size:12px;font-weight:800;letter-spacing:.6px;margin-bottom:8px}
+.pinned-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px}
+.meta-line{max-width:1100px;margin:30px auto 10px;padding:14px 20px;border-top:1px solid #23323f;display:flex;align-items:center;gap:10px;color:#8aa0a8;font-size:11px}
+.meta-logo{width:26px;height:26px;background:linear-gradient(135deg,#0084FF,#00D4FF);border-radius:7px;display:flex;align-items:center;justify-content:center;font-weight:900;color:white;font-size:13px;flex-shrink:0}
+.profile-photo{width:100%;max-height:420px;object-fit:contain !important;border-radius:14px;background:#0a0f14 !important;border:1px solid #23323f !important}
+.chat-body{resize:vertical;min-height:200px;max-height:55vh}
+#chatInput{resize:vertical;min-height:44px;max-height:150px}
+.thumbs{display:flex;gap:10px;margin-top:12px;overflow:auto;padding-bottom:4px}
+.thumbs img{width:84px;height:84px;border-radius:12px;object-fit:contain;cursor:pointer;border:2px solid #23323f;background:#0a0f14;padding:2px}
+.thumbs img.active{border-color:#14b8a6}
+.avatar{width:64px;height:64px;border-radius:14px;background:#0a0f14;border:1px solid #23323f;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:20px;overflow:hidden}
+.avatar img{width:100%;height:100%;object-fit:contain}
+.photo-slot{aspect-ratio:1;border:2px dashed #23323f;border-radius:10px;display:flex;align-items:center;justify-content:center;overflow:hidden;background:#0a0f14;position:relative}
+.photo-slot img{width:100%;height:100%;object-fit:contain}
+.modal-box.edit-pop{border:2px solid #14b8a6 !important;box-shadow:0 25px 80px rgba(0,0,0,.7) !important;max-width:680px !important;background:#1c2732 !important}
+#editBio{resize:vertical !important;min-height:120px !important}
+
 </style>
 </head>
 <body>
@@ -77,6 +97,7 @@ input,textarea,select{width:100%;padding:12px;border-radius:10px;border:1px soli
     <button class="btn btn-ghost" id="inboxTopBtn" style="display:none;position:relative" onclick="openInboxTop()">Messages <span id="inboxBadge" style="display:none;position:absolute;top:-6px;right:-6px;background:#ef4444;color:white;border-radius:50%;width:18px;height:18px;font-size:11px;align-items:center;justify-content:center">0</span></button>
     <span id="navUser" style="color:var(--muted);font-size:13px;display:none"></span>
     <button class="btn btn-ghost" id="editBtn" style="display:none" onclick="openEdit()">Edit Profile</button>
+    <button class="btn btn-ghost" id="logoutBtn" style="display:none" onclick="logout()">Log Out</button>
     <button class="btn btn-ghost" id="loginBtn" onclick="openModal('login')">Log In</button>
     <button class="btn btn-primary" id="joinBtn" onclick="openModal('signup')">Join Free</button>
     <button class="btn btn-ghost" id="logoutBtn" style="display:none" onclick="logout()">Logout</button>
@@ -446,5 +467,37 @@ document.getElementById('chatInput')?.addEventListener('focus', ()=>{
 loadUsers();
 setInterval(loadUsers, 15000);
 </script>
+
+<script>
+async function loadUsers(){
+  const city=document.getElementById('cityFilter').value;
+  const gender=document.getElementById('genderFilter').value;
+  const ageMin=document.getElementById('ageMinFilter').value;
+  const ageMax=document.getElementById('ageMaxFilter').value;
+  const bodyType=document.getElementById('bodyTypeFilter').value;
+  const heightMin=parseInt(document.getElementById('heightMinFilter').value||0);
+  const heightMax=parseInt(document.getElementById('heightMaxFilter').value||0);
+  const myId=currentUser?.id||0;
+  let url=`/api/users?city=${encodeURIComponent(city)}&gender=${encodeURIComponent(gender)}&ageMin=${ageMin}&ageMax=${ageMax}&bodyType=${encodeURIComponent(bodyType)}&myId=${myId}`;
+  try{
+    const res=await fetch(url); let list=await res.json();
+    function parseHeightInches(h){ if(!h) return 0; const m=h.match(/(\d+)'(\d+)?/); if(m){ return parseInt(m[1])*12 + (parseInt(m[2])||0); } return 0; }
+    list.forEach(u=>{ if((u.name||'').toLowerCase().includes('dee')) u.pinned=true; });
+    if(heightMin || heightMax){
+      list=list.filter(u=>{ const inh=parseHeightInches(u.height||''); if(!inh) return false; if(heightMin && inh < heightMin) return false; if(heightMax && inh > heightMax) return false; return true; });
+    }
+    list.sort((a,b)=> (b.pinned?1:0)-(a.pinned?1:0) || b.id-a.id);
+    const pinned=list.filter(u=>u.pinned);
+    const regular=list.filter(u=>!u.pinned);
+    const pSec=document.getElementById('pinnedSection');
+    const pGrid=document.getElementById('pinnedGrid');
+    if(pinned.length){ pSec.style.display='block'; pGrid.innerHTML=''; pinned.forEach(u=>{ const c=document.createElement('div'); c.className='card pinned'; c.onclick=()=>openProfile(u.id); c.innerHTML=`<div class="avatar">${u.photo_url?`<img src="${u.photo_url}">`:u.name[0]}</div><div class="online"></div><div style="margin-top:20px"><b>${u.name}, ${u.age} ⭐</b><div style="font-size:12px;color:#14b8a6">${u.city} • ${[u.height,u.body_type].filter(Boolean).join(' • ')}</div><div style="font-size:13px;color:#8aa0a8;margin-top:4px">${u.bio||''}</div></div>`; pGrid.appendChild(c); }); } else { if(pSec) pSec.style.display='none'; }
+    const grid=document.getElementById('userGrid'); grid.innerHTML='';
+    regular.forEach((u,i)=>{ if(i===5){ const ad=document.createElement('div'); ad.className='ad'; ad.innerHTML='Ad<br>Support Free Dating'; grid.appendChild(ad); } const card=document.createElement('div'); card.className='card'; card.onclick=()=>openProfile(u.id); card.innerHTML=`<div class="avatar">${u.photo_url?`<img src="${u.photo_url}">`:u.name[0]}</div><div class="online"></div><div style="margin-top:10px"><b>${u.name}, ${u.age}</b><div style="font-size:12px;color:#8aa0a8">${u.city} • ${[u.height,u.body_type].filter(Boolean).join(' • ')||'No height/body'}</div><div style="font-size:13px;color:#8aa0a8;margin-top:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${u.bio||''}</div></div>`; grid.appendChild(card); });
+  }catch(e){ console.log(e); }
+}
+function updateNav(){ const filt=document.getElementById('filters'); if(currentUser){ if(filt){ filt.classList.add('logged-in'); } } else { if(filt){ filt.classList.remove('logged-in'); } } if(currentUser){ document.getElementById('navUser').innerText=`Hi, ${currentUser.name}`; document.getElementById('navUser').style.display='block'; document.getElementById('editBtn').style.display='block'; document.getElementById('logoutBtn').style.display='block'; document.getElementById('inboxTopBtn').style.display='block'; document.getElementById('loginBtn').style.display='none'; document.getElementById('joinBtn').style.display='none'; } else { document.getElementById('navUser').style.display='none'; document.getElementById('editBtn').style.display='none'; document.getElementById('logoutBtn').style.display='none'; document.getElementById('inboxTopBtn').style.display='none'; document.getElementById('loginBtn').style.display='block'; document.getElementById('joinBtn').style.display='block'; } }
+</script>
 </body>
 </html>
+
