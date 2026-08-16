@@ -24,6 +24,8 @@ nav{display:flex;gap:10px;align-items:center}
 .grid{max-width:1100px;margin:0 auto;padding:20px;display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:16px}
 .card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:16px;position:relative;overflow:hidden;cursor:pointer;transition:.15s}
 .card:hover{transform:translateY(-3px);border-color:var(--teal2)}
+.card.pinned{border-color:var(--teal) !important}
+.card.pinned::before{content:'★ HOST';position:absolute;top:8px;left:8px;background:var(--teal);color:#001211;font-size:8px;font-weight:800;padding:2px 6px;border-radius:10px}
 .avatar{width:56px;height:56px;border-radius:50%;background:linear-gradient(135deg,var(--teal2),var(--teal));display:flex;align-items:center;justify-content:center;font-weight:800;font-size:20px;overflow:hidden}
 .avatar img{width:100%;height:100%;object-fit:cover}
 .avatar.big{width:140px;height:140px;font-size:48px;border:4px solid var(--teal2)}
@@ -39,7 +41,7 @@ input,textarea,select{width:100%;padding:12px;border-radius:10px;border:1px soli
 .photo-slot{aspect-ratio:1;border:2px dashed var(--border);border-radius:10px;display:flex;align-items:center;justify-content:center;overflow:hidden;background:var(--bg);position:relative}
 .photo-slot img{width:100%;height:100%;object-fit:cover}
 .photo-slot .remove{position:absolute;top:2px;right:2px;background:#ef4444;color:white;border:0;border-radius:50%;width:22px;height:22px;cursor:pointer}
-.profile-photo{width:100%;max-height:460px;object-fit:cover;border-radius:14px;background:var(--bg)}
+.profile-photo{width:100%;max-height:420px;object-fit:contain;border-radius:14px;background:#0a0f14;border:1px solid var(--border)}
 .thumbs{display:flex;gap:8px;margin-top:10px;overflow:auto}
 .thumbs img{width:72px;height:72px;border-radius:10px;object-fit:cover;cursor:pointer;border:2px solid transparent}
 .thumbs img.active{border-color:var(--teal)}
@@ -74,6 +76,7 @@ input,textarea,select{width:100%;padding:12px;border-radius:10px;border:1px soli
     <button class="btn btn-ghost" id="inboxTopBtn" style="display:none;position:relative" onclick="openInboxTop()">Messages <span id="inboxBadge" style="display:none;position:absolute;top:-6px;right:-6px;background:#ef4444;color:white;border-radius:50%;width:18px;height:18px;font-size:11px;align-items:center;justify-content:center">0</span></button>
     <span id="navUser" style="color:var(--muted);font-size:13px;display:none"></span>
     <button class="btn btn-ghost" id="editBtn" style="display:none" onclick="openEdit()">Edit Profile</button>
+    <button class="btn btn-ghost" id="logoutBtn" style="display:none" onclick="logout()">Log Out</button>
     <button class="btn btn-ghost" id="loginBtn" onclick="openModal('login')">Log In</button>
     <button class="btn btn-primary" id="joinBtn" onclick="openModal('signup')">Join Free</button>
     <button class="btn btn-ghost" id="logoutBtn" style="display:none" onclick="logout()">Logout</button>
@@ -113,7 +116,8 @@ input,textarea,select{width:100%;padding:12px;border-radius:10px;border:1px soli
       <option value="Man">Men</option>
     </select>
     <select id="filterAgeMin" onchange="loadUsers()" style="width:auto;margin:0;padding:6px 8px;border-radius:20px;background:var(--card);border:1px solid var(--border);color:var(--text);font-size:13px"><option value="">Min Age</option><option value="18">18</option><option value="25">25</option><option value="30">30</option><option value="35">35</option><option value="40">40</option><option value="45">45</option><option value="50">50</option></select>
-    <span style="color:var(--muted)">-</span>
+    
+    <select id="bodyTypeFilter" onchange="loadUsers()" style="width:auto;margin:0;padding:6px 10px;border-radius:20px;background:var(--card);border:1px solid var(--border);color:var(--text);font-size:13px"><option value="">Body</option><option>Slim</option><option>Average</option><option>Athletic</option></select>
     <select id="filterAgeMax" onchange="loadUsers()" style="width:auto;margin:0;padding:6px 8px;border-radius:20px;background:var(--card);border:1px solid var(--border);color:var(--text);font-size:13px"><option value="">Max Age</option><option value="30">30</option><option value="35">35</option><option value="40">40</option><option value="45">45</option><option value="50">50</option><option value="60">60</option><option value="99">99</option></select>
   </div>
   <span style="margin-left:auto;color:var(--muted);font-size:13px" id="count"></span>
@@ -204,7 +208,7 @@ document.getElementById('e_photos')?.addEventListener('change', e=>{
   eNewFiles=Array.from(e.target.files).slice(0,4); renderGridPreview(document.getElementById('e_preview'), eNewFiles, i=>{ eNewFiles.splice(i,1); renderGridPreview(document.getElementById('e_preview'), eNewFiles, arguments.callee); });
 });
 
-async function loadUsers(){
+async function loadUsersV1(){
   const gender = document.getElementById('filterGender')?.value || 'All';
   const ageMin = document.getElementById('filterAgeMin')?.value || '';
   const ageMax = document.getElementById('filterAgeMax')?.value || '';
@@ -443,5 +447,31 @@ document.getElementById('chatInput')?.addEventListener('focus', ()=>{
 loadUsers();
 setInterval(loadUsers, 15000);
 </script>
+
+<script>
+async function loadUsers(){
+  await loadUsersV1();
+  // Pin Dee left fast
+  if(typeof users !== 'undefined'){
+    users.forEach(u=>{ if((u.name||'').toLowerCase().includes('dee')) u.pinned=true; });
+    users.sort((a,b)=> (b.pinned?1:0)-(a.pinned?1:0) || b.id-a.id);
+    const grid=document.getElementById('grid'); if(grid){ 
+      // Re-render quickly with pinned first
+      const current = [...users];
+      grid.innerHTML='';
+      current.forEach((u,i)=>{
+        if(i===3){ const ad=document.createElement('div'); ad.className='ad'; ad.innerHTML='Advertisement<br>This is how we stay free'; grid.appendChild(ad); }
+        const d=document.createElement('div'); d.className='card'+(u.pinned?' pinned':''); d.onclick=()=>openProfile(u.id);
+        const photo=u.photo_url|| (u.photos&&u.photos[0]) || ''; const av=photo?`<div class="avatar"><img src="${photo}" loading="lazy"></div>`:`<div class="avatar">${u.name[0]}</div>`;
+        const hb=[u.height,u.body_type].filter(Boolean).join(' • ');
+        d.innerHTML=`<div class="online"></div><div style="display:flex;gap:12px;align-items:center">${av}<div><b>${u.name}, ${u.age}${u.pinned?' ⭐':''}</b><div style="color:var(--muted);font-size:13px">${u.gender||''} • ${u.city}${hb?' • '+hb:''}</div></div></div><p style="margin:12px 0;color:var(--muted);font-size:14px;min-height:40px">${(u.bio||'').slice(0,90)}...</p><button class="btn btn-primary" style="width:100%" onclick="event.stopPropagation();openChat(${u.id},'${u.name}')">Message Free</button>`;
+        grid.appendChild(d);
+      });
+    }
+  }
+}
+function logout(){ localStorage.removeItem('afd_token'); currentUser=null; updateNav(); closeModals(); loadUsers(); }
+</script>
 </body>
 </html>
+
