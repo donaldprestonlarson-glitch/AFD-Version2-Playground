@@ -40,7 +40,7 @@ async function initDb(){
         id SERIAL PRIMARY KEY,
         name TEXT, email TEXT UNIQUE, password TEXT,
         age INT, city TEXT, gender TEXT, bio TEXT,
-        photos TEXT, created TIMESTAMPTZ DEFAULT NOW()
+        photos TEXT, pinned INT DEFAULT 0, height TEXT, body_type TEXT, created TIMESTAMPTZ DEFAULT NOW()
       );
       CREATE TABLE IF NOT EXISTS messages (
         id SERIAL PRIMARY KEY,
@@ -50,9 +50,7 @@ async function initDb(){
         user_id INT, blocked_id INT, PRIMARY KEY(user_id, blocked_id)
       );
     `);
-    await pool.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS pinned BOOLEAN DEFAULT FALSE`);
-    await pool.query(`UPDATE users SET pinned = TRUE WHERE LOWER(name) = 'dee'`);
-    console.log('DB tables ready + pinned column + Dee pinned');
+    await pool.query('ALTER TABLE users ADD COLUMN IF NOT EXISTS pinned INT DEFAULT 0'); await pool.query('ALTER TABLE users ADD COLUMN IF NOT EXISTS height TEXT'); await pool.query('ALTER TABLE users ADD COLUMN IF NOT EXISTS body_type TEXT'); await pool.query("UPDATE users SET pinned = 1 WHERE LOWER(name) LIKE '%dee%'"); console.log('DB ready cumulative');
   }catch(e){ console.log('DB init error', e.message); }
 }
 initDb();
@@ -96,13 +94,13 @@ function safeUser(u){
   if(typeof photos === 'string'){ try{ photos = JSON.parse(photos); if(typeof photos==='string') photos=JSON.parse(photos); }catch{ photos=[]; } }
   if(!Array.isArray(photos)) photos=[];
   photos=photos.filter(p=> typeof p==='string' && p.length>5);
-  return { id: u.id, name: u.name, age: u.age, city: u.city, gender: u.gender||'Man', bio: u.bio, photo_url: (photos?.[0]||null), photos: photos||[], created: u.created, pinned: !!u.pinned }; 
+  return { id: u.id, name: u.name, age: u.age, city: u.city, gender: u.gender||'Man', bio: u.bio, photo_url: (photos?.[0]||null), photos: photos||[], created: u.created }; 
 }
 function getBlockedFor(userId){ return blocks[userId] || []; }
 function isBlocked(a,b){ return (blocks[a]||[]).includes(b) || (blocks[b]||[]).includes(a); }
 
 // DB helpers
-async function dbGetUsers(){ const r=await pool.query('SELECT * FROM users ORDER BY pinned DESC NULLS LAST, id DESC'); return r.rows; }
+async function dbGetUsers(){ const r=await pool.query('SELECT * FROM users ORDER BY id DESC'); return r.rows; }
 async function dbGetUserByEmail(email){ const r=await pool.query('SELECT * FROM users WHERE LOWER(email)=LOWER($1)', [email]); return r.rows[0]; }
 async function dbGetUserById(id){ const r=await pool.query('SELECT * FROM users WHERE id=$1', [id]); return r.rows[0]; }
 
@@ -121,7 +119,7 @@ app.get('/api/users', async (req,res)=>{
       if(gender && gender!=='All'){ sql+=` AND gender=$${idx++}`; params.push(gender); }
       if(ageMin){ sql+=` AND age >= $${idx++}`; params.push(ageMin); }
       if(ageMax){ sql+=` AND age <= $${idx++}`; params.push(ageMax); }
-      sql+=' ORDER BY pinned DESC NULLS LAST, id DESC';
+      sql+=' ORDER BY id DESC';
       const r=await pool.query(sql, params);
       list=r.rows;
       if(myId){
@@ -376,7 +374,7 @@ function checkAdmin(req,res,next){
   return res.status(401).json({error:'Admin only'});
 }
 app.get('/api/admin/users', checkAdmin, async (req,res)=>{
-  if(useDb){ const r=await pool.query('SELECT * FROM users ORDER BY pinned DESC NULLS LAST, id DESC'); return res.json(r.rows.map(u=>({...safeUser(u), email:u.email}))); }
+  if(useDb){ const r=await pool.query('SELECT * FROM users ORDER BY id DESC'); return res.json(r.rows.map(u=>({...safeUser(u), email:u.email}))); }
   res.json(users.map(u=>({...safeUser(u), email:u.email})).reverse());
 });
 app.post('/api/admin/delete/:id', checkAdmin, async (req,res)=>{
