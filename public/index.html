@@ -18,12 +18,18 @@ nav{display:flex;gap:10px;align-items:center}
 .hero h1{font-size: clamp(32px,5vw,54px);line-height:.95;letter-spacing:-1.5px}
 .hero h1 em{color:var(--teal);font-style:normal}
 .hero p{color:var(--muted);margin:16px 0 22px;font-size:18px}
-.filters{max-width:1100px;margin:20px auto;padding:0 20px;display:flex;gap:10px;flex-wrap:wrap}
+.filters{max-width:1100px;margin:0 auto;padding:8px 20px;display:flex;gap:8px;flex-wrap:wrap;position:sticky;top:60px;z-index:39;background:rgba(10,15,20,.95);backdrop-filter:blur(10px);border-bottom:1px solid var(--border)}
 .chip{padding:8px 16px;border-radius:100px;border:1px solid var(--border);background:var(--card);color:var(--muted);cursor:pointer}
 .chip.active{background:var(--teal2);color:white;border-color:var(--teal2)}
 .grid{max-width:1100px;margin:0 auto;padding:20px;display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:16px}
 .card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:16px;position:relative;overflow:hidden;cursor:pointer;transition:.15s}
 .card:hover{transform:translateY(-3px);border-color:var(--teal2)}
+.card.pinned{border:2px solid #14b8a6 !important}
+.pinned-section{max-width:1100px;margin:16px auto 0;padding:0 20px}
+.pinned-label{color:#14b8a6;font-size:12px;font-weight:800;margin-bottom:8px}
+.pinned-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px}
+.meta-line{max-width:1100px;margin:30px auto 10px;padding:14px 20px;border-top:1px solid #23323f;display:flex;align-items:center;gap:10px;color:#8aa0a8;font-size:11px}
+.meta-logo{width:26px;height:26px;background:linear-gradient(135deg,#0084FF,#00D4FF);border-radius:7px;display:flex;align-items:center;justify-content:center;font-weight:900;color:white;font-size:13px}
 .avatar{width:56px;height:56px;border-radius:50%;background:linear-gradient(135deg,var(--teal2),var(--teal));display:flex;align-items:center;justify-content:center;font-weight:800;font-size:20px;overflow:hidden}
 .avatar img{width:100%;height:100%;object-fit:cover}
 .avatar.big{width:140px;height:140px;font-size:48px;border:4px solid var(--teal2)}
@@ -39,10 +45,10 @@ input,textarea,select{width:100%;padding:12px;border-radius:10px;border:1px soli
 .photo-slot{aspect-ratio:1;border:2px dashed var(--border);border-radius:10px;display:flex;align-items:center;justify-content:center;overflow:hidden;background:var(--bg);position:relative}
 .photo-slot img{width:100%;height:100%;object-fit:cover}
 .photo-slot .remove{position:absolute;top:2px;right:2px;background:#ef4444;color:white;border:0;border-radius:50%;width:22px;height:22px;cursor:pointer}
-.profile-photo{width:100%;max-height:460px;object-fit:cover;border-radius:14px;background:var(--bg)}
-.thumbs{display:flex;gap:8px;margin-top:10px;overflow:auto}
-.thumbs img{width:72px;height:72px;border-radius:10px;object-fit:cover;cursor:pointer;border:2px solid transparent}
-.thumbs img.active{border-color:var(--teal)}
+.profile-photo{width:100%;max-height:420px;object-fit:contain;border-radius:14px;background:#0a0f14;border:1px solid var(--border)}
+.thumbs{display:flex;gap:10px;margin-top:12px;overflow:auto}
+.thumbs img{width:80px;height:80px;border-radius:10px;object-fit:contain;cursor:pointer;border:2px solid #23323f;background:#0a0f14}
+.thumbs img.active{border-color:#14b8a6}
 .chat{position:fixed;bottom:20px;right:20px;width:360px;max-width:92vw;background:var(--card2);border:1px solid var(--border);border-radius:16px;display:none;flex-direction:column;z-index:90;box-shadow:0 20px 50px rgba(0,0,0,.5)}
 .chat.open{display:flex}.chat-head{padding:14px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between}
 .chat-body{height:300px;overflow:auto;padding:14px;display:flex;flex-direction:column;gap:8px}
@@ -65,29 +71,6 @@ input,textarea,select{width:100%;padding:12px;border-radius:10px;border:1px soli
   .logo{font-size:14px}
   nav .btn{padding:7px 10px;font-size:12px}
 }
-
-.filters{max-width:1100px;margin:0 auto;padding:8px 20px;display:flex;gap:8px;flex-wrap:wrap;position:sticky;z-index:39;background:rgba(10,15,20,.95);backdrop-filter:blur(10px);border-bottom:1px solid var(--border);top:60px}
-.filters.logged-in{top:92px !important}
-.card.pinned{border:2px solid #14b8a6 !important;box-shadow:0 0 25px rgba(20,184,166,.35) !important;background:linear-gradient(135deg,#141c23,#0f2a26) !important}
-.card.pinned::before{content:'★ PINNED HOST';position:absolute;top:8px;left:8px;background:#14b8a6;color:#001211;font-size:9px;font-weight:900;padding:3px 8px;border-radius:20px;z-index:2}
-.pinned-section{max-width:1100px;margin:16px auto 0;padding:0 20px}
-.pinned-label{color:#14b8a6;font-size:12px;font-weight:800;letter-spacing:.6px;margin-bottom:8px}
-.pinned-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px}
-.meta-line{max-width:1100px;margin:30px auto 10px;padding:14px 20px;border-top:1px solid #23323f;display:flex;align-items:center;gap:10px;color:#8aa0a8;font-size:11px}
-.meta-logo{width:26px;height:26px;background:linear-gradient(135deg,#0084FF,#00D4FF);border-radius:7px;display:flex;align-items:center;justify-content:center;font-weight:900;color:white;font-size:13px;flex-shrink:0}
-.profile-photo{width:100%;max-height:420px;object-fit:contain !important;border-radius:14px;background:#0a0f14 !important;border:1px solid #23323f !important}
-.chat-body{resize:vertical;min-height:200px;max-height:55vh}
-#chatInput{resize:vertical;min-height:44px;max-height:150px}
-.thumbs{display:flex;gap:10px;margin-top:12px;overflow:auto;padding-bottom:4px}
-.thumbs img{width:84px;height:84px;border-radius:12px;object-fit:contain;cursor:pointer;border:2px solid #23323f;background:#0a0f14;padding:2px}
-.thumbs img.active{border-color:#14b8a6}
-.avatar{width:64px;height:64px;border-radius:14px;background:#0a0f14;border:1px solid #23323f;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:20px;overflow:hidden}
-.avatar img{width:100%;height:100%;object-fit:contain}
-.photo-slot{aspect-ratio:1;border:2px dashed #23323f;border-radius:10px;display:flex;align-items:center;justify-content:center;overflow:hidden;background:#0a0f14;position:relative}
-.photo-slot img{width:100%;height:100%;object-fit:contain}
-.modal-box.edit-pop{border:2px solid #14b8a6 !important;box-shadow:0 25px 80px rgba(0,0,0,.7) !important;max-width:680px !important;background:#1c2732 !important}
-#editBio{resize:vertical !important;min-height:120px !important}
-
 </style>
 </head>
 <body>
@@ -469,34 +452,41 @@ setInterval(loadUsers, 15000);
 </script>
 
 <script>
+// OVERRIDE loadUsers to include height/body filters + pinned
+const _origLoad = loadUsers;
 async function loadUsers(){
-  const city=document.getElementById('cityFilter').value;
-  const gender=document.getElementById('genderFilter').value;
-  const ageMin=document.getElementById('ageMinFilter').value;
-  const ageMax=document.getElementById('ageMaxFilter').value;
-  const bodyType=document.getElementById('bodyTypeFilter').value;
-  const heightMin=parseInt(document.getElementById('heightMinFilter').value||0);
-  const heightMax=parseInt(document.getElementById('heightMaxFilter').value||0);
+  const city=document.getElementById('cityFilter')?.value||'';
+  const gender=document.getElementById('genderFilter')?.value||'All';
+  const ageMin=document.getElementById('ageMinFilter')?.value||'';
+  const ageMax=document.getElementById('ageMaxFilter')?.value||'';
+  const bodyType=document.getElementById('bodyTypeFilter')?.value||'';
+  const heightMin=parseInt(document.getElementById('heightMinFilter')?.value||0);
+  const heightMax=parseInt(document.getElementById('heightMaxFilter')?.value||0);
   const myId=currentUser?.id||0;
   let url=`/api/users?city=${encodeURIComponent(city)}&gender=${encodeURIComponent(gender)}&ageMin=${ageMin}&ageMax=${ageMax}&bodyType=${encodeURIComponent(bodyType)}&myId=${myId}`;
   try{
     const res=await fetch(url); let list=await res.json();
-    function parseHeightInches(h){ if(!h) return 0; const m=h.match(/(\d+)'(\d+)?/); if(m){ return parseInt(m[1])*12 + (parseInt(m[2])||0); } return 0; }
+    function parseH(h){ if(!h) return 0; const m=h.match(/(\d+)'(\d+)?/); if(m) return parseInt(m[1])*12 + (parseInt(m[2])||0); return 0; }
     list.forEach(u=>{ if((u.name||'').toLowerCase().includes('dee')) u.pinned=true; });
     if(heightMin || heightMax){
-      list=list.filter(u=>{ const inh=parseHeightInches(u.height||''); if(!inh) return false; if(heightMin && inh < heightMin) return false; if(heightMax && inh > heightMax) return false; return true; });
+      list=list.filter(u=>{ const inh=parseH(u.height||''); if(!inh) return false; if(heightMin && inh < heightMin) return false; if(heightMax && inh > heightMax) return false; return true; });
     }
     list.sort((a,b)=> (b.pinned?1:0)-(a.pinned?1:0) || b.id-a.id);
     const pinned=list.filter(u=>u.pinned);
     const regular=list.filter(u=>!u.pinned);
     const pSec=document.getElementById('pinnedSection');
     const pGrid=document.getElementById('pinnedGrid');
-    if(pinned.length){ pSec.style.display='block'; pGrid.innerHTML=''; pinned.forEach(u=>{ const c=document.createElement('div'); c.className='card pinned'; c.onclick=()=>openProfile(u.id); c.innerHTML=`<div class="avatar">${u.photo_url?`<img src="${u.photo_url}">`:u.name[0]}</div><div class="online"></div><div style="margin-top:20px"><b>${u.name}, ${u.age} ⭐</b><div style="font-size:12px;color:#14b8a6">${u.city} • ${[u.height,u.body_type].filter(Boolean).join(' • ')}</div><div style="font-size:13px;color:#8aa0a8;margin-top:4px">${u.bio||''}</div></div>`; pGrid.appendChild(c); }); } else { if(pSec) pSec.style.display='none'; }
+    if(pinned.length){ pSec.style.display='block'; pGrid.innerHTML=''; pinned.forEach(u=>{ const c=document.createElement('div'); c.className='card pinned'; c.onclick=()=>openProfile(u.id); c.innerHTML=`<div class="avatar">${u.photo_url?`<img src="${u.photo_url}">`:u.name[0]}</div><div class="online"></div><div style="margin-top:18px"><b>${u.name}, ${u.age}</b><div style="font-size:12px;color:#14b8a6">${u.city} • ${[u.height,u.body_type].filter(Boolean).join(' • ')}</div></div>`; pGrid.appendChild(c); }); } else { pSec.style.display='none'; }
     const grid=document.getElementById('userGrid'); grid.innerHTML='';
-    regular.forEach((u,i)=>{ if(i===5){ const ad=document.createElement('div'); ad.className='ad'; ad.innerHTML='Ad<br>Support Free Dating'; grid.appendChild(ad); } const card=document.createElement('div'); card.className='card'; card.onclick=()=>openProfile(u.id); card.innerHTML=`<div class="avatar">${u.photo_url?`<img src="${u.photo_url}">`:u.name[0]}</div><div class="online"></div><div style="margin-top:10px"><b>${u.name}, ${u.age}</b><div style="font-size:12px;color:#8aa0a8">${u.city} • ${[u.height,u.body_type].filter(Boolean).join(' • ')||'No height/body'}</div><div style="font-size:13px;color:#8aa0a8;margin-top:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${u.bio||''}</div></div>`; grid.appendChild(card); });
+    regular.forEach((u,i)=>{
+      if(i===5){ const ad=document.createElement('div'); ad.className='ad'; ad.innerHTML='Ad<br>Support Free Dating'; grid.appendChild(ad); }
+      const card=document.createElement('div'); card.className='card'; card.onclick=()=>openProfile(u.id);
+      card.innerHTML=`<div class="avatar">${u.photo_url?`<img src="${u.photo_url}">`:u.name[0]}</div><div class="online"></div><div style="margin-top:10px"><b>${u.name}, ${u.age}</b><div style="font-size:12px;color:#8aa0a8">${u.city} • ${[u.height,u.body_type].filter(Boolean).join(' • ')||''}</div></div>`;
+      grid.appendChild(card);
+    });
   }catch(e){ console.log(e); }
 }
-function updateNav(){ const filt=document.getElementById('filters'); if(currentUser){ if(filt){ filt.classList.add('logged-in'); } } else { if(filt){ filt.classList.remove('logged-in'); } } if(currentUser){ document.getElementById('navUser').innerText=`Hi, ${currentUser.name}`; document.getElementById('navUser').style.display='block'; document.getElementById('editBtn').style.display='block'; document.getElementById('logoutBtn').style.display='block'; document.getElementById('inboxTopBtn').style.display='block'; document.getElementById('loginBtn').style.display='none'; document.getElementById('joinBtn').style.display='none'; } else { document.getElementById('navUser').style.display='none'; document.getElementById('editBtn').style.display='none'; document.getElementById('logoutBtn').style.display='none'; document.getElementById('inboxTopBtn').style.display='none'; document.getElementById('loginBtn').style.display='block'; document.getElementById('joinBtn').style.display='block'; } }
+function logout(){ localStorage.removeItem('afd_token'); currentUser=null; updateNav(); closeModals(); loadUsers(); }
 </script>
 </body>
 </html>
