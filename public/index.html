@@ -65,6 +65,34 @@ input,textarea,select{width:100%;padding:12px;border-radius:10px;border:1px soli
   .logo{font-size:14px}
   nav .btn{padding:7px 10px;font-size:12px}
 }
+
+/* --- V2 MODS AUTO --- */
+textarea, #messageInput, .message-input, .chat-input, #chatInput, #s_bio {
+  resize: vertical !important;
+  min-height: 60px !important;
+  max-height: 250px !important;
+  overflow-y: auto !important;
+}
+.profile-card img, .profile-photo, .photo-grid img, .gallery img, .card img, .avatar img, img {
+  max-width: 100% !important;
+  max-height: 420px !important;
+  object-fit: contain !important;
+  height: auto !important;
+}
+.filters {
+  position: sticky !important;
+  top: 62px !important;
+  z-index: 49 !important;
+  background: rgba(10,15,20,.92) !important;
+  backdrop-filter: blur(12px) !important;
+  padding: 10px 20px !important;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.4) !important;
+  margin: 0 auto !important;
+}
+.chat-body {
+  max-height: 50vh !important;
+}
+
 </style>
 </head>
 <body>
@@ -158,7 +186,7 @@ input,textarea,select{width:100%;padding:12px;border-radius:10px;border:1px soli
 <!-- LOGIN -->
 <div class="modal" id="loginModal"><div class="modal-box"><h3>Welcome back</h3><input id="l_email" placeholder="Email" type="email"><input id="l_pass" placeholder="Password" type="password"><div style="display:flex;gap:10px;margin-top:14px"><button class="btn btn-primary" style="flex:1" onclick="doLogin()">Log In</button><button class="btn btn-ghost" onclick="closeModals()">Cancel</button></div><div style="margin-top:10px;font-size:12px;color:var(--muted)">Demo: sarah.e@example.com / test123</div><div id="l_msg" style="margin-top:10px;font-size:13px;color:var(--teal)"></div></div></div>
 
-<div class="chat" id="chat"><div class="chat-head"><b id="chatName">Messages</b><div><span id="inboxBtn" style="cursor:pointer;margin-right:12px;font-size:12px;color:var(--teal)" onclick="showInbox()">Inbox</span><span style="cursor:pointer" onclick="closeChat()">X</span></div></div><div id="inboxView" style="display:none;max-height:300px;overflow:auto;padding:8px"></div><div id="chatView"><div style="padding:8px 12px;background:var(--teal2);font-size:11px;text-align:center">This conversation is 100% FREE. Always will be.</div><div class="chat-body" id="chatBody"></div><div style="padding:10px;display:flex;gap:8px"><input id="chatInput" placeholder="Type a message..." style="margin:0" onkeydown="if(event.key==='Enter')sendMsg()"><button class="btn btn-primary" onclick="sendMsg()">Send</button></div></div></div>
+<div class="chat" id="chat"><div class="chat-head"><b id="chatName">Messages</b><div><span id="inboxBtn" style="cursor:pointer;margin-right:12px;font-size:12px;color:var(--teal)" onclick="showInbox()">Inbox</span><span style="cursor:pointer" onclick="closeChat()">X</span></div></div><div id="inboxView" style="display:none;max-height:300px;overflow:auto;padding:8px"></div><div id="chatView"><div style="padding:8px 12px;background:var(--teal2);font-size:11px;text-align:center">This conversation is 100% FREE. Always will be.</div><div class="chat-body" id="chatBody"></div><div style="padding:10px;display:flex;gap:8px"><input id="chatInput" placeholder="Type a message... (drag to resize)" style="margin:0" onkeydown="if(event.key==='Enter')sendMsg()"><button class="btn btn-primary" onclick="sendMsg()">Send</button></div></div></div>
 
 <script>
 let users=[], currentUser=null, token=null, activeCity='All', chatWith=null, viewingUser=null;
@@ -218,7 +246,17 @@ async function loadUsers(){
   const res=await fetch(url); users=await res.json();
   document.getElementById('count').innerText=users.length+' singles in '+(activeCity==='All'?'Alberta':activeCity);
   const grid=document.getElementById('grid'); grid.innerHTML='';
-  users.forEach((u,i)=>{
+  
+  // V2 MOD: Pin Dee first client side too
+  users.sort((a,b)=>{
+    const aIsDee = a.name && a.name.toLowerCase()==='dee';
+    const bIsDee = b.name && b.name.toLowerCase()==='dee';
+    if(aIsDee && !bIsDee) return -1;
+    if(!aIsDee && bIsDee) return 1;
+    return 0;
+  });
+
+    users.forEach((u,i)=>{
     if(i===3){ const ad=document.createElement('div'); ad.className='ad'; ad.innerHTML='Advertisement<br>This is how we stay free'; grid.appendChild(ad); }
     const d=document.createElement('div'); d.className='card'; d.onclick=()=>openProfile(u.id);
     const photo=u.photo_url|| (u.photos&&u.photos[0]) || ''; const av=photo?`<div class="avatar"><img src="${photo}"></div>`:`<div class="avatar">${u.name[0]}</div>`;
