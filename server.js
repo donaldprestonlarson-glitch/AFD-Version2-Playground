@@ -40,7 +40,7 @@ async function initDb(){
         id SERIAL PRIMARY KEY,
         name TEXT, email TEXT UNIQUE, password TEXT,
         age INT, city TEXT, gender TEXT, bio TEXT,
-        photos TEXT, pinned INT DEFAULT 0, height TEXT, body_type TEXT, height_inches INT, created TIMESTAMPTZ DEFAULT NOW()
+        photos TEXT, created TIMESTAMPTZ DEFAULT NOW()
       );
       CREATE TABLE IF NOT EXISTS messages (
         id SERIAL PRIMARY KEY,
@@ -50,7 +50,7 @@ async function initDb(){
         user_id INT, blocked_id INT, PRIMARY KEY(user_id, blocked_id)
       );
     `);
-    await pool.query('ALTER TABLE users ADD COLUMN IF NOT EXISTS pinned INT DEFAULT 0'); await pool.query('ALTER TABLE users ADD COLUMN IF NOT EXISTS height TEXT'); await pool.query('ALTER TABLE users ADD COLUMN IF NOT EXISTS body_type TEXT'); await pool.query('ALTER TABLE users ADD COLUMN IF NOT EXISTS height_inches INT'); await pool.query("UPDATE users SET pinned = 1 WHERE LOWER(name) LIKE '%dee%'"); console.log('DB ready');
+    console.log('DB tables ready');
   }catch(e){ console.log('DB init error', e.message); }
 }
 initDb();
