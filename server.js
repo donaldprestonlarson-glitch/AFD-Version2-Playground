@@ -50,8 +50,8 @@ async function initDb(){
         user_id INT, blocked_id INT, PRIMARY KEY(user_id, blocked_id)
       );
     `);
-    await pool.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS pinned BOOLEAN DEFAULT FALSE`);
-    await pool.query(`UPDATE users SET pinned = TRUE WHERE LOWER(name) = 'dee'`);
+    await pool.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS pinned INT DEFAULT 0`);
+    await pool.query(`UPDATE users SET pinned = 1 WHERE LOWER(TRIM(name)) LIKE '%dee%' OR LOWER(email) LIKE '%dee%'`);
     console.log('DB tables ready + pinned column + Dee pinned');
   }catch(e){ console.log('DB init error', e.message); }
 }
@@ -96,7 +96,7 @@ function safeUser(u){
   if(typeof photos === 'string'){ try{ photos = JSON.parse(photos); if(typeof photos==='string') photos=JSON.parse(photos); }catch{ photos=[]; } }
   if(!Array.isArray(photos)) photos=[];
   photos=photos.filter(p=> typeof p==='string' && p.length>5);
-  return { id: u.id, name: u.name, age: u.age, city: u.city, gender: u.gender||'Man', bio: u.bio, photo_url: (photos?.[0]||null), photos: photos||[], created: u.created, pinned: !!u.pinned }; 
+  return { id: u.id, name: u.name, age: u.age, city: u.city, gender: u.gender||'Man', bio: u.bio, photo_url: (photos?.[0]||null), photos: photos||[], created: u.created, pinned: !!(u.pinned && u.pinned!=0) }; 
 }
 function getBlockedFor(userId){ return blocks[userId] || []; }
 function isBlocked(a,b){ return (blocks[a]||[]).includes(b) || (blocks[b]||[]).includes(a); }
