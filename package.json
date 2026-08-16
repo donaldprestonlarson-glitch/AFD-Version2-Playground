@@ -1,6 +1,6 @@
 {
   "name": "afd-version2-playground",
-  "version": "2.1.1",
+  "version": "2.6.0",
   "type": "module",
   "main": "server.js",
   "scripts": {
