@@ -65,31 +65,6 @@ input,textarea,select{width:100%;padding:12px;border-radius:10px;border:1px soli
   .logo{font-size:14px}
   nav .btn{padding:7px 10px;font-size:12px}
 }
-
-/* --- V2 MODS AUTO - photos resize + message resizable + filters sticky --- */
-textarea, #messageInput, .message-input, .chat-input, #chatInput, #s_bio {
-  resize: vertical !important;
-  min-height: 60px !important;
-  max-height: 250px !important;
-  overflow-y: auto !important;
-}
-.profile-card img, .profile-photo, .photo-grid img, .gallery img, .card img, .avatar img, img {
-  max-width: 100% !important;
-  max-height: 420px !important;
-  object-fit: contain !important;
-  height: auto !important;
-}
-.filters {
-  position: sticky !important;
-  top: 62px !important;
-  z-index: 49 !important;
-  background: rgba(10,15,20,.92) !important;
-  backdrop-filter: blur(12px) !important;
-  padding: 12px 20px !important;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.4) !important;
-}
-.chat-body { max-height: 50vh !important; }
-
 </style>
 </head>
 <body>
@@ -243,17 +218,7 @@ async function loadUsers(){
   const res=await fetch(url); users=await res.json();
   document.getElementById('count').innerText=users.length+' singles in '+(activeCity==='All'?'Alberta':activeCity);
   const grid=document.getElementById('grid'); grid.innerHTML='';
-  
-  // V2 MOD: Pin Dee first client side too
-  users.sort((a,b)=>{
-    const aDee = a.name && a.name.toLowerCase()==='dee';
-    const bDee = b.name && b.name.toLowerCase()==='dee';
-    if(aDee && !bDee) return -1;
-    if(!aDee && bDee) return 1;
-    return 0;
-  });
   users.forEach((u,i)=>{
-
     if(i===3){ const ad=document.createElement('div'); ad.className='ad'; ad.innerHTML='Advertisement<br>This is how we stay free'; grid.appendChild(ad); }
     const d=document.createElement('div'); d.className='card'; d.onclick=()=>openProfile(u.id);
     const photo=u.photo_url|| (u.photos&&u.photos[0]) || ''; const av=photo?`<div class="avatar"><img src="${photo}"></div>`:`<div class="avatar">${u.name[0]}</div>`;
