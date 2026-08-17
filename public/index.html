@@ -304,7 +304,7 @@ function openChat(id,name){
   chatInterval=setInterval(loadChat, 2000);
 }
 function closeChat(){ document.getElementById('chat').classList.remove('open'); const bd=document.getElementById('chatBackdrop'); if(bd) bd.classList.remove('open'); chatWith=null; if(chatInterval) clearInterval(chatInterval); }
-async function loadChat(){
+async async function loadChat(){
   if(!chatWith||!currentUser) return;
   try{
     const res=await fetch(`/api/messages/${currentUser.id}?with=${chatWith}`); 
@@ -322,7 +322,7 @@ async function sendMsg(){
   input.value='';
   try{
     await fetch('/api/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({from_id:currentUser.id,to_id:chatWith,text:t})});
-    loadChat();
+    await loadChat();
   }catch(e){ alert('Send failed: '+e.message); }
 }
 async function showInbox(){
