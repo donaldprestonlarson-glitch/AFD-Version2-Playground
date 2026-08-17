@@ -257,6 +257,7 @@ document.getElementById('e_photos')?.addEventListener('change', e=>{
 });
 
 async 
+
 async function loadUsers(){
   const gender = document.getElementById('filterGender')?.value || 'All';
   const ageMin = document.getElementById('filterAgeMin')?.value || '';
@@ -267,32 +268,32 @@ async function loadUsers(){
   const alcohol = document.getElementById('filterAlcohol')?.value || 'All';
   const cannabis = document.getElementById('filterCannabis')?.value || 'All';
   const occupation = document.getElementById('filterOccupation')?.value || 'All';
-  const cityParam=activeCity==='All'?'':`city=${activeCity}`;
+  const cityParam=activeCity==='All'?'':`city=${encodeURIComponent(activeCity)}`;
   const myParam=currentUser?`myId=${currentUser.id}`:'';
-  const genderParam=gender!=='All'?`gender=${gender}`:'';
+  const genderParam=gender!=='All'?`gender=${encodeURIComponent(gender)}`:'';
   const ageMinParam=ageMin?`ageMin=${ageMin}`:'';
   const ageMaxParam=ageMax?`ageMax=${ageMax}`:'';
-  const heightParam=height!=='All'?`height=${encodeURIComponent(height)}`:'';
-  const weightParam=weight!=='All'?`weight=${encodeURIComponent(weight)}`:'';
-  const smokingParam=smoking!=='All'?`smoking=${encodeURIComponent(smoking)}`:'';
-  const alcoholParam=alcohol!=='All'?`alcohol=${encodeURIComponent(alcohol)}`:'';
-  const cannabisParam=cannabis!=='All'?`cannabis=${encodeURIComponent(cannabis)}`:'';
-  const occupationParam=occupation!=='All'?`occupation=${encodeURIComponent(occupation)}`:'';
-  const q=[cityParam, myParam, genderParam, ageMinParam, ageMaxParam, heightParam, weightParam, smokingParam, alcoholParam, cannabisParam, occupationParam].filter(Boolean).join('&');
+  const q=[cityParam, myParam, genderParam, ageMinParam, ageMaxParam].filter(Boolean).join('&');
   const url='/api/users'+(q?'?'+q:'');
   try{
-    const res=await fetch(url); users=await res.json();
+    document.getElementById('count').innerText='Loading '+url+'...';
+    const res=await fetch(url);
+    if(!res.ok){ const txt=await res.text(); throw new Error('HTTP '+res.status+': '+txt.slice(0,200)); }
+    const data=await res.json();
+    if(!Array.isArray(data)){ throw new Error('Not array: '+JSON.stringify(data).slice(0,200)); }
+    users=data;
     document.getElementById('count').innerText=users.length+' singles in '+(activeCity==='All'?'Alberta':activeCity);
     const grid=document.getElementById('grid'); grid.innerHTML='';
     users.forEach((u,i)=>{
       if(i===3){ const ad=document.createElement('div'); ad.className='ad'; ad.innerHTML='Advertisement<br>This is how we stay free'; grid.appendChild(ad); }
       const d=document.createElement('div'); d.className='card'; d.onclick=()=>openProfile(u.id);
-      const photo=u.photo_url|| (u.photos&&u.photos[0]) || ''; const av=photo?`<div class="avatar"><img src="${photo}"></div>`:`<div class="avatar">${u.name[0]}</div>`;
+      const photo=u.photo_url|| (u.photos&&u.photos[0]) || ''; const av=photo?`<div class="avatar"><img src="${photo}"></div>`:`<div class="avatar">${(u.name||'?')[0]}</div>`;
       d.innerHTML=`<div class="online"></div><div style="display:flex;gap:12px;align-items:center">${av}<div><b>${u.name}, ${u.age}</b><div style="color:var(--muted);font-size:13px">${u.gender||''} • ${u.city} - ${u.photos?.length||0} photos</div></div></div><p style="margin:12px 0;color:var(--muted);font-size:14px;min-height:40px">${(u.bio||'').slice(0,90)}...</p><button class="btn btn-primary" style="width:100%" onclick="event.stopPropagation();openChat(${u.id},'${u.name.replace(/'/g,"\'")}')">Message Free</button>`;
       grid.appendChild(d);
     });
-  }catch(e){ console.error(e); document.getElementById('count').innerText='Error loading'; }
+  }catch(e){ console.error(e); document.getElementById('count').innerText='Error: '+e.message; document.getElementById('grid').innerHTML='<div style="padding:20px;color:#ef4444">Load failed: '+e.message+'<br><br>Try hard refresh. If still fails, API is down.</div>'; }
 }
+
 
 
 function openProfile(id){
