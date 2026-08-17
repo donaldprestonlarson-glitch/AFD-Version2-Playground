@@ -40,7 +40,7 @@ async function initDb(){
         id SERIAL PRIMARY KEY,
         name TEXT, email TEXT UNIQUE, password TEXT,
         age INT, city TEXT, gender TEXT, bio TEXT,
-        photos TEXT, height_cm INT, weight_lbs INT, smoking TEXT, occupation TEXT, alcohol TEXT, cannabis TEXT, created TIMESTAMPTZ DEFAULT NOW()
+        photos TEXT, created TIMESTAMPTZ DEFAULT NOW()
       );
       CREATE TABLE IF NOT EXISTS messages (
         id SERIAL PRIMARY KEY,
@@ -50,17 +50,7 @@ async function initDb(){
         user_id INT, blocked_id INT, PRIMARY KEY(user_id, blocked_id)
       );
     `);
-    await pool.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS pinned BOOLEAN DEFAULT FALSE`);
-    await pool.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS height_cm INT`);
-    await pool.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS weight_lbs INT`);
-    await pool.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS smoking TEXT`);
-    await pool.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS occupation TEXT`);
-    await pool.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS alcohol TEXT`);
-    await pool.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS cannabis TEXT`);
-    await pool.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS height_ft INT`);
-    await pool.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS height_in INT`);
-    await pool.query(`UPDATE users SET pinned = TRUE WHERE LOWER(name) = 'dee'`);
-    console.log('DB tables ready + pinned column + Dee pinned');
+    console.log('DB tables ready');
   }catch(e){ console.log('DB init error', e.message); }
 }
 initDb();
@@ -104,13 +94,13 @@ function safeUser(u){
   if(typeof photos === 'string'){ try{ photos = JSON.parse(photos); if(typeof photos==='string') photos=JSON.parse(photos); }catch{ photos=[]; } }
   if(!Array.isArray(photos)) photos=[];
   photos=photos.filter(p=> typeof p==='string' && p.length>5);
-  return { id: u.id, name: u.name, age: u.age, city: u.city, gender: u.gender||'Man', bio: u.bio, photo_url: (photos?.[0]||null), photos: photos||[], created: u.created, pinned: !!u.pinned }; 
+  return { id: u.id, name: u.name, age: u.age, city: u.city, gender: u.gender||'Man', bio: u.bio, photo_url: (photos?.[0]||null), photos: photos||[], created: u.created }; 
 }
 function getBlockedFor(userId){ return blocks[userId] || []; }
 function isBlocked(a,b){ return (blocks[a]||[]).includes(b) || (blocks[b]||[]).includes(a); }
 
 // DB helpers
-async function dbGetUsers(){ const r=await pool.query('SELECT * FROM users ORDER BY pinned DESC NULLS LAST, id DESC'); return r.rows; }
+async function dbGetUsers(){ const r=await pool.query('SELECT * FROM users ORDER BY id DESC'); return r.rows; }
 async function dbGetUserByEmail(email){ const r=await pool.query('SELECT * FROM users WHERE LOWER(email)=LOWER($1)', [email]); return r.rows[0]; }
 async function dbGetUserById(id){ const r=await pool.query('SELECT * FROM users WHERE id=$1', [id]); return r.rows[0]; }
 
@@ -129,11 +119,9 @@ app.get('/api/users', async (req,res)=>{
       if(gender && gender!=='All'){ sql+=` AND gender=$${idx++}`; params.push(gender); }
       if(ageMin){ sql+=` AND age >= $${idx++}`; params.push(ageMin); }
       if(ageMax){ sql+=` AND age <= $${idx++}`; params.push(ageMax); }
-      sql+=' ORDER BY pinned DESC NULLS LAST, id DESC';
+      sql+=' ORDER BY id DESC';
       const r=await pool.query(sql, params);
       list=r.rows;
-      // Always pin Dee first by name too
-      list = list.sort((a,b)=>{ const aDee = (a.name||'').toLowerCase().includes('dee (admin)'); const bDee = (b.name||'').toLowerCase().includes('dee (admin)'); if(aDee && !bDee) return -1; if(!aDee && bDee) return 1; return (b.pinned?1:0)-(a.pinned?1:0); });
       if(myId){
         const br=await pool.query('SELECT blocked_id FROM blocks WHERE user_id=$1', [myId]);
         const myBlocks=br.rows.map(x=>x.blocked_id);
@@ -142,7 +130,7 @@ app.get('/api/users', async (req,res)=>{
         list=list.filter(u=> u.id!==myId && !myBlocks.includes(u.id) && !blockedBy.includes(u.id));
       }
     }else{
-      list=users.slice().sort((a,b)=>{ const aDee = (a.name||'').toLowerCase().includes('dee (admin)'); const bDee = (b.name||'').toLowerCase().includes('dee (admin)'); if(aDee && !bDee) return -1; if(!aDee && bDee) return 1; return (b.pinned?1:0)-(a.pinned?1:0); });
+      list=users;
       if(city) list=list.filter(u=>u.city===city);
       if(gender && gender!=='All') list=list.filter(u=> (u.gender||'Man')===gender);
       if(ageMin) list=list.filter(u=> (u.age||25) >= ageMin);
@@ -181,8 +169,7 @@ app.post('/api/signup', (req,res,next)=>{ upload.array('photos',4)(req,res,(err)
       const hashed=await bcrypt.hash(password,10);
       const photoUrls=(req.files||[]).map(f=>getFileUrl(f));
       const r=await pool.query('INSERT INTO users(name,email,password,age,city,gender,bio,photos) VALUES($1,$2,$3,$4,$5,$6,$7,$8) RETURNING *', [name,email,hashed,parseInt(age)||25,city||'Edmonton',gender||'Man',bio||'',JSON.stringify(photoUrls)]);
-      let u=r.rows[0];
-      if((name||'').toLowerCase().includes('dee (admin)')){ try{ await pool.query('UPDATE users SET pinned=TRUE WHERE id=$1', [u.id]); u.pinned=true; }catch{} }
+      const u=r.rows[0];
       const token=jwt.sign({id:u.id},JWT_SECRET,{expiresIn:'30d'});
       return res.json({message:'Account created! Free forever!', token, ...safeUser(u)});
     }else{
@@ -320,7 +307,7 @@ app.get('/api/messages/:myId', async (req,res)=>{
     if(useDb){
       const br=await pool.query('SELECT 1 FROM blocks WHERE (user_id=$1 AND blocked_id=$2) OR (user_id=$2 AND blocked_id=$1)', [myId,withId]);
       if(br.rows.length) return res.json([]);
-      const r=await pool.query('SELECT * FROM messages WHERE (from_id=$1 AND to_id=$2) OR (from_id=$2 AND to_id=$1) ORDER BY pinned DESC, id ASC LIMIT 200', [myId,withId]);
+      const r=await pool.query('SELECT * FROM messages WHERE (from_id=$1 AND to_id=$2) OR (from_id=$2 AND to_id=$1) ORDER BY id ASC LIMIT 200', [myId,withId]);
       return res.json(r.rows);
     }else{
       if(isBlocked(myId, withId)) return res.json([]);
@@ -387,7 +374,7 @@ function checkAdmin(req,res,next){
   return res.status(401).json({error:'Admin only'});
 }
 app.get('/api/admin/users', checkAdmin, async (req,res)=>{
-  if(useDb){ const r=await pool.query('SELECT * FROM users ORDER BY pinned DESC NULLS LAST, id DESC'); return res.json(r.rows.map(u=>({...safeUser(u), email:u.email}))); }
+  if(useDb){ const r=await pool.query('SELECT * FROM users ORDER BY id DESC'); return res.json(r.rows.map(u=>({...safeUser(u), email:u.email}))); }
   res.json(users.map(u=>({...safeUser(u), email:u.email})).reverse());
 });
 app.post('/api/admin/delete/:id', checkAdmin, async (req,res)=>{
