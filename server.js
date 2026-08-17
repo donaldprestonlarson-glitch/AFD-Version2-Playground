@@ -40,7 +40,7 @@ async function initDb(){
         id SERIAL PRIMARY KEY,
         name TEXT, email TEXT UNIQUE, password TEXT,
         age INT, city TEXT, gender TEXT, bio TEXT,
-        photos TEXT, height_cm INT, weight_lbs INT, smoking TEXT, occupation TEXT, created TIMESTAMPTZ DEFAULT NOW()
+        photos TEXT, height_cm INT, weight_lbs INT, smoking TEXT, occupation TEXT, alcohol TEXT, cannabis TEXT, created TIMESTAMPTZ DEFAULT NOW()
       );
       CREATE TABLE IF NOT EXISTS messages (
         id SERIAL PRIMARY KEY,
@@ -55,6 +55,8 @@ async function initDb(){
     await pool.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS weight_lbs INT`);
     await pool.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS smoking TEXT`);
     await pool.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS occupation TEXT`);
+    await pool.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS alcohol TEXT`);
+    await pool.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS cannabis TEXT`);
     await pool.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS height_ft INT`);
     await pool.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS height_in INT`);
     await pool.query(`UPDATE users SET pinned = TRUE WHERE LOWER(name) = 'dee'`);
@@ -119,12 +121,6 @@ app.get('/api/users', async (req,res)=>{
     const gender = req.query.gender;
     const ageMin = parseInt(req.query.ageMin||0);
     const ageMax = parseInt(req.query.ageMax||0);
-    const heightMin = parseInt(req.query.heightMin||0);
-    const heightMax = parseInt(req.query.heightMax||0);
-    const weightMin = parseInt(req.query.weightMin||0);
-    const weightMax = parseInt(req.query.weightMax||0);
-    const smoking = req.query.smoking||'';
-    const occupation = req.query.occupation||'';
     let list;
     if(useDb){
       let sql='SELECT * FROM users WHERE 1=1';
@@ -133,12 +129,6 @@ app.get('/api/users', async (req,res)=>{
       if(gender && gender!=='All'){ sql+=` AND gender=$${idx++}`; params.push(gender); }
       if(ageMin){ sql+=` AND age >= $${idx++}`; params.push(ageMin); }
       if(ageMax){ sql+=` AND age <= $${idx++}`; params.push(ageMax); }
-      if(heightMin){ sql+=` AND height_cm >= $${idx++}`; params.push(heightMin); }
-      if(heightMax){ sql+=` AND height_cm <= $${idx++}`; params.push(heightMax); }
-      if(weightMin){ sql+=` AND weight_lbs >= $${idx++}`; params.push(weightMin); }
-      if(weightMax){ sql+=` AND weight_lbs <= $${idx++}`; params.push(weightMax); }
-      if(smoking && smoking!=='All'){ sql+=` AND smoking=$${idx++}`; params.push(smoking); }
-      if(occupation && occupation!=='All'){ sql+=` AND occupation=$${idx++}`; params.push(occupation); }
       sql+=' ORDER BY pinned DESC NULLS LAST, id DESC';
       const r=await pool.query(sql, params);
       list=r.rows;
@@ -157,12 +147,6 @@ app.get('/api/users', async (req,res)=>{
       if(gender && gender!=='All') list=list.filter(u=> (u.gender||'Man')===gender);
       if(ageMin) list=list.filter(u=> (u.age||25) >= ageMin);
       if(ageMax) list=list.filter(u=> (u.age||25) <= ageMax);
-      if(heightMin) list=list.filter(u=> (u.height_cm||0) >= heightMin);
-      if(heightMax) list=list.filter(u=> (u.height_cm||0) <= heightMax);
-      if(weightMin) list=list.filter(u=> (u.weight_lbs||0) >= weightMin);
-      if(weightMax) list=list.filter(u=> (u.weight_lbs||0) <= weightMax);
-      if(smoking && smoking!=='All') list=list.filter(u=> (u.smoking||'')===smoking);
-      if(occupation && occupation!=='All') list=list.filter(u=> (u.occupation||'')===occupation);
       if(myId){
         const myBlocks = getBlockedFor(myId);        list = list.filter(u=> u.id!==myId && !myBlocks.includes(u.id) && !(blocks[u.id]||[]).includes(myId));
       }
