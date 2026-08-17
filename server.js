@@ -114,7 +114,6 @@ async function dbGetUsers(){ const r=await pool.query('SELECT * FROM users ORDER
 async function dbGetUserByEmail(email){ const r=await pool.query('SELECT * FROM users WHERE LOWER(email)=LOWER($1)', [email]); return r.rows[0]; }
 async function dbGetUserById(id){ const r=await pool.query('SELECT * FROM users WHERE id=$1', [id]); return r.rows[0]; }
 
-
 app.get('/api/users', async (req,res)=>{
   try{
     const city=req.query.city;
@@ -122,58 +121,39 @@ app.get('/api/users', async (req,res)=>{
     const gender = req.query.gender;
     const ageMin = parseInt(req.query.ageMin||0);
     const ageMax = parseInt(req.query.ageMax||0);
-    let list=[];
+    let list;
     if(useDb){
-      try{
-        let sql='SELECT * FROM users WHERE 1=1';
-        const params=[]; let idx=1;
-        if(city){ sql+=` AND city=$${idx++}`; params.push(city); }
-        if(gender && gender!=='All'){ sql+=` AND gender=$${idx++}`; params.push(gender); }
-        if(ageMin){ sql+=` AND age >= $${idx++}`; params.push(ageMin); }
-        if(ageMax){ sql+=` AND age <= $${idx++}`; params.push(ageMax); }
-        sql+=' ORDER BY pinned DESC NULLS LAST, id DESC LIMIT 200';
-        const r=await pool.query(sql, params);
-        list=r.rows;
-      }catch(dbErr){ console.error('DB error', dbErr.message); list=users.slice(); }
+      let sql='SELECT * FROM users WHERE 1=1';
+      const params=[]; let idx=1;
+      if(city){ sql+=` AND city=$${idx++}`; params.push(city); }
+      if(gender && gender!=='All'){ sql+=` AND gender=$${idx++}`; params.push(gender); }
+      if(ageMin){ sql+=` AND age >= $${idx++}`; params.push(ageMin); }
+      if(ageMax){ sql+=` AND age <= $${idx++}`; params.push(ageMax); }
+      sql+=' ORDER BY pinned DESC NULLS LAST, id DESC';
+      const r=await pool.query(sql, params);
+      list=r.rows;
+      // Always pin Dee first by name too
+      list = list.sort((a,b)=>{ const aDee = (a.name||'').toLowerCase().includes('dee (admin)'); const bDee = (b.name||'').toLowerCase().includes('dee (admin)'); if(aDee && !bDee) return -1; if(!aDee && bDee) return 1; return (b.pinned?1:0)-(a.pinned?1:0); });
+      if(myId){
+        const br=await pool.query('SELECT blocked_id FROM blocks WHERE user_id=$1', [myId]);
+        const myBlocks=br.rows.map(x=>x.blocked_id);
+        const br2=await pool.query('SELECT user_id FROM blocks WHERE blocked_id=$1', [myId]);
+        const blockedBy=br2.rows.map(x=>x.user_id);
+        list=list.filter(u=> u.id!==myId && !myBlocks.includes(u.id) && !blockedBy.includes(u.id));
+      }
     }else{
-      list=users.slice();
+      list=users.slice().sort((a,b)=>{ const aDee = (a.name||'').toLowerCase().includes('dee (admin)'); const bDee = (b.name||'').toLowerCase().includes('dee (admin)'); if(aDee && !bDee) return -1; if(!aDee && bDee) return 1; return (b.pinned?1:0)-(a.pinned?1:0); });
       if(city) list=list.filter(u=>u.city===city);
       if(gender && gender!=='All') list=list.filter(u=> (u.gender||'Man')===gender);
       if(ageMin) list=list.filter(u=> (u.age||25) >= ageMin);
       if(ageMax) list=list.filter(u=> (u.age||25) <= ageMax);
-    }
-    // sort Dee admin first
-    list = list.sort((a,b)=>{ const aDee = (a.name||'').toLowerCase().includes('dee (admin)'); const bDee = (b.name||'').toLowerCase().includes('dee (admin)'); if(aDee && !bDee) return -1; if(!aDee && bDee) return 1; return (b.pinned?1:0)-(a.pinned?1:0); });
-    if(myId){
-      try{
-        if(useDb){
-          const br=await pool.query('SELECT blocked_id FROM blocks WHERE user_id=$1', [myId]);
-          const myBlocks=br.rows.map(x=>x.blocked_id);
-          const br2=await pool.query('SELECT user_id FROM blocks WHERE blocked_id=$1', [myId]);
-          const blockedBy=br2.rows.map(x=>x.user_id);
-          list=list.filter(u=> u.id!==myId && !myBlocks.includes(u.id) && !blockedBy.includes(u.id));
-        }else{
-          const myBlocks = getBlockedFor(myId); list = list.filter(u=> u.id!==myId && !myBlocks.includes(u.id) && !(blocks[u.id]||[]).includes(myId));
-        }
-      }catch(e){ console.error('block filter error', e.message); }
-    }
-    // If All returns 0, try Edmonton then Calgary as server fallback (playground DB issue)
-    if(list.length===0 && !city){
-      console.log('All query empty, trying Edmonton fallback server side');
-      try{
-        const r2=await pool.query('SELECT * FROM users WHERE city=$1 ORDER BY pinned DESC NULLS LAST, id DESC LIMIT 200', ['Edmonton']);
-        if(r2.rows.length>0) list=r2.rows;
-        else {
-          const r3=await pool.query('SELECT * FROM users WHERE city=$1 ORDER BY pinned DESC NULLS LAST, id DESC LIMIT 200', ['Calgary']);
-          if(r3.rows.length>0) list=r3.rows;
-        }
-      }catch(e){ console.error('fallback query error', e.message); }
-      if(list.length===0 && users.length>0){ list=users.slice(); }
+      if(myId){
+        const myBlocks = getBlockedFor(myId);        list = list.filter(u=> u.id!==myId && !myBlocks.includes(u.id) && !(blocks[u.id]||[]).includes(myId));
+      }
     }
     res.json(list.map(safeUser));
-  }catch(e){ console.error('users error', e); res.json([]); }
+  }catch(e){ res.status(500).json({error:e.message}); }
 });
-
 
 app.get('/api/me', async (req,res)=>{
   const token=req.headers.authorization?.split(' ')[1];
