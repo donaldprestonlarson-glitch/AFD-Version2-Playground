@@ -252,8 +252,9 @@ function logout(){
   const ib=document.getElementById('inboxTopBtn'); if(ib) ib.style.display='none';
   const lb=document.getElementById('loginBtn'); if(lb) lb.style.display='inline-block';
   const jb=document.getElementById('joinBtn'); if(jb) jb.style.display='inline-block';
+  closeModals();
   loadUsers();
-  setTimeout(()=>location.reload(), 100);
+  console.log('logged out, loading All');
 }
 
 async function tryAutoLogin(){
@@ -300,7 +301,7 @@ async function loadUsers(){
     const countEl=document.getElementById('count');
     if(countEl) countEl.innerText=users.length+' singles in '+(activeCity==='All'?'Alberta':activeCity);
     const grid=document.getElementById('grid');
-    if(!grid){ console.error('grid missing'); return; }
+    if(!grid) return;
     grid.innerHTML='';
     users.forEach((u,i)=>{
       if(i===3){ const ad=document.createElement('div'); ad.className='ad'; ad.innerHTML='Advertisement<br>This is how we stay free'; grid.appendChild(ad); }
@@ -309,7 +310,7 @@ async function loadUsers(){
       d.innerHTML=`<div class="online"></div><div style="display:flex;gap:12px;align-items:center">${av}<div><b>${u.name}, ${u.age}</b><div style="color:var(--muted);font-size:13px">${u.gender||''} • ${u.city} - ${u.photos?.length||0} photos</div></div></div><p style="margin:12px 0;color:var(--muted);font-size:14px;min-height:40px">${(u.bio||'').slice(0,90)}...</p><button class="btn btn-primary" style="width:100%" onclick="event.stopPropagation();openChat(${u.id},'${u.name.replace(/'/g,"\'")}')">Message Free</button>`;
       grid.appendChild(d);
     });
-  }catch(e){ console.error(e); const ce=document.getElementById('count'); if(ce) ce.innerText='Error: '+e.message; }
+  }catch(e){ console.error(e); }
 }
 
 
