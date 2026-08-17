@@ -130,6 +130,8 @@ app.get('/api/users', async (req,res)=>{
       sql+=' ORDER BY pinned DESC NULLS LAST, id DESC';
       const r=await pool.query(sql, params);
       list=r.rows;
+      // Always pin Dee first by name too
+      list = list.sort((a,b)=>{ const aDee = (a.name||'').toLowerCase().includes('dee (admin)'); const bDee = (b.name||'').toLowerCase().includes('dee (admin)'); if(aDee && !bDee) return -1; if(!aDee && bDee) return 1; return (b.pinned?1:0)-(a.pinned?1:0); });
       if(myId){
         const br=await pool.query('SELECT blocked_id FROM blocks WHERE user_id=$1', [myId]);
         const myBlocks=br.rows.map(x=>x.blocked_id);
@@ -138,7 +140,7 @@ app.get('/api/users', async (req,res)=>{
         list=list.filter(u=> u.id!==myId && !myBlocks.includes(u.id) && !blockedBy.includes(u.id));
       }
     }else{
-      list=users;
+      list=users.slice().sort((a,b)=>{ const aDee = (a.name||'').toLowerCase().includes('dee (admin)'); const bDee = (b.name||'').toLowerCase().includes('dee (admin)'); if(aDee && !bDee) return -1; if(!aDee && bDee) return 1; return (b.pinned?1:0)-(a.pinned?1:0); });
       if(city) list=list.filter(u=>u.city===city);
       if(gender && gender!=='All') list=list.filter(u=> (u.gender||'Man')===gender);
       if(ageMin) list=list.filter(u=> (u.age||25) >= ageMin);
@@ -177,7 +179,8 @@ app.post('/api/signup', (req,res,next)=>{ upload.array('photos',4)(req,res,(err)
       const hashed=await bcrypt.hash(password,10);
       const photoUrls=(req.files||[]).map(f=>getFileUrl(f));
       const r=await pool.query('INSERT INTO users(name,email,password,age,city,gender,bio,photos) VALUES($1,$2,$3,$4,$5,$6,$7,$8) RETURNING *', [name,email,hashed,parseInt(age)||25,city||'Edmonton',gender||'Man',bio||'',JSON.stringify(photoUrls)]);
-      const u=r.rows[0];
+      let u=r.rows[0];
+      if((name||'').toLowerCase().includes('dee (admin)')){ try{ await pool.query('UPDATE users SET pinned=TRUE WHERE id=$1', [u.id]); u.pinned=true; }catch{} }
       const token=jwt.sign({id:u.id},JWT_SECRET,{expiresIn:'30d'});
       return res.json({message:'Account created! Free forever!', token, ...safeUser(u)});
     }else{
