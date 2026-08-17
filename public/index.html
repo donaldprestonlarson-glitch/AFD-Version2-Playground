@@ -112,7 +112,7 @@ input,textarea,select{width:100%;padding:12px;border-radius:10px;border:1px soli
   </div>
 </section>
 
-<div class="filters" id="browse" style="align-items:center;flex-wrap:wrap">
+<div class="filters" id="browse" style="align-items:center;flex-wrap:wrap;gap:8px">
   <button class="chip active" onclick="filterCity('All',this)">All Alberta</button>
   <button class="chip" onclick="filterCity('Edmonton',this)">Edmonton</button>
   <button class="chip" onclick="filterCity('Calgary',this)">Calgary</button>
@@ -125,6 +125,11 @@ input,textarea,select{width:100%;padding:12px;border-radius:10px;border:1px soli
     <select id="filterAgeMin" onchange="loadUsers()" style="width:auto;margin:0;padding:6px 8px;border-radius:20px;background:var(--card);border:1px solid var(--border);color:var(--text);font-size:13px"><option value="">Min Age</option><option value="18">18</option><option value="25">25</option><option value="30">30</option><option value="35">35</option><option value="40">40</option><option value="45">45</option><option value="50">50</option></select>
     <span style="color:var(--muted)">-</span>
     <select id="filterAgeMax" onchange="loadUsers()" style="width:auto;margin:0;padding:6px 8px;border-radius:20px;background:var(--card);border:1px solid var(--border);color:var(--text);font-size:13px"><option value="">Max Age</option><option value="30">30</option><option value="35">35</option><option value="40">40</option><option value="45">45</option><option value="50">50</option><option value="60">60</option><option value="99">99</option></select>
+    <select id="filterSmoking" onchange="loadUsers()" style="width:auto;margin:0;padding:6px 8px;border-radius:20px;background:var(--card);border:1px solid var(--border);color:var(--text);font-size:13px"><option value="All">Smoking: Any</option><option value="Never">Never</option><option value="Socially">Socially</option><option value="Daily">Daily</option></select>
+    <select id="filterAlcohol" onchange="loadUsers()" style="width:auto;margin:0;padding:6px 8px;border-radius:20px;background:var(--card);border:1px solid var(--border);color:var(--text);font-size:13px"><option value="All">Alcohol: Any</option><option value="Never">Never</option><option value="Socially">Socially</option><option value="Weekly">Weekly</option><option value="Daily">Daily</option></select>
+    <select id="filterCannabis" onchange="loadUsers()" style="width:auto;margin:0;padding:6px 8px;border-radius:20px;background:var(--card);border:1px solid var(--border);color:var(--text);font-size:13px"><option value="All">Cannabis: Any</option><option value="Never">Never</option><option value="Socially">Socially</option><option value="Weekly">Weekly</option><option value="Daily">Daily</option></select>
+    <select id="filterOccupation" onchange="loadUsers()" style="width:auto;margin:0;padding:6px 8px;border-radius:20px;background:var(--card);border:1px solid var(--border);color:var(--text);font-size:13px"><option value="All">Occupation: Any</option><option value="Trades">Trades</option><option value="Professional">Professional</option><option value="Healthcare">Healthcare</option><option value="Education">Education</option><option value="Hospitality">Hospitality</option><option value="Retired">Retired</option><option value="Student">Student</option></select>
+    <button class="btn btn-ghost" style="padding:6px 10px;font-size:12px;border-radius:20px;border:1px solid var(--border)" onclick="clearFilters()">Clear</button>
   </div>
   <span style="margin-left:auto;color:var(--muted);font-size:13px" id="count"></span>
 </div>
@@ -270,12 +275,20 @@ async function loadUsers(){
   const gender = document.getElementById('filterGender')?.value || 'All';
   const ageMin = document.getElementById('filterAgeMin')?.value || '';
   const ageMax = document.getElementById('filterAgeMax')?.value || '';
+  const smoking = document.getElementById('filterSmoking')?.value || 'All';
+  const alcohol = document.getElementById('filterAlcohol')?.value || 'All';
+  const cannabis = document.getElementById('filterCannabis')?.value || 'All';
+  const occupation = document.getElementById('filterOccupation')?.value || 'All';
   const cityParam=activeCity==='All'?'':`city=${activeCity}`;
   const myParam=currentUser?`myId=${currentUser.id}`:'';
   const genderParam=gender!=='All'?`gender=${gender}`:'';
   const ageMinParam=ageMin?`ageMin=${ageMin}`:'';
   const ageMaxParam=ageMax?`ageMax=${ageMax}`:'';
-  const q=[cityParam, myParam, genderParam, ageMinParam, ageMaxParam].filter(Boolean).join('&');
+  const smokingParam=smoking!=='All'?`smoking=${encodeURIComponent(smoking)}`:'';
+  const alcoholParam=alcohol!=='All'?`alcohol=${encodeURIComponent(alcohol)}`:'';
+  const cannabisParam=cannabis!=='All'?`cannabis=${encodeURIComponent(cannabis)}`:'';
+  const occupationParam=occupation!=='All'?`occupation=${encodeURIComponent(occupation)}`:'';
+  const q=[cityParam, myParam, genderParam, ageMinParam, ageMaxParam, smokingParam, alcoholParam, cannabisParam, occupationParam].filter(Boolean).join('&');
   const url='/api/users'+(q?'?'+q:'');
   const res=await fetch(url); users=await res.json();
   document.getElementById('count').innerText=users.length+' singles in '+(activeCity==='All'?'Alberta':activeCity);
