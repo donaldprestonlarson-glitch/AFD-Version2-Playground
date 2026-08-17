@@ -41,7 +41,7 @@ input,textarea,select{width:100%;padding:12px;border-radius:10px;border:1px soli
 .photo-slot{aspect-ratio:1;border:2px dashed var(--border);border-radius:10px;display:flex;align-items:center;justify-content:center;overflow:hidden;background:#0a0f14;position:relative;box-sizing:border-box}
 .photo-slot img{width:100%;height:100%;object-fit:cover;object-position:center top;background:#0a0f14}
 .photo-slot .remove{position:absolute;top:2px;right:2px;background:#ef4444;color:white;border:0;border-radius:50%;width:22px;height:22px;cursor:pointer}
-.profile-photo{ transition: all 0.2s; } .profile-photo{width:100%;max-height:50vh;object-fit:contain;object-position:center;border-radius:14px;background:#0a0f14;border:1px solid var(--border);display:block;box-sizing:border-box}
+.profile-photo{width:100%;max-height:50vh;object-fit:contain;object-position:center;border-radius:14px;background:#0a0f14;border:1px solid var(--border);display:block;box-sizing:border-box}
 .thumbs{display:flex;gap:8px;margin-top:10px;overflow:auto;max-width:100%;box-sizing:border-box}
 .thumbs img{width:72px;height:72px;border-radius:10px;object-fit:cover;object-position:center top;background:#0a0f14;cursor:pointer;border:2px solid var(--border);box-sizing:border-box}
 .thumbs img.active{border-color:var(--teal)}
@@ -68,13 +68,13 @@ input,textarea,select{width:100%;padding:12px;border-radius:10px;border:1px soli
   nav .btn{padding:7px 10px;font-size:12px}
 }
 
-.pinned-card{border:2px solid var(--teal)!important;box-shadow:0 0 20px rgba(45,212,191,0.25)!important;order:-1}
+/* stationary window */
+#profileModal .modal-box.wide{max-height:85vh;overflow:hidden;display:flex;flex-direction:column}
+#profileModal #pv_bio{max-height:140px;overflow-y:auto;white-space:pre-wrap;background:var(--bg);padding:12px;border-radius:10px;border:1px solid var(--border)}
+#profileModal #pv_thumbs{flex-shrink:0}
+.pinned-card{border:2px solid var(--teal)!important;box-shadow:0 0 20px rgba(45,212,191,0.25)!important}
 .host-badge{background:var(--teal);color:#0a0f14;font-size:10px;font-weight:800;padding:3px 8px;border-radius:20px;position:absolute;top:8px;left:8px;z-index:2;letter-spacing:0.5px}
 .host-blurb{background:linear-gradient(135deg,#0f2a2a,#0a1f1f);border:1px solid var(--teal);border-radius:8px;padding:8px 10px;margin-top:8px;font-size:12px;color:#8ee9d6}
-
-
-#profileModal .modal-box.wide{max-height:85vh;overflow:hidden;display:flex;flex-direction:column}
-#profileModal #pv_bio{max-height:140px;overflow-y:auto}
 </style>
 </head>
 <body>
@@ -146,34 +146,7 @@ input,textarea,select{width:100%;padding:12px;border-radius:10px;border:1px soli
 <div class="modal" id="signupModal"><div class="modal-box">
   <h3>Join Actually Free — It's Free</h3>
   <p style="color:var(--muted);font-size:13px">No credit card. Ever.</p>
-  <input id="s_name" placeholder="Your name"><input id="s_email" placeholder="Email" type="email"><input id="s_pass" placeholder="Password" type="password">
-  <div style="display:flex;gap:8px"><input id="s_age" placeholder="Age" type="number" min="18" style="flex:1"><select id="s_gender" style="flex:1"><option value="Man">I am a Man</option><option value="Woman">I am a Woman</option></select></div>
-  <select id="s_city"><option value="Edmonton">Edmonton</option><option value="Calgary">Calgary</option></select>
-  <div style="border:1px solid var(--border);border-radius:10px;padding:10px;margin-top:8px;background:#0f1922">
-    <div style="font-size:12px;color:var(--teal);margin-bottom:6px;font-weight:700">Basics — all required</div>
-    <div style="display:flex;gap:8px">
-      <select id="s_height_ft" style="flex:1"><option value="">Feet</option><option value="4">4'</option><option value="5">5'</option><option value="6">6'</option><option value="7">7'</option></select>
-      <select id="s_height_in" style="flex:1"><option value="">Inches</option><option value="0">0"</option><option value="1">1"</option><option value="2">2"</option><option value="3">3"</option><option value="4">4"</option><option value="5">5"</option><option value="6">6"</option><option value="7">7"</option><option value="8">8"</option><option value="9">9"</option><option value="10">10"</option><option value="11">11"</option></select>
-      <input id="s_weight" placeholder="Weight lbs" type="number" min="80" max="400" style="flex:1">
-    </div>
-    <div style="display:flex;gap:8px;margin-top:8px"><select id="s_occupation" style="flex:1.8"><option value="">Occupation</option>
-<option value="Trades / Construction / Skilled Labour">Trades / Construction / Skilled Labour</option>
-<option value="Oil & Gas / Energy">Oil & Gas / Energy</option>
-<option value="Healthcare / Medical">Healthcare / Medical</option>
-<option value="Education / Teaching">Education / Teaching</option>
-<option value="Technology / IT">Technology / IT</option>
-<option value="Professional / Office / Corporate">Professional / Office / Corporate</option>
-<option value="Sales / Retail / Customer Service">Sales / Retail / Customer Service</option>
-<option value="Hospitality / Food / Tourism">Hospitality / Food / Tourism</option>
-<option value="Public Service / Government">Public Service / Government</option>
-<option value="First Responder / Military / Law">First Responder / Military / Law</option>
-<option value="Self-Employed / Entrepreneur">Self-Employed / Entrepreneur</option>
-<option value="Student">Student</option>
-<option value="Stay-at-home / Homemaker">Stay-at-home / Homemaker</option>
-<option value="Retired / Other / Prefer not to say">Retired / Other / Prefer not to say</option></select><select id="s_smoking" style="flex:1"><option value="">Smoking?</option><option value="Non-smoker">Non-smoker</option><option value="Occasional">Occasional / Social</option><option value="Regular">Regular smoker</option><option value="Trying to quit">Trying to quit</option></select></div>
-<div style="display:flex;gap:8px;margin-top:8px"><select id="s_alcohol" style="flex:1"><option value="">Alcohol (optional)</option><option value="Non-drinker">Non-drinker</option><option value="Occasional / Social">Occasional / Social</option><option value="Regular">Regular</option><option value="Prefer not to say">Prefer not to say</option></select><select id="s_cannabis" style="flex:1"><option value="">Cannabis (optional)</option><option value="Non-user">Non-user</option><option value="Occasional / Social">Occasional / Social</option><option value="Regular">Regular</option><option value="Medical">Medical</option><option value="Prefer not to say">Prefer not to say</option></select></div>
-  </div>
-  <textarea id="s_bio" placeholder="Short bio" style="margin-top:8px"></textarea>
+  <input id="s_name" placeholder="Your name"><input id="s_email" placeholder="Email" type="email"><input id="s_pass" placeholder="Password" type="password"><div style="display:flex;gap:8px"><input id="s_age" placeholder="Age" type="number" min="18" style="flex:1"><select id="s_gender" style="flex:1"><option value="Man">I am a Man</option><option value="Woman">I am a Woman</option></select></div><select id="s_city"><option value="Edmonton">Edmonton</option><option value="Calgary">Calgary</option></select><textarea id="s_bio" placeholder="Short bio"></textarea>
   <div class="photo-upload"><b style="color:var(--teal)">Up to 4 photos</b> — free & cloud hosted<div class="photo-grid" id="s_preview"></div><input type="file" id="s_photos" accept="image/*" multiple><div style="font-size:11px;color:var(--muted);margin-top:6px">Hold Ctrl to pick 4 at once — JPG/PNG up to 5MB each</div></div>
   <div style="display:flex;gap:10px;margin-top:14px"><button class="btn btn-primary" style="flex:1" onclick="doSignup()">Create Account</button><button class="btn btn-ghost" onclick="closeModals()">Cancel</button></div><div id="s_msg" style="margin-top:10px;font-size:13px;color:var(--teal)"></div>
 </div></div>
@@ -181,32 +154,7 @@ input,textarea,select{width:100%;padding:12px;border-radius:10px;border:1px soli
 <!-- EDIT PROFILE -->
 <div class="modal" id="editModal"><div class="modal-box">
   <h3>Edit Profile — 4 Photos Max</h3>
-  <input id="e_name" placeholder="Your name"><input id="e_age" placeholder="Age" type="number"><select id="e_city"><option value="Edmonton">Edmonton</option><option value="Calgary">Calgary</option></select>
-  <div style="border:1px solid var(--border);border-radius:10px;padding:10px;margin-top:8px;background:#0f1922">
-    <div style="font-size:12px;color:var(--teal);margin-bottom:6px;font-weight:700">Basics</div>
-    <div style="display:flex;gap:8px">
-      <select id="e_height_ft" style="flex:1"><option value="">Feet</option><option value="4">4'</option><option value="5">5'</option><option value="6">6'</option><option value="7">7'</option></select>
-      <select id="e_height_in" style="flex:1"><option value="">Inches</option><option value="0">0"</option><option value="1">1"</option><option value="2">2"</option><option value="3">3"</option><option value="4">4"</option><option value="5">5"</option><option value="6">6"</option><option value="7">7"</option><option value="8">8"</option><option value="9">9"</option><option value="10">10"</option><option value="11">11"</option></select>
-      <input id="e_weight" placeholder="Weight lbs" type="number" min="80" max="400" style="flex:1">
-    </div>
-    <div style="display:flex;gap:8px;margin-top:8px"><select id="e_occupation" style="flex:1.8"><option value="">Occupation</option>
-<option value="Trades / Construction / Skilled Labour">Trades / Construction / Skilled Labour</option>
-<option value="Oil & Gas / Energy">Oil & Gas / Energy</option>
-<option value="Healthcare / Medical">Healthcare / Medical</option>
-<option value="Education / Teaching">Education / Teaching</option>
-<option value="Technology / IT">Technology / IT</option>
-<option value="Professional / Office / Corporate">Professional / Office / Corporate</option>
-<option value="Sales / Retail / Customer Service">Sales / Retail / Customer Service</option>
-<option value="Hospitality / Food / Tourism">Hospitality / Food / Tourism</option>
-<option value="Public Service / Government">Public Service / Government</option>
-<option value="First Responder / Military / Law">First Responder / Military / Law</option>
-<option value="Self-Employed / Entrepreneur">Self-Employed / Entrepreneur</option>
-<option value="Student">Student</option>
-<option value="Stay-at-home / Homemaker">Stay-at-home / Homemaker</option>
-<option value="Retired / Other / Prefer not to say">Retired / Other / Prefer not to say</option></select><select id="e_smoking" style="flex:1"><option value="">Smoking?</option><option value="Non-smoker">Non-smoker</option><option value="Occasional">Occasional / Social</option><option value="Regular">Regular smoker</option><option value="Trying to quit">Trying to quit</option></select></div>
-<div style="display:flex;gap:8px;margin-top:8px"><select id="e_alcohol" style="flex:1"><option value="">Alcohol (optional)</option><option value="Non-drinker">Non-drinker</option><option value="Occasional / Social">Occasional / Social</option><option value="Regular">Regular</option><option value="Prefer not to say">Prefer not to say</option></select><select id="e_cannabis" style="flex:1"><option value="">Cannabis (optional)</option><option value="Non-user">Non-user</option><option value="Occasional / Social">Occasional / Social</option><option value="Regular">Regular</option><option value="Medical">Medical</option><option value="Prefer not to say">Prefer not to say</option></select></div>
-  </div>
-  <textarea id="e_bio" placeholder="Bio" style="margin-top:8px"></textarea>
+  <input id="e_name" placeholder="Your name"><input id="e_age" placeholder="Age" type="number"><select id="e_city"><option value="Edmonton">Edmonton</option><option value="Calgary">Calgary</option></select><textarea id="e_bio" placeholder="Bio"></textarea>
   <div style="margin-top:10px"><b style="font-size:13px">Your photos (tap X to remove, then Save)</b><div class="photo-grid" id="e_existing"></div></div>
   <div class="photo-upload"><b style="color:var(--teal)">Add more photos</b><div class="photo-grid" id="e_preview"></div><input type="file" id="e_photos" accept="image/*" multiple></div>
   <div style="display:flex;gap:10px;margin-top:14px"><button class="btn btn-primary" style="flex:1" onclick="doUpdate()">Save — Still Free</button><button class="btn btn-ghost" onclick="closeModals()">Cancel</button></div>
@@ -319,13 +267,6 @@ function openEdit(){
 }
 
 async function doSignup(){
-  const ft=document.getElementById('s_height_ft').value;
-  const inch=document.getElementById('s_height_in').value;
-  const weight=document.getElementById('s_weight').value;
-  const smoking=document.getElementById('s_smoking').value;
-  const occupation=document.getElementById('s_occupation').value; const alcohol=document.getElementById('s_alcohol').value; const cannabis=document.getElementById('s_cannabis').value; if(!ft||inch===''||!weight||!smoking||!occupation){ document.getElementById('s_msg').textContent='Height, weight, occupation and smoking are required'; return; }
-  const heightCm=getHeightCm(ft,inch);
-
   const msg=document.getElementById('s_msg'); msg.innerText='Creating...';
   const fd=new FormData();
   fd.append('name',s_name.value); fd.append('email',s_email.value); fd.append('password',s_pass.value); fd.append('age',s_age.value); fd.append('city',s_city.value); fd.append('bio',s_bio.value);
@@ -335,13 +276,6 @@ async function doSignup(){
   if(!j.error){ handleAuth(j); setTimeout(()=>{closeModals();loadUsers();},800); }
 }
 async function doUpdate(){
-  const ft=document.getElementById('e_height_ft').value;
-  const inch=document.getElementById('e_height_in').value;
-  const weight=document.getElementById('e_weight').value;
-  const smoking=document.getElementById('e_smoking').value;
-  const occupation=document.getElementById('e_occupation').value; const alcohol=document.getElementById('e_alcohol').value; const cannabis=document.getElementById('e_cannabis').value; if(!ft||inch===''||!weight||!smoking||!occupation){ document.getElementById('e_msg').textContent='Height, weight, occupation and smoking are required'; return; }
-  const heightCm=getHeightCm(ft,inch);
-
   const msg=document.getElementById('e_msg'); msg.innerText='Saving...';
   const fd=new FormData();
   fd.append('name',e_name.value); fd.append('age',e_age.value); fd.append('city',e_city.value); fd.append('bio',e_bio.value);
