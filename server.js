@@ -40,7 +40,7 @@ async function initDb(){
         id SERIAL PRIMARY KEY,
         name TEXT, email TEXT UNIQUE, password TEXT,
         age INT, city TEXT, gender TEXT, bio TEXT,
-        photos TEXT, created TIMESTAMPTZ DEFAULT NOW()
+        photos TEXT, height_cm INT, weight_lbs INT, smoking TEXT, created TIMESTAMPTZ DEFAULT NOW()
       );
       CREATE TABLE IF NOT EXISTS messages (
         id SERIAL PRIMARY KEY,
@@ -51,6 +51,11 @@ async function initDb(){
       );
     `);
     await pool.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS pinned BOOLEAN DEFAULT FALSE`);
+    await pool.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS height_cm INT`);
+    await pool.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS weight_lbs INT`);
+    await pool.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS smoking TEXT`);
+    await pool.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS height_ft INT`);
+    await pool.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS height_in INT`);
     await pool.query(`UPDATE users SET pinned = TRUE WHERE LOWER(name) = 'dee'`);
     console.log('DB tables ready + pinned column + Dee pinned');
   }catch(e){ console.log('DB init error', e.message); }
