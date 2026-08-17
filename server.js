@@ -330,6 +330,7 @@ app.get('/api/messages/:myId', async (req,res)=>{
   }catch(e){ res.status(500).json({error:e.message}); }
 });
 
+app.delete('/api/messages/:msgId', async (req,res)=>{ const msgId=parseInt(req.params.msgId); const myId=parseInt(req.body.myId)||parseInt(req.query.myId); try{ if(useDb){ const r=await pool.query('SELECT * FROM messages WHERE id=$1',[msgId]); if(!r.rows.length) return res.status(404).json({error:'Not found'}); if(r.rows[0].from_id!==myId) return res.status(403).json({error:'Only own'}); await pool.query('DELETE FROM messages WHERE id=$1',[msgId]); return res.json({ok:true}); }else{ const i=messages.findIndex(m=>m.id==msgId); if(i==-1) return res.status(404).json({error:'Not found'}); if(messages[i].from_id!==myId) return res.status(403).json({error:'Only own'}); messages.splice(i,1); return res.json({ok:true}); } }catch(e){ res.status(500).json({error:e.message}); } });
 app.get('/api/inbox/:myId', async (req,res)=>{
   const myId=parseInt(req.params.myId);
   try{
