@@ -45,7 +45,7 @@ input,textarea,select{width:100%;padding:12px;border-radius:10px;border:1px soli
 .thumbs{display:flex;gap:8px;margin-top:10px;overflow:auto;max-width:100%;box-sizing:border-box}
 .thumbs img{width:72px;height:72px;border-radius:10px;object-fit:cover;object-position:center top;background:#0a0f14;cursor:pointer;border:2px solid var(--border);box-sizing:border-box}
 .thumbs img.active{border-color:var(--teal)}
-.chat{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);width:400px;max-width:92vw;max-height:80vh;background:var(--card2);border:1px solid var(--border);border-radius:16px;display:none;flex-direction:column;z-index:200;box-shadow:0 20px 60px rgba(0,0,0,.6)}
+.chat{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);width:420px;max-width:92vw;max-height:82vh;background:var(--card2);border:1px solid var(--border);border-radius:16px;display:none;flex-direction:column;z-index:200;box-shadow:0 24px 70px rgba(0,0,0,.7)}
 .chat.open{display:flex}.chat-head{padding:14px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between}
 .chat-body{height:300px;overflow:auto;padding:14px;display:flex;flex-direction:column;gap:8px;resize:vertical;min-height:200px;max-height:60vh}
 .msg{max-width:80%;padding:8px 12px;border-radius:12px;font-size:14px}.me{align-self:flex-end;background:var(--teal);color:#001211}.them{align-self:flex-start;background:var(--card);border:1px solid var(--border)}
@@ -77,8 +77,9 @@ input,textarea,select{width:100%;padding:12px;border-radius:10px;border:1px soli
 .host-badge{background:var(--teal);color:#0a0f14;font-size:10px;font-weight:800;padding:3px 8px;border-radius:20px;position:absolute;top:8px;left:8px;z-index:2;letter-spacing:0.5px}
 .host-blurb{background:linear-gradient(135deg,#0f2a2a,#0a1f1f);border:1px solid var(--teal);border-radius:8px;padding:8px 10px;margin-top:8px;font-size:12px;color:#8ee9d6}
 .chat.open{display:flex}
-.chat-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:199;display:none}
+.chat-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:199;display:none}
 .chat-backdrop.open{display:block}
+.chat .chat-body{max-height:50vh}
 </style>
 </head>
 <body>
@@ -172,6 +173,7 @@ input,textarea,select{width:100%;padding:12px;border-radius:10px;border:1px soli
 <!-- LOGIN -->
 <div class="modal" id="loginModal"><div class="modal-box"><h3>Welcome back</h3><input id="l_email" placeholder="Email" type="email"><input id="l_pass" placeholder="Password" type="password"><div style="display:flex;gap:10px;margin-top:14px"><button class="btn btn-primary" style="flex:1" onclick="doLogin()">Log In</button><button class="btn btn-ghost" onclick="closeModals()">Cancel</button></div><div style="margin-top:10px;font-size:12px;color:var(--muted)">Demo: sarah.e@example.com / test123</div><div id="l_msg" style="margin-top:10px;font-size:13px;color:var(--teal)"></div></div></div>
 
+<div class="chat-backdrop" id="chatBackdrop" onclick="closeChat()"></div>
 <div class="chat" id="chat"><div class="chat-head"><b id="chatName">Messages</b><div><span id="inboxBtn" style="cursor:pointer;margin-right:12px;font-size:12px;color:var(--teal)" onclick="showInbox()">Inbox</span><span style="cursor:pointer" onclick="closeChat()">X</span></div></div><div id="inboxView" style="display:none;max-height:300px;overflow:auto;padding:8px"></div><div id="chatView"><div style="padding:8px 12px;background:var(--teal2);font-size:11px;text-align:center">This conversation is 100% FREE. Always will be.</div><div class="chat-body" id="chatBody"></div><div style="padding:10px;display:flex;gap:8px"><input id="chatInput" placeholder="Type a message..." style="margin:0" onkeydown="if(event.key==='Enter')sendMsg()"><button class="btn btn-primary" onclick="sendMsg()">Send</button></div></div></div>
 
 <script>
@@ -294,19 +296,23 @@ async function doLogin(){
   const j=await res.json(); if(j.error){ l_msg.innerText=j.error; return; } handleAuth(j); closeModals(); 
 }
 let chatInterval=null;
-function closeChat(){ document.getElementById('chatBox').classList.remove('open'); document.getElementById('chatBackdrop').classList.remove('open'); }
+function closeChat(){
+  document.getElementById('chat').classList.remove('open');
+  const bd=document.getElementById('chatBackdrop'); if(bd) bd.classList.remove('open');
+  chatWith=null; if(chatInterval) clearInterval(chatInterval);
+}
 function openChat(id,name){
   if(!currentUser){ openModal('login'); return; }
   if(currentUser.id===id){ alert('That is you!'); return; }
-  chatWith=id; document.getElementById('chatName').innerText=name; 
+  chatWith=id; document.getElementById('chatName').innerText=name;
   document.getElementById('chat').classList.add('open');
+  const bd=document.getElementById('chatBackdrop'); if(bd) bd.classList.add('open');
   document.getElementById('chatView').style.display='block';
-  document.getElementById('inboxView').style.display='none';
+  const inbox=document.getElementById('inboxView'); if(inbox) inbox.style.display='none';
   loadChat();
   if(chatInterval) clearInterval(chatInterval);
   chatInterval=setInterval(loadChat, 2000);
 }
-function closeChat(){ document.getElementById('chat').classList.remove('open'); chatWith=null; if(chatInterval) clearInterval(chatInterval); }
 async function loadChat(){
   if(!chatWith||!currentUser) return;
   try{
