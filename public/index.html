@@ -34,7 +34,7 @@ nav{display:flex;gap:10px;align-items:center}
 .modal{position:fixed;inset:0;background:rgba(0,0,0,.7);display:none;align-items:center;justify-content:center;z-index:100;padding:20px}
 .modal.open{display:flex}
 .modal-box{background:var(--card2);border:1px solid var(--border);border-radius:16px;width:100%;max-width:480px;padding:20px;max-height:94vh;overflow:auto}
-.modal-box.wide{max-height:92vh;height:auto;min-height:400px;max-width:600px}
+.modal-box.wide{max-width:600px}
 input,textarea,select{width:100%;padding:12px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);margin-top:8px}
 .photo-upload{margin-top:12px;border:2px dashed var(--border);border-radius:12px;padding:14px;text-align:center;background:var(--bg)}
 .photo-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:10px 0}
@@ -73,8 +73,8 @@ input,textarea,select{width:100%;padding:12px;border-radius:10px;border:1px soli
 .host-blurb{background:linear-gradient(135deg,#0f2a2a,#0a1f1f);border:1px solid var(--teal);border-radius:8px;padding:8px 10px;margin-top:8px;font-size:12px;color:#8ee9d6}
 
 
-#profileModal .modal-box.wide{max-height:92vh;height:auto;min-height:400px;max-height:85vh;overflow:hidden;display:flex;flex-direction:column}
-#profileModal #pv_bio{max-height:320px;min-height:120px;overflow-y:auto;line-height:1.5}
+#profileModal .modal-box.wide{max-height:85vh;overflow:hidden;display:flex;flex-direction:column}
+#profileModal #pv_bio{max-height:140px;overflow-y:auto}
 </style>
 </head>
 <body>
@@ -112,41 +112,24 @@ input,textarea,select{width:100%;padding:12px;border-radius:10px;border:1px soli
   </div>
 </section>
 
-<div class="filters" id="browse" style="align-items:center;flex-wrap:wrap;gap:8px;padding:10px 0">
-  <button class="chip active" onclick="filterCity('All',this)">All Alberta</button>
-  <button class="chip" onclick="filterCity('Edmonton',this)">Edmonton</button>
-  <button class="chip" onclick="filterCity('Calgary',this)">Calgary</button>
-  <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-left:8px">
-    <select id="filterGender" onchange="loadUsers()" style="width:auto;margin:0;padding:6px 12px;border-radius:20px;background:var(--card);border:1px solid var(--border);color:var(--text);font-size:13px">
-      <option value="All">All Genders</option>
-      <option value="Woman">Women Only</option>
-      <option value="Man">Men Only</option>
-    </select>
-    <select id="filterAgeMin" onchange="loadUsers()" style="width:auto;margin:0;padding:6px 10px;border-radius:20px;background:var(--card);border:1px solid var(--border);color:var(--text);font-size:13px"><option value="">Min Age</option><option value="18">18</option><option value="25">25</option><option value="30">30</option><option value="35">35</option><option value="40">40</option><option value="45">45</option><option value="50">50</option></select>
-    <span style="color:var(--muted)">-</span>
-    <select id="filterHeight" onchange="loadUsers()" style="width:auto;margin:0;padding:6px 8px;border-radius:20px;background:var(--card);border:1px solid var(--border);color:var(--text);font-size:13px"><option value="All">Any Height</option><option value="Under 5ft4">Under 5ft4</option><option value="5ft4-5ft7">5ft4-5ft7</option><option value="5ft8-5ft11">5ft8-5ft11</option><option value="6ft+">6ft+</option></select>
-    <select id="filterWeight" onchange="loadUsers()" style="width:auto;margin:0;padding:6px 8px;border-radius:20px;background:var(--card);border:1px solid var(--border);color:var(--text);font-size:13px"><option value="All">Any Weight</option><option value="Slim">Slim</option><option value="Athletic">Athletic</option><option value="Average">Average</option><option value="Curvy">Curvy</option><option value="Large">Large</option></select>
-    <select id="filterAgeMax" onchange="loadUsers()" style="width:auto;margin:0;padding:6px 10px;border-radius:20px;background:var(--card);border:1px solid var(--border);color:var(--text);font-size:13px"><option value="">Max Age</option><option value="30">30</option><option value="35">35</option><option value="40">40</option><option value="45">45</option><option value="50">50</option><option value="60">60</option><option value="99">99</option></select>
-    <select id="filterSmoking" onchange="loadUsers()" style="width:auto;margin:0;padding:6px 10px;border-radius:20px;background:var(--card);border:1px solid var(--border);color:var(--text);font-size:13px"><option value="All">Smoking Any</option><option value="Never">Non-Smoker</option><option value="Socially">Smokes Socially</option><option value="Daily">Smokes Daily</option></select>
-    <select id="filterAlcohol" onchange="loadUsers()" style="width:auto;margin:0;padding:6px 10px;border-radius:20px;background:var(--card);border:1px solid var(--border);color:var(--text);font-size:13px"><option value="All">Drinking Any</option><option value="Never">Never Drinks</option><option value="Socially">Social Drinker</option><option value="Weekly">Drinks Weekly</option><option value="Daily">Drinks Daily</option></select>
-    <select id="filterCannabis" onchange="loadUsers()" style="width:auto;margin:0;padding:6px 10px;border-radius:20px;background:var(--card);border:1px solid var(--border);color:var(--text);font-size:13px"><option value="All">Cannabis Any</option><option value="Never">No Cannabis</option><option value="Socially">Cannabis Socially</option><option value="Weekly">Cannabis Weekly</option><option value="Daily">Cannabis Daily</option></select>
-    <select id="filterOccupation" onchange="loadUsers()" style="width:auto;margin:0;padding:6px 10px;border-radius:20px;background:var(--card);border:1px solid var(--border);color:var(--text);font-size:13px"><option value="All">Any Job</option><option value="Trades">Trades</option><option value="Professional">Professional</option><option value="Healthcare">Healthcare</option><option value="Education">Education</option><option value="Hospitality">Hospitality</option><option value="Retired">Retired</option><option value="Student">Student</option></select>
-    <button class="btn btn-ghost" style="padding:6px 12px;font-size:12px;border-radius:20px;border:1px solid var(--border)" onclick="clearFilters()">Clear Filters</button>
+<div class="filters" id="browse" style="flex-direction:column;gap:8px;align-items:stretch">
+  <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+    <button class="chip active" onclick="filterCity('All',this)">All Alberta</button>
+    <button class="chip" onclick="filterCity('Edmonton',this)">Edmonton</button>
+    <button class="chip" onclick="filterCity('Calgary',this)">Calgary</button>
+    <select id="filterGender" onchange="loadUsers()" style="width:auto;margin:0;padding:7px 12px;border-radius:20px;background:var(--card);border:1px solid var(--border);color:var(--text);font-size:13px"><option value="All">All Genders</option><option value="Woman">Women Only</option><option value="Man">Men Only</option></select>
+    <div style="display:flex;gap:4px;align-items:center"><select id="filterAgeMin" onchange="loadUsers()" style="width:auto;margin:0;padding:7px 10px;border-radius:20px;background:var(--card);border:1px solid var(--border);color:var(--text);font-size:13px"><option value="">Min Age</option><option value="18">18</option><option value="25">25</option><option value="30">30</option><option value="35">35</option><option value="40">40</option><option value="45">45</option><option value="50">50</option></select><span style="color:var(--muted)">-</span><select id="filterAgeMax" onchange="loadUsers()" style="width:auto;margin:0;padding:7px 10px;border-radius:20px;background:var(--card);border:1px solid var(--border);color:var(--text);font-size:13px"><option value="">Max Age</option><option value="30">30</option><option value="35">35</option><option value="40">40</option><option value="45">45</option><option value="50">50</option><option value="60">60</option><option value="99">99</option></select></div>
+    <span style="margin-left:auto;color:var(--muted);font-size:13px" id="count"></span>
   </div>
-  <span style="margin-left:auto;color:var(--muted);font-size:13px" id="count"></span>
-</div>
-
-<div class="grid" id="grid"></div>
-
-<!-- PROFILE VIEW -->
-<div class="modal" id="profileModal"><div class="modal-box wide">
-  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px"><h3 id="pv_name">Profile</h3><span style="cursor:pointer;font-size:22px" onclick="closeModals()">✕</span></div>
-  <img id="pv_photo" class="profile-photo" style="display:none">
-  <div id="pv_noPhoto" class="avatar big" style="margin:0 auto 12px;display:none"></div>
-  <div class="thumbs" id="pv_thumbs"></div>
-  <div style="margin:12px 0"><b id="pv_age_city" style="color:var(--muted)"></b></div>
-  <p id="pv_bio" style="white-space:pre-wrap;background:var(--bg);padding:14px;border-radius:10px;border:1px solid var(--border);max-height:320px;min-height:120px;overflow-y:auto;line-height:1.5;font-size:14px;display:block"></p>
-  <div style="display:flex;gap:10px;margin-top:16px"><button class="btn btn-primary" style="flex:1" onclick="messageFromProfile()">Message Free</button><button class="btn btn-ghost" onclick="closeModals()">Close</button><button class="btn btn-ghost" style="color:#f87171" onclick="blockUser()">Block</button></div>
+  <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+    <select id="filterHeight" onchange="loadUsers()" style="width:auto;margin:0;padding:7px 10px;border-radius:20px;background:var(--card);border:1px solid var(--border);color:var(--text);font-size:13px"><option value="All">Any Height</option><option value="Under 5ft4">Under 5ft4</option><option value="5ft4-5ft7">5ft4-5ft7</option><option value="5ft8-5ft11">5ft8-5ft11</option><option value="6ft+">6ft+</option></select>
+    <select id="filterWeight" onchange="loadUsers()" style="width:auto;margin:0;padding:7px 10px;border-radius:20px;background:var(--card);border:1px solid var(--border);color:var(--text);font-size:13px"><option value="All">Any Weight</option><option value="Slim">Slim</option><option value="Athletic">Athletic</option><option value="Average">Average</option><option value="Curvy">Curvy</option><option value="Large">Large</option></select>
+    <select id="filterSmoking" onchange="loadUsers()" style="width:auto;margin:0;padding:7px 10px;border-radius:20px;background:var(--card);border:1px solid var(--border);color:var(--text);font-size:13px"><option value="All">Smoking Any</option><option value="Never">Non-Smoker</option><option value="Socially">Social</option><option value="Daily">Daily</option></select>
+    <select id="filterAlcohol" onchange="loadUsers()" style="width:auto;margin:0;padding:7px 10px;border-radius:20px;background:var(--card);border:1px solid var(--border);color:var(--text);font-size:13px"><option value="All">Drinking Any</option><option value="Never">Never</option><option value="Socially">Social</option><option value="Weekly">Weekly</option><option value="Daily">Daily</option></select>
+    <select id="filterCannabis" onchange="loadUsers()" style="width:auto;margin:0;padding:7px 10px;border-radius:20px;background:var(--card);border:1px solid var(--border);color:var(--text);font-size:13px"><option value="All">Cannabis Any</option><option value="Never">No</option><option value="Socially">Social</option><option value="Weekly">Weekly</option><option value="Daily">Daily</option></select>
+    <select id="filterOccupation" onchange="loadUsers()" style="width:auto;margin:0;padding:7px 10px;border-radius:20px;background:var(--card);border:1px solid var(--border);color:var(--text);font-size:13px"><option value="All">Any Job</option><option value="Trades">Trades</option><option value="Professional">Professional</option><option value="Healthcare">Healthcare</option><option value="Education">Education</option><option value="Hospitality">Hospitality</option><option value="Retired">Retired</option><option value="Student">Student</option></select>
+    <button class="btn btn-ghost" style="padding:7px 14px;font-size:12px;border-radius:20px;border:1px solid var(--border)" onclick="clearFilters()">Clear Filters</button>
+  </div>
 </div></div>
 
 <!-- SIGNUP -->
@@ -273,7 +256,8 @@ document.getElementById('e_photos')?.addEventListener('change', e=>{
   eNewFiles=Array.from(e.target.files).slice(0,4); renderGridPreview(document.getElementById('e_preview'), eNewFiles, i=>{ eNewFiles.splice(i,1); renderGridPreview(document.getElementById('e_preview'), eNewFiles, arguments.callee); });
 });
 
-async async function loadUsers(){
+async 
+async function loadUsers(){
   const gender = document.getElementById('filterGender')?.value || 'All';
   const ageMin = document.getElementById('filterAgeMin')?.value || '';
   const ageMax = document.getElementById('filterAgeMax')?.value || '';
@@ -296,17 +280,20 @@ async async function loadUsers(){
   const occupationParam=occupation!=='All'?`occupation=${encodeURIComponent(occupation)}`:'';
   const q=[cityParam, myParam, genderParam, ageMinParam, ageMaxParam, heightParam, weightParam, smokingParam, alcoholParam, cannabisParam, occupationParam].filter(Boolean).join('&');
   const url='/api/users'+(q?'?'+q:'');
-  const res=await fetch(url); users=await res.json();
-  document.getElementById('count').innerText=users.length+' singles in '+(activeCity==='All'?'Alberta':activeCity);
-  const grid=document.getElementById('grid'); grid.innerHTML='';
-  users.forEach((u,i)=>{
-    if(i===3){ const ad=document.createElement('div'); ad.className='ad'; ad.innerHTML='Advertisement<br>This is how we stay free'; grid.appendChild(ad); }
-    const d=document.createElement('div'); d.className='card'; d.onclick=()=>openProfile(u.id);
-    const photo=u.photo_url|| (u.photos&&u.photos[0]) || ''; const av=photo?`<div class="avatar"><img src="${photo}"></div>`:`<div class="avatar">${u.name[0]}</div>`;
-    d.innerHTML=`<div class="online"></div><div style="display:flex;gap:12px;align-items:center">${av}<div><b>${u.name}, ${u.age}</b><div style="color:var(--muted);font-size:13px">${u.gender||''} • ${u.city} - ${u.photos?.length||0} photos</div></div></div><p style="margin:12px 0;color:var(--muted);font-size:14px;min-height:40px">${(u.bio||'').slice(0,90)}...</p><button class="btn btn-primary" style="width:100%" onclick="event.stopPropagation();openChat(${u.id},'${u.name.replace(/'/g,"\\'")}')">Message Free</button>`;
-    grid.appendChild(d);
-  });
+  try{
+    const res=await fetch(url); users=await res.json();
+    document.getElementById('count').innerText=users.length+' singles in '+(activeCity==='All'?'Alberta':activeCity);
+    const grid=document.getElementById('grid'); grid.innerHTML='';
+    users.forEach((u,i)=>{
+      if(i===3){ const ad=document.createElement('div'); ad.className='ad'; ad.innerHTML='Advertisement<br>This is how we stay free'; grid.appendChild(ad); }
+      const d=document.createElement('div'); d.className='card'; d.onclick=()=>openProfile(u.id);
+      const photo=u.photo_url|| (u.photos&&u.photos[0]) || ''; const av=photo?`<div class="avatar"><img src="${photo}"></div>`:`<div class="avatar">${u.name[0]}</div>`;
+      d.innerHTML=`<div class="online"></div><div style="display:flex;gap:12px;align-items:center">${av}<div><b>${u.name}, ${u.age}</b><div style="color:var(--muted);font-size:13px">${u.gender||''} • ${u.city} - ${u.photos?.length||0} photos</div></div></div><p style="margin:12px 0;color:var(--muted);font-size:14px;min-height:40px">${(u.bio||'').slice(0,90)}...</p><button class="btn btn-primary" style="width:100%" onclick="event.stopPropagation();openChat(${u.id},'${u.name.replace(/'/g,"\'")}')">Message Free</button>`;
+      grid.appendChild(d);
+    });
+  }catch(e){ console.error(e); document.getElementById('count').innerText='Error loading'; }
 }
+
 
 function openProfile(id){
   const u=users.find(x=>x.id==id); if(!u) return; viewingUser=u;
@@ -342,6 +329,7 @@ function openProfile(id){
 function messageFromProfile(){ closeModals(); setTimeout(()=>openChat(viewingUser.id, viewingUser.name),200); }
 function blockUser(){ alert('Reported! Admin will review and remove if nude/inappropriate. Thanks for keeping AFD clean.'); closeModals(); }
 
+function clearFilters(){ const ids=["filterGender","filterAgeMin","filterAgeMax","filterHeight","filterWeight","filterSmoking","filterAlcohol","filterCannabis","filterOccupation"]; ids.forEach(id=>{ const e=document.getElementById(id); if(e) e.value=id.includes("Age")?"": "All"; }); filterCity("All", document.querySelector(".chip.active")||document.querySelector(".chip")); }
 function filterCity(c,el){ activeCity=c; document.querySelectorAll('.chip').forEach(x=>x.classList.remove('active')); if(el) el.classList.add('active'); loadUsers(); }
 function openModal(t){ document.getElementById(t+'Modal').classList.add('open'); }
 function closeModals(){ document.querySelectorAll('.modal').forEach(m=>m.classList.remove('open')); }
