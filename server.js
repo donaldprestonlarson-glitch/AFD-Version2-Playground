@@ -141,8 +141,7 @@ app.get('/api/users', async (req,res)=>{
         const myBlocks = getBlockedFor(myId);        list = list.filter(u=> u.id!==myId && !myBlocks.includes(u.id) && !(blocks[u.id]||[]).includes(myId));
       }
     }
-    // Pin Dee (Admin) first
-    list = list.sort((a,b)=>{ const aDee=(a.name||'').toLowerCase().includes('dee (admin)'); const bDee=(b.name||'').toLowerCase().includes('dee (admin)'); if(aDee && !bDee) return -1; if(!aDee && bDee) return 1; return 0; });
+    list = list.sort((a,b)=>{ const ad=(a.name||'').toLowerCase().includes('dee (admin)'); const bd=(b.name||'').toLowerCase().includes('dee (admin)'); if(ad&&!bd) return -1; if(!ad&&bd) return 1; return 0; });
     res.json(list.map(safeUser));
   }catch(e){ res.status(500).json({error:e.message}); }
 });
