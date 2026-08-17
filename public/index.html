@@ -296,18 +296,25 @@ function openChat(id,name){
   if(!currentUser){ openModal('login'); return; }
   if(currentUser.id===id){ alert('That is you!'); return; }
   chatWith=id; document.getElementById('chatName').innerText=name; 
-  document.getElementById('chat').classList.add('open');
-  const bd=document.getElementById('chatBackdrop'); if(bd) bd.classList.add('open');
+  document.getElementById('chat').classList.add('open'); const bd=document.getElementById('chatBackdrop'); if(bd) bd.classList.add('open');
   document.getElementById('chatView').style.display='block';
   document.getElementById('inboxView').style.display='none';
   loadChat();
   if(chatInterval) clearInterval(chatInterval);
   chatInterval=setInterval(loadChat, 2000);
 }
-function closeChat(){
-  document.getElementById('chat').classList.remove('open');
-  const bd=document.getElementById('chatBackdrop'); if(bd) bd.classList.remove('open');
-  chatWith=null; if(chatInterval) clearInterval(chatInterval);
+function closeChat(){ document.getElementById('chat').classList.remove('open'); const bd=document.getElementById('chatBackdrop'); if(bd) bd.classList.remove('open'); chatWith=null; if(chatInterval) clearInterval(chatInterval); }
+async function loadChat(){
+  if(!chatWith||!currentUser) return;
+  try{
+    const res=await fetch(`/api/messages/${currentUser.id}?with=${chatWith}`); 
+    const msgs=await res.json();
+    const body=document.getElementById('chatBody'); 
+    if(!msgs.length){ body.innerHTML='<div style="color:var(--muted);font-size:13px;text-align:center;padding:20px">No messages yet. Say hi — it is free!</div>'; return; }
+    body.innerHTML='';
+    msgs.forEach(m=>{ const d=document.createElement('div'); d.className='msg '+(m.from_id===currentUser.id?'me':'them'); d.innerText=m.text; body.appendChild(d); });
+    body.scrollTop=body.scrollHeight;
+  }catch(e){ console.log('chat load err',e); }
 }
 async function sendMsg(){
   const input=document.getElementById('chatInput');
