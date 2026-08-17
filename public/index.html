@@ -68,52 +68,47 @@ input,textarea,select{width:100%;padding:12px;border-radius:10px;border:1px soli
   nav .btn{padding:7px 10px;font-size:12px}
 }
 
-/* V2.1j - FINAL THUMBS INSIDE - 48px + grid */
-#profileModal .modal-box, #editModal .modal-box, #signupModal .modal-box{
+/* V2.1k - THUMBS SCROLL INSIDE FRAME */
+#profileModal .modal-box{
+  overflow:hidden!important;
   max-width:min(600px,92vw)!important;
   width:92vw!important;
   box-sizing:border-box!important;
-  overflow-x:hidden!important;
-  padding:16px!important;
 }
 .profile-photo{
   width:100%!important;
   max-width:100%!important;
-  max-height:45vh!important;
+  max-height:50vh!important;
   object-fit:contain!important;
   display:block!important;
 }
 #profileModal .thumbs{
-  display:grid!important;
-  grid-template-columns:repeat(4,1fr)!important;
-  gap:6px!important;
+  display:flex!important;
+  flex-wrap:nowrap!important;
+  gap:8px!important;
   width:100%!important;
   max-width:100%!important;
+  overflow-x:auto!important;
+  overflow-y:hidden!important;
   box-sizing:border-box!important;
-  overflow:hidden!important;
-  margin-top:10px!important;
+  padding-bottom:4px!important;
+  -webkit-overflow-scrolling:touch!important;
+  scrollbar-width:thin!important;
 }
 #profileModal .thumbs img{
-  width:100%!important;
-  max-width:100%!important;
-  aspect-ratio:1/1!important;
-  height:auto!important;
-  max-height:70px!important;
+  width:64px!important;
+  height:64px!important;
+  min-width:64px!important;
+  max-width:64px!important;
+  flex:0 0 64px!important;
   object-fit:cover!important;
-  display:block!important;
-  box-sizing:border-box!important;
   border-radius:8px!important;
-  border:2px solid transparent!important;
+  display:block!important;
 }
 .photo-grid{
   max-width:100%!important;
-  width:100%!important;
-  grid-template-columns:repeat(4,minmax(0,1fr))!important;
-  gap:6px!important;
   overflow:hidden!important;
 }
-.photo-slot{ min-width:0!important; max-width:100%!important; overflow:hidden!important; }
-.photo-slot img{ max-width:100%!important; width:100%!important; height:100%!important; }
 
 </style>
 </head>
