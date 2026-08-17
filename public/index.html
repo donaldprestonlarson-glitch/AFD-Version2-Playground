@@ -171,6 +171,7 @@ input,textarea,select{width:100%;padding:12px;border-radius:10px;border:1px soli
 <option value="Student">Student</option>
 <option value="Stay-at-home / Homemaker">Stay-at-home / Homemaker</option>
 <option value="Retired / Other / Prefer not to say">Retired / Other / Prefer not to say</option></select><select id="s_smoking" style="flex:1"><option value="">Smoking?</option><option value="Non-smoker">Non-smoker</option><option value="Occasional">Occasional / Social</option><option value="Regular">Regular smoker</option><option value="Trying to quit">Trying to quit</option></select></div>
+<div style="display:flex;gap:8px;margin-top:8px"><select id="s_alcohol" style="flex:1"><option value="">Alcohol (optional)</option><option value="Non-drinker">Non-drinker</option><option value="Occasional / Social">Occasional / Social</option><option value="Regular">Regular</option><option value="Prefer not to say">Prefer not to say</option></select><select id="s_cannabis" style="flex:1"><option value="">Cannabis (optional)</option><option value="Non-user">Non-user</option><option value="Occasional / Social">Occasional / Social</option><option value="Regular">Regular</option><option value="Medical">Medical</option><option value="Prefer not to say">Prefer not to say</option></select></div>
   </div>
   <textarea id="s_bio" placeholder="Short bio" style="margin-top:8px"></textarea>
   <div class="photo-upload"><b style="color:var(--teal)">Up to 4 photos</b> — free & cloud hosted<div class="photo-grid" id="s_preview"></div><input type="file" id="s_photos" accept="image/*" multiple><div style="font-size:11px;color:var(--muted);margin-top:6px">Hold Ctrl to pick 4 at once — JPG/PNG up to 5MB each</div></div>
@@ -203,6 +204,7 @@ input,textarea,select{width:100%;padding:12px;border-radius:10px;border:1px soli
 <option value="Student">Student</option>
 <option value="Stay-at-home / Homemaker">Stay-at-home / Homemaker</option>
 <option value="Retired / Other / Prefer not to say">Retired / Other / Prefer not to say</option></select><select id="e_smoking" style="flex:1"><option value="">Smoking?</option><option value="Non-smoker">Non-smoker</option><option value="Occasional">Occasional / Social</option><option value="Regular">Regular smoker</option><option value="Trying to quit">Trying to quit</option></select></div>
+<div style="display:flex;gap:8px;margin-top:8px"><select id="e_alcohol" style="flex:1"><option value="">Alcohol (optional)</option><option value="Non-drinker">Non-drinker</option><option value="Occasional / Social">Occasional / Social</option><option value="Regular">Regular</option><option value="Prefer not to say">Prefer not to say</option></select><select id="e_cannabis" style="flex:1"><option value="">Cannabis (optional)</option><option value="Non-user">Non-user</option><option value="Occasional / Social">Occasional / Social</option><option value="Regular">Regular</option><option value="Medical">Medical</option><option value="Prefer not to say">Prefer not to say</option></select></div>
   </div>
   <textarea id="e_bio" placeholder="Bio" style="margin-top:8px"></textarea>
   <div style="margin-top:10px"><b style="font-size:13px">Your photos (tap X to remove, then Save)</b><div class="photo-grid" id="e_existing"></div></div>
@@ -304,7 +306,6 @@ function blockUser(){ alert('Reported! Admin will review and remove if nude/inap
 
 function filterCity(c,el){ activeCity=c; document.querySelectorAll('.chip').forEach(x=>x.classList.remove('active')); el.classList.add('active'); loadUsers(); }
 function openModal(t){ document.getElementById(t+'Modal').classList.add('open'); }
-function clearFilters(){ f_city.value=''; f_gender.value='All'; f_ageMin.value=''; f_ageMax.value=''; f_heightMin.value=''; f_heightMax.value=''; f_weightMin.value=''; f_weightMax.value=''; f_smoking.value='All'; f_occupation.value='All'; loadUsers(); }
 function closeModals(){ document.querySelectorAll('.modal').forEach(m=>m.classList.remove('open')); }
 function openEdit(){
   if(!currentUser) return openModal('login');
@@ -322,7 +323,7 @@ async function doSignup(){
   const inch=document.getElementById('s_height_in').value;
   const weight=document.getElementById('s_weight').value;
   const smoking=document.getElementById('s_smoking').value;
-  const occupation=document.getElementById('s_occupation').value; if(!ft||inch===''||!weight||!smoking||!occupation){ document.getElementById('s_msg').textContent='Height, weight, occupation and smoking are required'; return; }
+  const occupation=document.getElementById('s_occupation').value; const alcohol=document.getElementById('s_alcohol').value; const cannabis=document.getElementById('s_cannabis').value; if(!ft||inch===''||!weight||!smoking||!occupation){ document.getElementById('s_msg').textContent='Height, weight, occupation and smoking are required'; return; }
   const heightCm=getHeightCm(ft,inch);
 
   const msg=document.getElementById('s_msg'); msg.innerText='Creating...';
@@ -338,7 +339,7 @@ async function doUpdate(){
   const inch=document.getElementById('e_height_in').value;
   const weight=document.getElementById('e_weight').value;
   const smoking=document.getElementById('e_smoking').value;
-  const occupation=document.getElementById('e_occupation').value; if(!ft||inch===''||!weight||!smoking||!occupation){ document.getElementById('e_msg').textContent='Height, weight, occupation and smoking are required'; return; }
+  const occupation=document.getElementById('e_occupation').value; const alcohol=document.getElementById('e_alcohol').value; const cannabis=document.getElementById('e_cannabis').value; if(!ft||inch===''||!weight||!smoking||!occupation){ document.getElementById('e_msg').textContent='Height, weight, occupation and smoking are required'; return; }
   const heightCm=getHeightCm(ft,inch);
 
   const msg=document.getElementById('e_msg'); msg.innerText='Saving...';
