@@ -157,10 +157,18 @@ app.get('/api/users', async (req,res)=>{
         }
       }catch(e){ console.error('block filter error', e.message); }
     }
-    // If DB returned 0 for All (empty table), fallback to memory users
-    if(list.length===0 && !city && users.length>0){
-      console.log('All query empty, using memory users', users.length);
-      list=users.slice();
+    // If All returns 0, try Edmonton then Calgary as server fallback (playground DB issue)
+    if(list.length===0 && !city){
+      console.log('All query empty, trying Edmonton fallback server side');
+      try{
+        const r2=await pool.query('SELECT * FROM users WHERE city=$1 ORDER BY pinned DESC NULLS LAST, id DESC LIMIT 200', ['Edmonton']);
+        if(r2.rows.length>0) list=r2.rows;
+        else {
+          const r3=await pool.query('SELECT * FROM users WHERE city=$1 ORDER BY pinned DESC NULLS LAST, id DESC LIMIT 200', ['Calgary']);
+          if(r3.rows.length>0) list=r3.rows;
+        }
+      }catch(e){ console.error('fallback query error', e.message); }
+      if(list.length===0 && users.length>0){ list=users.slice(); }
     }
     res.json(list.map(safeUser));
   }catch(e){ console.error('users error', e); res.json([]); }
