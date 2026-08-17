@@ -311,6 +311,7 @@ async function loadUsers(){
       grid.appendChild(d);
     });
   }catch(e){ console.error(e); }
+  if(users.length===0 && activeCity==='All'){ console.log('All returned 0, trying Edmonton fallback'); const r=await fetch('/api/users?city=Edmonton'); if(r.ok){ users=await r.json(); const grid=document.getElementById('grid'); if(grid && users.length>0){ grid.innerHTML=''; users.forEach((u,i)=>{ const d=document.createElement('div'); d.className='card'; d.onclick=()=>openProfile(u.id); const photo=u.photo_url|| (u.photos&&u.photos[0]) || ''; const av=photo?`<div class="avatar"><img src="${photo}"></div>`:`<div class="avatar">${(u.name||'?')[0]}</div>`; d.innerHTML=`<div class="online"></div><div style="display:flex;gap:12px;align-items:center">${av}<div><b>${u.name}, ${u.age}</b></div></div><p style="margin:12px 0;color:var(--muted);font-size:14px;min-height:40px">${(u.bio||'').slice(0,90)}...</p><button class="btn btn-primary" style="width:100%" onclick="event.stopPropagation();openChat(${u.id},'${u.name.replace(/'/g,"\\'"')}')">Message Free</button>`; grid.appendChild(d); }); const ce=document.getElementById('count'); if(ce) ce.innerText=users.length+' singles (Edmonton fallback)'; } } }
 }
 
 
@@ -560,7 +561,7 @@ document.getElementById('chatInput')?.addEventListener('focus', ()=>{
   setTimeout(()=>{ document.getElementById('chatBody').scrollTop=document.getElementById('chatBody').scrollHeight; }, 300);
 });
 
-loadUsers();
+if(document.readyState==='loading'){ document.addEventListener('DOMContentLoaded', ()=>{ loadUsers(); }); } else { loadUsers(); }
 setInterval(loadUsers, 15000);
 </script>
 </body>
