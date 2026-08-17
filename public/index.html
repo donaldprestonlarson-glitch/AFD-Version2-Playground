@@ -76,10 +76,6 @@ input,textarea,select{width:100%;padding:12px;border-radius:10px;border:1px soli
 .pinned-card{border:2px solid var(--teal)!important;box-shadow:0 0 20px rgba(45,212,191,0.25)!important}
 .host-badge{background:var(--teal);color:#0a0f14;font-size:10px;font-weight:800;padding:3px 8px;border-radius:20px;position:absolute;top:8px;left:8px;z-index:2;letter-spacing:0.5px}
 .host-blurb{background:linear-gradient(135deg,#0f2a2a,#0a1f1f);border:1px solid var(--teal);border-radius:8px;padding:8px 10px;margin-top:8px;font-size:12px;color:#8ee9d6}
-.chat.open{display:flex}
-.chat-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:199;display:none}
-.chat-backdrop.open{display:block}
-.chat .chat-body{max-height:50vh}
 </style>
 </head>
 <body>
@@ -296,34 +292,22 @@ async function doLogin(){
   const j=await res.json(); if(j.error){ l_msg.innerText=j.error; return; } handleAuth(j); closeModals(); 
 }
 let chatInterval=null;
-function closeChat(){
-  document.getElementById('chat').classList.remove('open');
-  const bd=document.getElementById('chatBackdrop'); if(bd) bd.classList.remove('open');
-  chatWith=null; if(chatInterval) clearInterval(chatInterval);
-}
 function openChat(id,name){
   if(!currentUser){ openModal('login'); return; }
   if(currentUser.id===id){ alert('That is you!'); return; }
-  chatWith=id; document.getElementById('chatName').innerText=name;
+  chatWith=id; document.getElementById('chatName').innerText=name; 
   document.getElementById('chat').classList.add('open');
   const bd=document.getElementById('chatBackdrop'); if(bd) bd.classList.add('open');
   document.getElementById('chatView').style.display='block';
-  const inbox=document.getElementById('inboxView'); if(inbox) inbox.style.display='none';
+  document.getElementById('inboxView').style.display='none';
   loadChat();
   if(chatInterval) clearInterval(chatInterval);
   chatInterval=setInterval(loadChat, 2000);
 }
-async function loadChat(){
-  if(!chatWith||!currentUser) return;
-  try{
-    const res=await fetch(`/api/messages/${currentUser.id}?with=${chatWith}`); 
-    const msgs=await res.json();
-    const body=document.getElementById('chatBody'); 
-    if(!msgs.length){ body.innerHTML='<div style="color:var(--muted);font-size:13px;text-align:center;padding:20px">No messages yet. Say hi — it is free!</div>'; return; }
-    body.innerHTML='';
-    msgs.forEach(m=>{ const d=document.createElement('div'); d.className='msg '+(m.from_id===currentUser.id?'me':'them'); d.innerText=m.text; body.appendChild(d); });
-    body.scrollTop=body.scrollHeight;
-  }catch(e){ console.log('chat load err',e); }
+function closeChat(){
+  document.getElementById('chat').classList.remove('open');
+  const bd=document.getElementById('chatBackdrop'); if(bd) bd.classList.remove('open');
+  chatWith=null; if(chatInterval) clearInterval(chatInterval);
 }
 async function sendMsg(){
   const input=document.getElementById('chatInput');
