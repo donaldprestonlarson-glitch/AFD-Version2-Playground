@@ -38,12 +38,12 @@ nav{display:flex;gap:10px;align-items:center}
 input,textarea,select{width:100%;padding:12px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);margin-top:8px}
 .photo-upload{margin-top:12px;border:2px dashed var(--border);border-radius:12px;padding:14px;text-align:center;background:var(--bg)}
 .photo-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:10px 0}
-.photo-slot{aspect-ratio:1;border:2px dashed var(--border);border-radius:10px;display:flex;align-items:center;justify-content:center;overflow:hidden;background:var(--bg);position:relative}
+.photo-slot{aspect-ratio:1;border:2px dashed var(--border);border-radius:10px;display:flex;align-items:center;justify-content:center;overflow:hidden;background:var(--bg);position:relative;max-width:100%;box-sizing:border-box}
 .photo-slot img{width:100%;height:100%;object-fit:cover}
 .photo-slot .remove{position:absolute;top:2px;right:2px;background:#ef4444;color:white;border:0;border-radius:50%;width:22px;height:22px;cursor:pointer}
-.profile-photo{width:100%;max-height:420px;object-fit:contain;border-radius:14px;background:#0a0f14;border:1px solid var(--border)}
-.thumbs{display:flex;gap:8px;margin-top:10px;overflow:auto}
-.thumbs img{width:72px;height:72px;border-radius:10px;object-fit:cover;cursor:pointer;border:2px solid transparent}
+.profile-photo{width:100%;max-width:100%;max-height:60vh;object-fit:contain;object-position:center center;border-radius:14px;background:#0a0f14;border:1px solid var(--border);display:block;box-sizing:border-box}
+.thumbs{display:flex;gap:8px;margin-top:10px;overflow:auto;max-width:100%;box-sizing:border-box}
+.thumbs img{width:72px;height:72px;max-width:72px;max-height:72px;border-radius:10px;object-fit:cover;cursor:pointer;border:2px solid transparent;box-sizing:border-box;flex-shrink:0}
 .thumbs img.active{border-color:var(--teal)}
 .chat{position:fixed;bottom:20px;right:20px;width:360px;max-width:92vw;background:var(--card2);border:1px solid var(--border);border-radius:16px;display:none;flex-direction:column;z-index:90;box-shadow:0 20px 50px rgba(0,0,0,.5)}
 .chat.open{display:flex}.chat-head{padding:14px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between}
@@ -67,18 +67,6 @@ input,textarea,select{width:100%;padding:12px;border-radius:10px;border:1px soli
   .logo{font-size:14px}
   nav .btn{padding:7px 10px;font-size:12px}
 }
-
-/* === V2.1 IMAGE CONTAIN FIX - photos must stay in frame always === */
-img{max-width:100%!important; height:auto; box-sizing:border-box}
-.profile-photo{width:100%!important; max-width:100%!important; height:auto!important; max-height:65vh!important; object-fit:contain!important; object-position:center center; display:block; margin:0 auto; background:#0a0f14}
-.photo-slot img, .avatar img, .thumbs img, .photo-grid img{width:100%!important; height:100%!important; object-fit:cover!important; max-width:100%!important; max-height:100%!important}
-.photo-slot{overflow:hidden!important; max-width:100%!important}
-.avatar, .avatar.big{overflow:hidden!important; flex-shrink:0}
-.modal-box, .modal-box.wide{max-width:95vw!important; overflow:hidden!important; box-sizing:border-box}
-.modal-box.wide{max-width:600px!important}
-#profileView{overflow:hidden}
-#profilePhotos{max-width:100%; overflow:hidden}
-
 </style>
 </head>
 <body>
