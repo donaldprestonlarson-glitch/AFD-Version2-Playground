@@ -266,7 +266,7 @@ document.getElementById('e_photos')?.addEventListener('change', e=>{
   eNewFiles=Array.from(e.target.files).slice(0,4); renderGridPreview(document.getElementById('e_preview'), eNewFiles, i=>{ eNewFiles.splice(i,1); renderGridPreview(document.getElementById('e_preview'), eNewFiles, arguments.callee); });
 });
 
-async function loadUsers(){
+async async function loadUsers(){
   const gender = document.getElementById('filterGender')?.value || 'All';
   const ageMin = document.getElementById('filterAgeMin')?.value || '';
   const ageMax = document.getElementById('filterAgeMax')?.value || '';
