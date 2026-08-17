@@ -283,6 +283,7 @@ document.getElementById('e_photos')?.addEventListener('change', e=>{
 });
 
 async 
+
 async function loadUsers(){
   const gender = document.getElementById('filterGender')?.value || 'All';
   const ageMin = document.getElementById('filterAgeMin')?.value || '';
@@ -295,9 +296,16 @@ async function loadUsers(){
   const q=[cityParam, myParam, genderParam, ageMinParam, ageMaxParam].filter(Boolean).join('&');
   const url='/api/users'+(q?'?'+q:'');
   try{
-    const res=await fetch(url);
+    let res=await fetch(url);
     if(!res.ok) throw new Error('HTTP '+res.status);
-    users=await res.json();
+    let data=await res.json();
+    // If All returned 0 and we are on All, try Edmonton as fallback for refresh bug
+    if(data.length===0 && activeCity==='All'){
+      console.log('All returned 0, retrying Edmonton');
+      const r2=await fetch('/api/users?city=Edmonton');
+      if(r2.ok){ const d2=await r2.json(); if(d2.length>0){ data=d2; console.log('Edmonton fallback got', d2.length); } }
+    }
+    users=data;
     const countEl=document.getElementById('count');
     if(countEl) countEl.innerText=users.length+' singles in '+(activeCity==='All'?'Alberta':activeCity);
     const grid=document.getElementById('grid');
@@ -310,8 +318,9 @@ async function loadUsers(){
       d.innerHTML=`<div class="online"></div><div style="display:flex;gap:12px;align-items:center">${av}<div><b>${u.name}, ${u.age}</b><div style="color:var(--muted);font-size:13px">${u.gender||''} • ${u.city} - ${u.photos?.length||0} photos</div></div></div><p style="margin:12px 0;color:var(--muted);font-size:14px;min-height:40px">${(u.bio||'').slice(0,90)}...</p><button class="btn btn-primary" style="width:100%" onclick="event.stopPropagation();openChat(${u.id},'${u.name.replace(/'/g,"\'")}')">Message Free</button>`;
       grid.appendChild(d);
     });
-  }catch(e){ console.error(e); }
+  }catch(e){ console.error('loadUsers error', e); }
 }
+
 
 
 function openProfile(id){
