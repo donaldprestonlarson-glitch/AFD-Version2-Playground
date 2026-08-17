@@ -34,7 +34,7 @@ nav{display:flex;gap:10px;align-items:center}
 .modal{position:fixed;inset:0;background:rgba(0,0,0,.7);display:none;align-items:center;justify-content:center;z-index:100;padding:20px}
 .modal.open{display:flex}
 .modal-box{background:var(--card2);border:1px solid var(--border);border-radius:16px;width:100%;max-width:480px;padding:20px;max-height:94vh;overflow:auto}
-.modal-box.wide{max-height:92vh;height:92vh; /* bigger */max-width:600px}
+.modal-box.wide{max-width:600px}
 input,textarea,select{width:100%;padding:12px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);margin-top:8px}
 .photo-upload{margin-top:12px;border:2px dashed var(--border);border-radius:12px;padding:14px;text-align:center;background:var(--bg)}
 .photo-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:10px 0}
@@ -42,10 +42,10 @@ input,textarea,select{width:100%;padding:12px;border-radius:10px;border:1px soli
 .photo-slot img{width:100%;height:100%;object-fit:cover;object-position:center top;background:#0a0f14}
 .photo-slot .remove{position:absolute;top:2px;right:2px;background:#ef4444;color:white;border:0;border-radius:50%;width:22px;height:22px;cursor:pointer}
 .profile-photo{ transition: all 0.2s; } .profile-photo{width:100%;max-height:50vh;object-fit:contain;object-position:center;border-radius:14px;background:#0a0f14;border:1px solid var(--border);display:block;box-sizing:border-box}
-.thumbs{display:flex;gap:8px;margin-top:10px;overflow:auto;max-width:100%;box-sizing:border-box}
-.thumbs img{width:72px;height:72px;border-radius:10px;object-fit:cover;object-position:center top;background:#0a0f14;cursor:pointer;border:2px solid var(--border);box-sizing:border-box}
+.thumbs{display:flex;gap:8px;margin-top:10px;overflow:auto;max-width:100%;box-sizing:border-box;min-height:76px}
+.thumbs img{width:72px;height:72px;min-width:72px;border-radius:10px;object-fit:cover;object-position:center top;background:#0a0f14;cursor:pointer;border:2px solid var(--border);box-sizing:border-box;display:block}
 .thumbs img.active{border-color:var(--teal)}
-.chat{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);width:420px;max-width:92vw;max-height:82vh;background:var(--card2);border:1px solid var(--border);border-radius:16px;display:none;flex-direction:column;z-index:200;box-shadow:0 24px 70px rgba(0,0,0,.7)}
+.chat{position:fixed;bottom:20px;right:20px;width:360px;max-width:92vw;background:var(--card2);border:1px solid var(--border);border-radius:16px;display:none;flex-direction:column;z-index:90;box-shadow:0 20px 50px rgba(0,0,0,.5)}
 .chat.open{display:flex}.chat-head{padding:14px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between}
 .chat-body{height:300px;overflow:auto;padding:14px;display:flex;flex-direction:column;gap:8px;resize:vertical;min-height:200px;max-height:60vh}
 .msg{max-width:80%;padding:8px 12px;border-radius:12px;font-size:14px}.me{align-self:flex-end;background:var(--teal);color:#001211}.them{align-self:flex-start;background:var(--card);border:1px solid var(--border)}
@@ -73,11 +73,8 @@ input,textarea,select{width:100%;padding:12px;border-radius:10px;border:1px soli
 .host-blurb{background:linear-gradient(135deg,#0f2a2a,#0a1f1f);border:1px solid var(--teal);border-radius:8px;padding:8px 10px;margin-top:8px;font-size:12px;color:#8ee9d6}
 
 
-#profileModal .modal-box.wide{max-height:92vh;height:92vh; /* bigger */max-height:85vh;overflow:hidden;display:flex;flex-direction:column}
+#profileModal .modal-box.wide{max-height:85vh;overflow:hidden;display:flex;flex-direction:column}
 #profileModal #pv_bio{max-height:140px;overflow-y:auto}
-.chat.open{display:flex}
-.chat-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:199;display:none}
-.chat-backdrop.open{display:block}
 </style>
 </head>
 <body>
@@ -141,7 +138,7 @@ input,textarea,select{width:100%;padding:12px;border-radius:10px;border:1px soli
   <div id="pv_noPhoto" class="avatar big" style="margin:0 auto 12px;display:none"></div>
   <div class="thumbs" id="pv_thumbs"></div>
   <div style="margin:12px 0"><b id="pv_age_city" style="color:var(--muted)"></b></div>
-  <p id="pv_bio" style="white-space:pre-wrap;background:var(--bg);padding:12px;border-radius:10px;border:1px solid var(--border);max-height:320px;min-height:120px;overflow-y:auto;display:block"></p>
+  <p id="pv_bio" style="white-space:pre-wrap;background:var(--bg);padding:12px;border-radius:10px;border:1px solid var(--border)"></p>
   <div style="display:flex;gap:10px;margin-top:16px"><button class="btn btn-primary" style="flex:1" onclick="messageFromProfile()">Message Free</button><button class="btn btn-ghost" onclick="closeModals()">Close</button><button class="btn btn-ghost" style="color:#f87171" onclick="blockUser()">Block</button></div>
 </div></div>
 
@@ -223,7 +220,6 @@ input,textarea,select{width:100%;padding:12px;border-radius:10px;border:1px soli
 <!-- LOGIN -->
 <div class="modal" id="loginModal"><div class="modal-box"><h3>Welcome back</h3><input id="l_email" placeholder="Email" type="email"><input id="l_pass" placeholder="Password" type="password"><div style="display:flex;gap:10px;margin-top:14px"><button class="btn btn-primary" style="flex:1" onclick="doLogin()">Log In</button><button class="btn btn-ghost" onclick="closeModals()">Cancel</button></div><div style="margin-top:10px;font-size:12px;color:var(--muted)">Demo: sarah.e@example.com / test123</div><div id="l_msg" style="margin-top:10px;font-size:13px;color:var(--teal)"></div></div></div>
 
-<div class="chat-backdrop" id="chatBackdrop" onclick="closeChat()"></div>
 <div class="chat" id="chat"><div class="chat-head"><b id="chatName">Messages</b><div><span id="inboxBtn" style="cursor:pointer;margin-right:12px;font-size:12px;color:var(--teal)" onclick="showInbox()">Inbox</span><span style="cursor:pointer" onclick="closeChat()">X</span></div></div><div id="inboxView" style="display:none;max-height:300px;overflow:auto;padding:8px"></div><div id="chatView"><div style="padding:8px 12px;background:var(--teal2);font-size:11px;text-align:center">This conversation is 100% FREE. Always will be.</div><div class="chat-body" id="chatBody"></div><div style="padding:10px;display:flex;gap:8px"><input id="chatInput" placeholder="Type a message..." style="margin:0" onkeydown="if(event.key==='Enter')sendMsg()"><button class="btn btn-primary" onclick="sendMsg()">Send</button></div></div></div>
 
 <script>
@@ -298,11 +294,30 @@ function openProfile(id){
   document.getElementById('pv_name').innerText=`${u.name}, ${u.age}`;
   document.getElementById('pv_age_city').innerText=`${u.gender||''} • ${u.city} - ${u.photos?.length||0} photos - Online now`;
   document.getElementById('pv_bio').innerText=u.bio||'No bio yet';
-  const photos=u.photos&&u.photos.length?u.photos:(u.photo_url?[u.photo_url]:[]);
+  let photos=[];
+  if(u.photos && Array.isArray(u.photos) && u.photos.length) photos=u.photos;
+  else if(u.photo_url) photos=[u.photo_url];
+  else if(typeof u.photos==='string'){ try{ photos=JSON.parse(u.photos); }catch{ photos=[]; } }
+  photos=photos.filter(p=>p && p.length>5);
   const main=document.getElementById('pv_photo'); const no=document.getElementById('pv_noPhoto');
   const thumbs=document.getElementById('pv_thumbs'); thumbs.innerHTML='';
-  if(photos.length){ main.src=photos[0]; main.style.display='block'; no.style.display='none'; photos.forEach((p,i)=>{ const im=document.createElement('img'); im.src=p; if(i===0) im.className='active'; im.onclick=()=>{ main.src=p; thumbs.querySelectorAll('img').forEach(x=>x.classList.remove('active')); im.classList.add('active'); }; thumbs.appendChild(im); }); }
-  else { main.style.display='none'; no.innerText=u.name[0]; no.style.display='flex'; }
+  if(photos.length){
+    main.onerror=()=>{ main.style.display='none'; no.innerText=u.name[0]; no.style.display='flex'; };
+    main.src=photos[0]; main.style.display='block'; no.style.display='none';
+    photos.forEach((p,i)=>{
+      const im=document.createElement('img');
+      im.src=p;
+      im.loading='lazy';
+      if(i===0) im.className='active';
+      im.onerror=()=>{ im.style.display='none'; };
+      im.onclick=()=>{ main.src=p; thumbs.querySelectorAll('img').forEach(x=>x.classList.remove('active')); im.classList.add('active'); };
+      thumbs.appendChild(im);
+    });
+    // always show thumbs even if 1 photo
+    thumbs.style.display='flex';
+  } else {
+    main.style.display='none'; no.innerText=u.name[0]; no.style.display='flex'; thumbs.style.display='none';
+  }
   document.getElementById('profileModal').classList.add('open');
 }
 function messageFromProfile(){ closeModals(); setTimeout(()=>openChat(viewingUser.id, viewingUser.name),200); }
@@ -364,14 +379,14 @@ function openChat(id,name){
   if(!currentUser){ openModal('login'); return; }
   if(currentUser.id===id){ alert('That is you!'); return; }
   chatWith=id; document.getElementById('chatName').innerText=name; 
-  document.getElementById('chat').classList.add('open'); var bd=document.getElementById('chatBackdrop'); if(bd) bd.classList.add('open');
+  document.getElementById('chat').classList.add('open');
   document.getElementById('chatView').style.display='block';
   document.getElementById('inboxView').style.display='none';
   loadChat();
   if(chatInterval) clearInterval(chatInterval);
   chatInterval=setInterval(loadChat, 2000);
 }
-function closeChat(){ document.getElementById('chat').classList.remove('open'); var bd=document.getElementById('chatBackdrop'); if(bd) bd.classList.remove('open'); chatWith=null; if(chatInterval) clearInterval(chatInterval); }
+function closeChat(){ document.getElementById('chat').classList.remove('open'); chatWith=null; if(chatInterval) clearInterval(chatInterval); }
 async function loadChat(){
   if(!chatWith||!currentUser) return;
   try{
