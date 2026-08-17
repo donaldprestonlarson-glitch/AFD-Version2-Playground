@@ -226,7 +226,7 @@ input,textarea,select{width:100%;padding:12px;border-radius:10px;border:1px soli
 <div class="chat" id="chat"><div class="chat-head"><b id="chatName">Messages</b><div><span id="inboxBtn" style="cursor:pointer;margin-right:12px;font-size:12px;color:var(--teal)" onclick="showInbox()">Inbox</span><span style="cursor:pointer" onclick="closeChat()">X</span></div></div><div id="inboxView" style="display:none;max-height:300px;overflow:auto;padding:8px"></div><div id="chatView"><div style="padding:8px 12px;background:var(--teal2);font-size:11px;text-align:center">This conversation is 100% FREE. Always will be.</div><div class="chat-body" id="chatBody"></div><div style="padding:10px;display:flex;gap:8px"><input id="chatInput" placeholder="Type a message..." style="margin:0" onkeydown="if(event.key==='Enter')sendMsg()"><button class="btn btn-primary" onclick="sendMsg()">Send</button></div></div></div>
 
 <script>
-let users=[], currentUser=null, token=null, activeCity='All', chatWith=null, viewingUser=null;
+let users=[], currentUser=null, token=null, activeCity='All', APP_VER='1.6t', chatWith=null, viewingUser=null;
 let editKeepPhotos=[], sFiles=[], eNewFiles=[];
 
 function authHeaders(){ return token ? { 'Authorization':'Bearer '+token } : {}; }
