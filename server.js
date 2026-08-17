@@ -40,7 +40,7 @@ async function initDb(){
         id SERIAL PRIMARY KEY,
         name TEXT, email TEXT UNIQUE, password TEXT,
         age INT, city TEXT, gender TEXT, bio TEXT,
-        photos TEXT, height_cm INT, weight_lbs INT, smoking TEXT, created TIMESTAMPTZ DEFAULT NOW()
+        photos TEXT, height_cm INT, weight_lbs INT, smoking TEXT, occupation TEXT, created TIMESTAMPTZ DEFAULT NOW()
       );
       CREATE TABLE IF NOT EXISTS messages (
         id SERIAL PRIMARY KEY,
@@ -54,6 +54,7 @@ async function initDb(){
     await pool.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS height_cm INT`);
     await pool.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS weight_lbs INT`);
     await pool.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS smoking TEXT`);
+    await pool.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS occupation TEXT`);
     await pool.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS height_ft INT`);
     await pool.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS height_in INT`);
     await pool.query(`UPDATE users SET pinned = TRUE WHERE LOWER(name) = 'dee'`);
@@ -314,7 +315,7 @@ app.get('/api/messages/:myId', async (req,res)=>{
     if(useDb){
       const br=await pool.query('SELECT 1 FROM blocks WHERE (user_id=$1 AND blocked_id=$2) OR (user_id=$2 AND blocked_id=$1)', [myId,withId]);
       if(br.rows.length) return res.json([]);
-      const r=await pool.query('SELECT * FROM messages WHERE (from_id=$1 AND to_id=$2) OR (from_id=$2 AND to_id=$1) ORDER BY id ASC LIMIT 200', [myId,withId]);
+      const r=await pool.query('SELECT * FROM messages WHERE (from_id=$1 AND to_id=$2) OR (from_id=$2 AND to_id=$1) ORDER BY pinned DESC, id ASC LIMIT 200', [myId,withId]);
       return res.json(r.rows);
     }else{
       if(isBlocked(myId, withId)) return res.json([]);
