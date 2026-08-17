@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>v1.7 BIO 340PX - Actually Free Dating — Always Will Be | Edmonton Calgary</title>
+<title>Actually Free Dating — Always Will Be | Edmonton Calgary</title>
 <style>
 :root{--bg:#0a0f14;--card:#141c23;--card2:#1c2732;--teal:#14b8a6;--teal2:#0f766e;--text:#e6f0ef;--muted:#8aa0a8;--border:#23323f}
 *{box-sizing:border-box;margin:0;padding:0;font-family:Inter,system-ui,sans-serif}
@@ -67,7 +67,7 @@ input,textarea,select{width:100%;padding:12px;border-radius:10px;border:1px soli
   .logo{font-size:14px}
   nav .btn{padding:7px 10px;font-size:12px}
 }
-/* v1.7 bio scroll 340px */ #pv_bio::-webkit-scrollbar{width:6px} #pv_bio::-webkit-scrollbar-thumb{background:#23323f;border-radius:3px} </style>
+#profileModal #pv_bio{max-height:160px!important;overflow-y:auto!important} .modal-box.wide{overflow:hidden} #pv_bio::-webkit-scrollbar{width:5px} #pv_bio::-webkit-scrollbar-thumb{background:#23323f;border-radius:3px} </style>
 </head>
 <body>
 <header>
@@ -127,14 +127,14 @@ input,textarea,select{width:100%;padding:12px;border-radius:10px;border:1px soli
 
 
 <!-- PROFILE VIEW -->
-<div class="modal" id="profileModal"><div class="modal-box wide">
-  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px"><h3 id="pv_name">Profile</h3><span style="cursor:pointer;font-size:22px" onclick="closeModals()">✕</span></div>
-  <img id="pv_photo" class="profile-photo" style="display:none">
-  <div id="pv_noPhoto" class="avatar big" style="margin:0 auto 12px;display:none"></div>
-  <div class="thumbs" id="pv_thumbs"></div>
-  <div style="margin:12px 0"><b id="pv_age_city" style="color:var(--muted)"></b></div>
-  <div id="pv_bio" style="white-space:pre-wrap;background:#0a0f14;padding:16px;border-radius:12px;border:1px solid #23323f;max-height:340px;min-height:130px;overflow-y:scroll;line-height:1.6;font-size:14px;display:block;-webkit-overflow-scrolling:touch"></div>
-  <div style="display:flex;gap:10px;margin-top:16px"><button class="btn btn-primary" style="flex:1" onclick="messageFromProfile()">Message Free</button><button class="btn btn-ghost" onclick="closeModals()">Close</button><button class="btn btn-ghost" style="color:#f87171" onclick="blockUser()">Block</button></div>
+<div class="modal" id="profileModal"><div class="modal-box wide" style="max-height:90vh;display:flex;flex-direction:column;overflow:hidden">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-shrink:0"><h3 id="pv_name">Profile</h3><span style="cursor:pointer;font-size:22px" onclick="closeModals()">✕</span></div>
+  <img id="pv_photo" class="profile-photo" style="display:none;flex-shrink:0">
+  <div id="pv_noPhoto" class="avatar big" style="margin:0 auto 12px;display:none;flex-shrink:0"></div>
+  <div class="thumbs" id="pv_thumbs" style="flex-shrink:0"></div>
+  <div style="margin:12px 0;flex-shrink:0"><b id="pv_age_city" style="color:var(--muted)"></b></div>
+  <div id="pv_bio" style="white-space:pre-wrap;background:#0a0f14;padding:12px;border-radius:10px;border:1px solid #23323f;max-height:160px;min-height:80px;overflow-y:auto;line-height:1.5;font-size:14px;display:block;flex-shrink:1;-webkit-overflow-scrolling:touch;overscroll-behavior:contain"></div>
+  <div style="display:flex;gap:10px;margin-top:16px;flex-shrink:0"><button class="btn btn-primary" style="flex:1" onclick="messageFromProfile()">Message Free</button><button class="btn btn-ghost" onclick="closeModals()">Close</button><button class="btn btn-ghost" style="color:#f87171" onclick="blockUser()">Block</button></div>
 </div></div>
 
 <div class="chat" id="chat"><div class="chat-head"><b id="chatName">Messages</b><div><span id="inboxBtn" style="cursor:pointer;margin-right:12px;font-size:12px;color:var(--teal)" onclick="showInbox()">Inbox</span><span style="cursor:pointer" onclick="closeChat()">X</span></div></div><div id="inboxView" style="display:none;max-height:300px;overflow:auto;padding:8px"></div><div id="chatView"><div style="padding:8px 12px;background:var(--teal2);font-size:11px;text-align:center">This conversation is 100% FREE. Always will be.</div><div class="chat-body" id="chatBody"></div><div style="padding:10px;display:flex;gap:8px"><input id="chatInput" placeholder="Type a message..." style="margin:0" onkeydown="if(event.key==='Enter')sendMsg()"><button class="btn btn-primary" onclick="sendMsg()">Send</button></div></div></div>
