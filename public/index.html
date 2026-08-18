@@ -39,11 +39,11 @@ input,textarea,select{width:100%;padding:12px;border-radius:10px;border:1px soli
 .photo-upload{margin-top:12px;border:2px dashed var(--border);border-radius:12px;padding:14px;text-align:center;background:var(--bg)}
 .photo-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:10px auto;max-width:400px;justify-content:center}
 .photo-slot{aspect-ratio:1;border:2px dashed var(--border);border-radius:10px;display:flex;align-items:center;justify-content:center;overflow:hidden;background:#0a0f14;position:relative;box-sizing:border-box}
-.photo-slot img{width:100%;height:100%;object-fit:contain;object-position:center;background:#0a0f14}
+.photo-slot img{width:100%;height:100%;object-fit:cover;object-position:center top;background:#0a0f14}
 .photo-slot .remove{position:absolute;top:2px;right:2px;background:#ef4444;color:white;border:0;border-radius:50%;width:22px;height:22px;cursor:pointer}
 .profile-photo{width:100%;max-height:50vh;object-fit:contain;object-position:center;border-radius:14px;background:#0a0f14;border:1px solid var(--border);display:block;box-sizing:border-box}
 .thumbs{display:flex;gap:8px;margin:10px auto 0;overflow:auto;max-width:100%;box-sizing:border-box;justify-content:center;flex-wrap:wrap}
-.thumbs img{width:72px;height:72px;border-radius:10px;object-fit:contain;object-position:center;background:#0a0f14;cursor:pointer;border:2px solid var(--border);box-sizing:border-box}
+.thumbs img{width:72px;height:72px;border-radius:10px;object-fit:cover;object-position:center top;background:#0a0f14;cursor:pointer;border:2px solid var(--border);box-sizing:border-box}
 .thumbs img.active{border-color:var(--teal)}
 .chat{position:fixed;bottom:20px;right:20px;width:360px;max-width:92vw;background:var(--card2);border:1px solid var(--border);border-radius:16px;display:none;flex-direction:column;z-index:90;box-shadow:0 20px 50px rgba(0,0,0,.5)}
 .chat.open{display:flex}.chat-head{padding:14px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between}
@@ -70,6 +70,8 @@ input,textarea,select{width:100%;padding:12px;border-radius:10px;border:1px soli
 #profileModal #pv_bio{max-height:160px!important;overflow-y:auto!important} .modal-box.wide{overflow:hidden} #pv_bio::-webkit-scrollbar{width:5px} #pv_bio::-webkit-scrollbar-thumb{background:#23323f;border-radius:3px} 
 #backToFilters{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--card2);border:1px solid var(--teal);color:var(--teal);padding:10px 20px;border-radius:100px;font-weight:700;font-size:13px;cursor:pointer;z-index:80;display:none;box-shadow:0 10px 30px rgba(0,0,0,.4)}
 #backToFilters.show{display:flex}
+
+.profile-photo{width:100%;max-height:380px;object-fit:cover;object-position:center top;border-radius:12px;background:#0a0f14}
 </style>
 </head>
 <body>
@@ -504,5 +506,6 @@ loadUsers();
 setInterval(loadUsers, 15000);
 </script>
 <button id="backToFilters" onclick="scrollToFilters()">↑ Filters</button>
+<div style="text-align:center;padding:20px;color:var(--muted);font-size:11px;display:flex;align-items:center;justify-content:center;gap:6px"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" style="display:inline-block;vertical-align:middle;margin-right:4px"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14.5c-2.49 0-4.5-2.01-4.5-4.5S8.51 7.5 11 7.5c1.24 0 2.36.5 3.18 1.32l-1.07 1.07A2.99 2.99 0 0 0 11 9a3 3 0 1 0 0 6c.83 0 1.58-.34 2.11-.89l1.07 1.07A4.49 4.49 0 0 1 11 16.5zm5-4.5h-1.5V10h-1v2h-1.5v1H14v2h1v-2H16.5v-1z" fill="#0084FF"/></svg> Built with Meta AI • Actually Free Dating • Always Will Be</div>
 </body>
 </html>
