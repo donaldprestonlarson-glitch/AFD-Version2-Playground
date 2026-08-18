@@ -8,7 +8,7 @@
 *{box-sizing:border-box;margin:0;padding:0;font-family:Inter,system-ui,sans-serif}
 body{background:var(--bg);color:var(--text);line-height:1.5}
 /* HEADER - FIXED Z-INDEX SO LOGIN BUTTONS NEVER GET COVERED */
-header{position:sticky;top:0;z-index:100;background:rgba(10,15,20,.95);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:12px 20px;display:flex;justify-content:space-between;align-items:center}
+header{position:static;top:0;z-index:100;background:rgba(10,15,20,.95);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:12px 20px;display:flex;justify-content:space-between;align-items:center}
 .logo{font-weight:900;letter-spacing:-.5px;pointer-events:none}.logo span{color:var(--teal)}.logo .sub{font-weight:400;color:var(--muted);font-size:.9em;margin-left:8px}
 .badge{background:var(--teal2);color:white;padding:3px 8px;border-radius:20px;font-size:11px;font-weight:700;letter-spacing:.5px;margin-left:10px;pointer-events:none}
 nav{display:flex;gap:10px;align-items:center;position:relative;z-index:101}
@@ -21,8 +21,8 @@ nav{display:flex;gap:10px;align-items:center;position:relative;z-index:101}
 .hero p{color:var(--muted);margin:16px 0 22px;font-size:18px}
 
 /* BALANCED FILTER BAR - LOCKED v1.8 */
-.filters-top{position:static;max-width:1100px;margin:0 auto;padding:12px 20px 6px;display:flex;gap:10px;flex-wrap:wrap;position:static;background:rgba(10,15,20,.92);backdrop-filter:blur(10px);border-bottom:1px solid transparent}
-.filters-bottom{position:static;max-width:1100px;margin:0 auto;padding:6px 20px 12px;display:flex;gap:10px;flex-wrap:wrap;position:static;background:rgba(10,15,20,.92);backdrop-filter:blur(10px);border-bottom:1px solid var(--border)}
+.filters-top{max-width:1100px;margin:0 auto;padding:12px 20px 6px;display:flex;gap:10px;flex-wrap:wrap;position:static;top:auto;z-index:40;background:rgba(10,15,20,.92);backdrop-filter:blur(10px);border-bottom:1px solid transparent}
+.filters-bottom{max-width:1100px;margin:0 auto;padding:6px 20px 12px;display:flex;gap:10px;flex-wrap:wrap;position:static;top:auto;z-index:39;background:rgba(10,15,20,.92);backdrop-filter:blur(10px);border-bottom:1px solid var(--border)}
 .filters-label{font-size:11px;color:var(--muted);width:100%;letter-spacing:.5px;font-weight:700;margin-bottom:2px}
 .chip{padding:8px 16px;border-radius:100px;border:1px solid var(--border);background:var(--card);color:var(--muted);cursor:pointer;font-size:14px}
 .chip.active{background:var(--teal2);color:white;border-color:var(--teal2)}
@@ -74,8 +74,8 @@ input,textarea,select{width:100%;padding:12px;border-radius:10px;border:1px soli
   nav{width:100%;justify-content:flex-end;gap:6px;flex-wrap:wrap}
   #navUser{display:block !important;width:100%;text-align:right;font-size:12px;color:var(--teal) !important;margin-bottom:2px;order:-1}
   nav .btn{padding:8px 12px;font-size:13px}
-  .filters-top{position:static;top:78px}
-  .filters-bottom{position:static;top:128px}
+  .filters-top{top:auto}
+  .filters-bottom{top:auto}
   .chat{left:0;right:0;bottom:0;width:100%;max-width:100%;border-radius:16px 16px 0 0;max-height:85vh;max-height:85dvh}
   .chat-body{height:50vh;max-height:50dvh}
   #chatInput{font-size:16px}
@@ -87,6 +87,8 @@ input,textarea,select{width:100%;padding:12px;border-radius:10px;border:1px soli
 
 #backToFilters{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--card2);border:1px solid var(--teal);color:var(--teal);padding:10px 20px;border-radius:100px;font-weight:700;font-size:13px;cursor:pointer;z-index:80;display:none;box-shadow:0 10px 30px rgba(0,0,0,.4)}
 #backToFilters.show{display:flex}
+
+#profileModal #pv_bio{max-height:160px!important;overflow-y:auto!important}
 </style>
 </head>
 <body>
@@ -112,51 +114,26 @@ input,textarea,select{width:100%;padding:12px;border-radius:10px;border:1px soli
 </section>
 
 <!-- BALANCED FILTER BAR 5 TOP + 7 BOTTOM - LOCKED -->
-<div class="filters-top">
-  <div class="filters-label">TOP FILTERS</div>
-  <button class="chip active" data-city="All" id="chipAll">All</button>
-  <button class="chip" data-city="Edmonton" id="chipEdm">Edmonton</button>
-  <button class="chip" data-city="Calgary" id="chipCal">Calgary</button>
-  <select class="chip-select" id="genderFilter" title="Gender">
-    <option value="All">Gender: All</option>
-    <option value="Woman">Woman</option>
-    <option value="Man">Man</option>
-    <option value="Non-binary">Non-binary</option>
-  </select>
-  <select class="chip-select" id="ageFilter" title="Age">
-    <option value="All">Age: All</option>
-    <option value="18-25">18-25</option>
-    <option value="26-35">26-35</option>
-    <option value="36-45">36-45</option>
-    <option value="46-55">46-55</option>
-    <option value="56+">56+</option>
-  </select>
-</div>
-<div class="filters-bottom">
-  <div class="filters-label">MORE FILTERS (wire up next)</div>
-  <select class="chip-select" id="heightFilter"><option value="All">Height: All</option><option>5'0"-5'4"</option><option>5'5"-5'8"</option><option>5'9"-6'0"</option><option>6'1"+</option></select>
-  <select class="chip-select" id="weightFilter"><option value="All">Weight: All</option><option>Slim</option><option>Average</option><option>Athletic</option><option>Curvy</option><option>Heavyset</option></select>
-  <select class="chip-select" id="smokingFilter"><option value="All">Smoking: All</option><option>Never</option><option>Occasionally</option><option>Daily</option></select>
-  <select class="chip-select" id="drinkingFilter"><option value="All">Drinking: All</option><option>Never</option><option>Social</option><option>Regular</option></select>
-  <select class="chip-select" id="cannabisFilter"><option value="All">Cannabis: All</option><option>Never</option><option>Occasionally</option><option>Regular</option></select>
-  <select class="chip-select" id="jobFilter"><option value="All">Job: All</option><option>Student</option><option>Professional</option><option>Trades</option><option>Healthcare</option><option>Tech</option><option>Other</option></select>
-  <button class="chip" id="clearBtn">Clear Filters</button><span id="count" style="color:var(--muted);font-size:12px;margin-left:10px;white-space:nowrap;align-self:center">0 singles</span>
+<div class="filters" id="browse" style="flex-direction:column;gap:8px;align-items:stretch">
+  <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+    <button class="chip active" onclick="filterCity('All',this)">All Alberta</button>
+    <button class="chip" onclick="filterCity('Edmonton',this)">Edmonton</button>
+    <button class="chip" onclick="filterCity('Calgary',this)">Calgary</button>
+    <select id="filterGender" onchange="loadUsers()" style="width:auto;margin:0;padding:7px 12px;border-radius:20px;background:var(--card);border:1px solid var(--border);color:var(--text);font-size:13px"><option value="All">All Genders</option><option value="Woman">Women Only</option><option value="Man">Men Only</option></select>
+    <div style="display:flex;gap:4px;align-items:center"><select id="filterAgeMin" onchange="loadUsers()" style="width:auto;margin:0;padding:7px 10px;border-radius:20px;background:var(--card);border:1px solid var(--border);color:var(--text);font-size:13px"><option value="">Min Age</option><option value="18">18</option><option value="25">25</option><option value="30">30</option><option value="35">35</option><option value="40">40</option><option value="45">45</option><option value="50">50</option></select><span style="color:var(--muted)">-</span><select id="filterAgeMax" onchange="loadUsers()" style="width:auto;margin:0;padding:7px 10px;border-radius:20px;background:var(--card);border:1px solid var(--border);color:var(--text);font-size:13px"><option value="">Max Age</option><option value="30">30</option><option value="35">35</option><option value="40">40</option><option value="45">45</option><option value="50">50</option><option value="60">60</option><option value="99">99</option></select></div>
+    
+  </div>
+  <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+    <select id="filterHeight" style="width:auto;margin:0;padding:7px 10px;border-radius:20px;background:var(--card);border:1px solid var(--border);color:var(--text);font-size:13px"><option value="All">Any Height</option><option value="Under 5ft4">Under 5ft4</option><option value="5ft4-5ft7">5ft4-5ft7</option><option value="5ft8-5ft11">5ft8-5ft11</option><option value="6ft+">6ft+</option></select>
+    <select id="filterWeight" style="width:auto;margin:0;padding:7px 10px;border-radius:20px;background:var(--card);border:1px solid var(--border);color:var(--text);font-size:13px"><option value="All">Any Weight</option><option value="Slim">Slim</option><option value="Athletic">Athletic</option><option value="Average">Average</option><option value="Curvy">Curvy</option><option value="Large">Large</option></select>
+    <select id="filterSmoking" style="width:auto;margin:0;padding:7px 10px;border-radius:20px;background:var(--card);border:1px solid var(--border);color:var(--text);font-size:13px"><option value="All">Smoking Any</option><option value="Never">Non-Smoker</option><option value="Socially">Social</option><option value="Daily">Daily</option></select>
+    <select id="filterAlcohol" style="width:auto;margin:0;padding:7px 10px;border-radius:20px;background:var(--card);border:1px solid var(--border);color:var(--text);font-size:13px"><option value="All">Drinking Any</option><option value="Never">Never</option><option value="Socially">Social</option><option value="Weekly">Weekly</option><option value="Daily">Daily</option></select>
+    <select id="filterCannabis" style="width:auto;margin:0;padding:7px 10px;border-radius:20px;background:var(--card);border:1px solid var(--border);color:var(--text);font-size:13px"><option value="All">Cannabis Any</option><option value="Never">No</option><option value="Socially">Social</option><option value="Weekly">Weekly</option><option value="Daily">Daily</option></select>
+    <select id="filterOccupation" style="width:auto;margin:0;padding:7px 10px;border-radius:20px;background:var(--card);border:1px solid var(--border);color:var(--text);font-size:13px"><option value="All">Any Job</option><option value="Trades">Trades</option><option value="Professional">Professional</option><option value="Healthcare">Healthcare</option><option value="Education">Education</option><option value="Hospitality">Hospitality</option><option value="Retired">Retired</option><option value="Student">Student</option></select>
+    <button class="btn btn-ghost" style="padding:7px 14px;font-size:12px;border-radius:20px;border:1px solid var(--border)" onclick="clearFilters()">Clear Filters</button><span id="count" style="color:var(--muted);font-size:12px;margin-left:8px;white-space:nowrap"></span>
+  </div>
 </div>
 
-<div class="grid" id="grid"></div>
-
-<!-- PROFILE MODAL -->
-<div class="modal" id="profileModal">
-  <div class="modal-box wide">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px"><h3 id="pv_name"></h3><button class="btn btn-ghost" onclick="closeModals()">✕</button></div>
-    <div id="profileContent">
-      <div style="display:flex;gap:20px;flex-wrap:wrap">
-        <div class="avatar big" id="pv_avatar"></div>
-        <div style="flex:1;min-width:200px">
-          <div id="pv_meta" style="color:var(--muted);font-size:14px"></div>
-          <div id="pv_bio"></div>
-          <div id="pv_thumbs" class="thumbs"></div>
-        </div>
       </div>
     </div>
     <div style="display:flex;gap:10px;margin-top:16px">
@@ -198,7 +175,7 @@ input,textarea,select{width:100%;padding:12px;border-radius:10px;border:1px soli
     <textarea id="regBio" placeholder="Bio - tell us about you..." rows="3"></textarea>
     <div class="photo-upload">
       <input type="file" id="photoInput" multiple accept="image/*" style="display:none">
-      <button class="btn btn-ghost" type="button" onclick="document.getElementById('photoInput').click()">+ Add Photos (up to 6)</button>
+      <button class="btn btn-ghost" type="button" onclick="document.getElementById('photoInput').click()">+ Add Photos (up to 4)</button>
       <div class="photo-grid" id="photoGrid"></div>
       <div style="font-size:11px;color:var(--muted)">Photos auto-resize to 800px, kept intact (no crop)</div>
     </div>
@@ -578,8 +555,8 @@ document.querySelectorAll('.modal').forEach(m=>{
 });
 
 
-function scrollToFilters(){ const f=document.querySelector('.filters-top')||document.querySelector('.filters'); if(f) f.scrollIntoView({behavior:'smooth'}); }
-window.addEventListener('scroll', ()=>{ const c=document.getElementById('backToFilters'); if(!c) return; c.classList.toggle('show', window.scrollY>500); });
+function scrollToFilters(){ const f=document.querySelector('.filters'); if(f) f.scrollIntoView({behavior:'smooth'}); }
+window.addEventListener('scroll', ()=>{ const c=document.getElementById('backToFilters'); if(c) c.classList.toggle('show', window.scrollY>500); });
 
 loadUsers();
 setInterval(loadUsers, 15000);
