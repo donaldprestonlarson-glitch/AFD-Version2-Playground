@@ -7,7 +7,7 @@
 :root{--bg:#0a0f14;--card:#141c23;--card2:#1c2732;--teal:#14b8a6;--teal2:#0f766e;--text:#e6f0ef;--muted:#8aa0a8;--border:#23323f}
 *{box-sizing:border-box;margin:0;padding:0;font-family:Inter,system-ui,sans-serif}
 body{background:var(--bg);color:var(--text);line-height:1.5}
-header{position:sticky;top:0;z-index:110;background:rgba(10,15,20,.9);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:12px 20px;display:flex;justify-content:space-between;align-items:center}
+header{position:static;top:0;z-index:50;background:rgba(10,15,20,.9);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:12px 20px;display:flex;justify-content:space-between;align-items:center}
 .logo{font-weight:900;letter-spacing:-.5px}.logo span{color:var(--teal)}.logo .sub{font-weight:400;color:var(--muted);font-size:.9em;margin-left:8px}
 .badge{background:var(--teal2);color:white;padding:3px 8px;border-radius:20px;font-size:11px;font-weight:700;letter-spacing:.5px;margin-left:10px}
 nav{display:flex;gap:10px;align-items:center;position:relative;z-index:111}
@@ -18,7 +18,7 @@ nav{display:flex;gap:10px;align-items:center;position:relative;z-index:111}
 .hero h1{font-size: clamp(32px,5vw,54px);line-height:.95;letter-spacing:-1.5px}
 .hero h1 em{color:var(--teal);font-style:normal}
 .hero p{color:var(--muted);margin:16px 0 22px;font-size:18px}
-.filters{max-width:1100px;margin:0 auto;padding:12px 20px;display:flex;gap:10px;flex-wrap:wrap;position:sticky;top:56px;z-index:30;background:rgba(10,15,20,.92);backdrop-filter:blur(10px);border-bottom:1px solid var(--border)}
+.filters{max-width:1100px;margin:0 auto;padding:12px 20px;display:flex;gap:10px;flex-wrap:wrap;position:static;background:rgba(10,15,20,.92);border-bottom:1px solid var(--border)}
 .chip{padding:8px 16px;border-radius:100px;border:1px solid var(--border);background:var(--card);color:var(--muted);cursor:pointer}
 .chip.active{background:var(--teal2);color:white;border-color:var(--teal2)}
 .grid{max-width:1100px;margin:0 auto;padding:20px;display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:16px}
@@ -67,7 +67,10 @@ input,textarea,select{width:100%;padding:12px;border-radius:10px;border:1px soli
   .logo{font-size:14px}
   nav .btn{padding:7px 10px;font-size:12px}
 }
-#profileModal #pv_bio{max-height:160px!important;overflow-y:auto!important} .modal-box.wide{overflow:hidden} #pv_bio::-webkit-scrollbar{width:5px} #pv_bio::-webkit-scrollbar-thumb{background:#23323f;border-radius:3px} </style>
+#profileModal #pv_bio{max-height:160px!important;overflow-y:auto!important} .modal-box.wide{overflow:hidden} #pv_bio::-webkit-scrollbar{width:5px} #pv_bio::-webkit-scrollbar-thumb{background:#23323f;border-radius:3px} 
+#backToFilters{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--card2);border:1px solid var(--teal);color:var(--teal);padding:10px 20px;border-radius:100px;font-weight:700;font-size:13px;cursor:pointer;z-index:80;display:none;box-shadow:0 10px 30px rgba(0,0,0,.4)}
+#backToFilters.show{display:flex;align-items:center;gap:6px}
+</style>
 </head>
 <body>
 <header>
@@ -138,7 +141,7 @@ input,textarea,select{width:100%;padding:12px;border-radius:10px;border:1px soli
 </div></div>
 
 
-<!-- LOGIN MODAL - RESTORED FROM WORKING BUILD -->
+<!-- LOGIN MODALS RESTORED + UNSTICK FIX -->
 <div class="modal" id="loginModal">
   <div class="modal-box">
     <div style="display:flex;justify-content:space-between"><h3>Log In</h3><button class="btn btn-ghost" onclick="closeModals()">✕</button></div>
@@ -166,12 +169,11 @@ input,textarea,select{width:100%;padding:12px;border-radius:10px;border:1px soli
       <select id="regCannabis"><option value="All">Cannabis</option><option>Never</option><option>Occasionally</option><option>Regular</option></select>
       <select id="regJob"><option value="All">Job</option><option>Student</option><option>Professional</option><option>Trades</option><option>Healthcare</option><option>Tech</option><option>Other</option></select>
     </div>
-    <textarea id="regBio" placeholder="Bio - tell us about you..." rows="3"></textarea>
+    <textarea id="regBio" placeholder="Bio..." rows="3"></textarea>
     <div class="photo-upload">
       <input type="file" id="photoInput" multiple accept="image/*" style="display:none">
-      <button class="btn btn-ghost" type="button" onclick="document.getElementById('photoInput').click()">+ Add Photos (up to 6)</button>
+      <button class="btn btn-ghost" type="button" onclick="document.getElementById('photoInput').click()">+ Add Photos (up to 4)</button>
       <div class="photo-grid" id="photoGrid"></div>
-      <div style="font-size:11px;color:var(--muted)">Photos auto-resize intact</div>
     </div>
     <div id="s_msg" style="color:#ef4444;font-size:13px;margin-top:8px"></div>
     <button class="btn btn-primary" style="width:100%;margin-top:12px" onclick="doRegister()">Create Profile - 100% Free</button>
@@ -473,8 +475,68 @@ document.getElementById('chatInput')?.addEventListener('focus', ()=>{
   setTimeout(()=>{ document.getElementById('chatBody').scrollTop=document.getElementById('chatBody').scrollHeight; }, 300);
 });
 
+
+// BACK TO TOP FILTERS CHIP - v1.8.4
+
+let pendingPhotos=[];
+document.getElementById('photoInput')?.addEventListener('change', e=>{
+  const files = Array.from(e.target.files).slice(0,4);
+  pendingPhotos = files.slice(0,4);
+  const grid = document.getElementById('photoGrid');
+  grid.innerHTML='';
+  pendingPhotos.forEach((file,i)=>{
+    const slot=document.createElement('div'); slot.className='photo-slot';
+    const img=document.createElement('img'); img.src=URL.createObjectURL(file);
+    const rm=document.createElement('button'); rm.className='remove'; rm.innerText='×';
+    rm.onclick=(ev)=>{ ev.stopPropagation(); pendingPhotos.splice(i,1); grid.innerHTML=''; pendingPhotos.forEach((f,j)=>{ const s=document.createElement('div'); s.className='photo-slot'; const im=document.createElement('img'); im.src=URL.createObjectURL(f); const r=document.createElement('button'); r.className='remove'; r.innerText='×'; r.onclick=(e2)=>{ e2.stopPropagation(); pendingPhotos.splice(j,1); s.remove(); }; s.appendChild(im); s.appendChild(r); grid.appendChild(s); }); };
+    slot.appendChild(img); slot.appendChild(rm); grid.appendChild(slot);
+  });
+});
+
+async function doRegister(){
+  const fd=new FormData();
+  fd.append('name', document.getElementById('regName').value.trim());
+  fd.append('age', document.getElementById('regAge').value.trim());
+  fd.append('city', document.getElementById('regCity').value);
+  fd.append('gender', document.getElementById('regGender').value);
+  fd.append('email', document.getElementById('regEmail').value.trim());
+  fd.append('password', document.getElementById('regPass').value);
+  fd.append('bio', document.getElementById('regBio').value);
+  fd.append('height', document.getElementById('regHeight')?.value || 'All');
+  fd.append('weight', document.getElementById('regWeight')?.value || 'All');
+  fd.append('smoking', document.getElementById('regSmoking')?.value || 'All');
+  fd.append('drinking', document.getElementById('regDrinking')?.value || 'All');
+  fd.append('cannabis', document.getElementById('regCannabis')?.value || 'All');
+  fd.append('job', document.getElementById('regJob')?.value || 'All');
+  pendingPhotos.forEach(f=> fd.append('photos', f));
+  if(!fd.get('name')||!fd.get('email')||!fd.get('password')){ document.getElementById('s_msg').innerText='Name, email, password required'; return; }
+  try{
+    const res=await fetch('/api/signup',{method:'POST',body:fd});
+    const j=await res.json();
+    if(j.error){ document.getElementById('s_msg').innerText=j.error; return; }
+    localStorage.setItem('afd_token', j.token);
+    localStorage.setItem('afd_user', JSON.stringify(j.user));
+    closeModals(); location.reload();
+  }catch(e){ document.getElementById('s_msg').innerText='Create failed '+e.message; }
+}
+
+function scrollToFilters(){
+  const f = document.querySelector('.filters') || document.querySelector('.filters-top') || document.getElementById('grid');
+  if(f) f.scrollIntoView({behavior:'smooth', block:'start'});
+}
+window.addEventListener('scroll', ()=>{
+  const chip = document.getElementById('backToFilters');
+  if(!chip) return;
+  if(window.scrollY > 500){
+    chip.classList.add('show');
+  } else {
+    chip.classList.remove('show');
+  }
+});
+
 loadUsers();
 setInterval(loadUsers, 15000);
 </script>
+<button id="backToFilters" onclick="scrollToFilters()">↑ Filters</button>
 </body>
 </html>
