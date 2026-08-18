@@ -53,22 +53,6 @@ async function initDb(){
     await pool.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS pinned BOOLEAN DEFAULT FALSE`);
     await pool.query(`UPDATE users SET pinned = TRUE WHERE LOWER(name) = 'dee'`);
     console.log('DB tables ready + pinned column + Dee pinned');
-
-    // Seed if empty
-    try{
-      const cnt = await pool.query('SELECT COUNT(*) FROM users');
-      if(parseInt(cnt.rows[0].count)===0){
-        console.log('Seeding demo users + Dee');
-        const bcrypt = await import('bcryptjs');
-        const hash = await bcrypt.default.hash('password123', 10);
-        await pool.query(`INSERT INTO users (name, age, city, gender, bio, email, password, photos, pinned) VALUES 
-          ('Dee (Admin)', 30, 'Edmonton', 'Woman', 'Admin of Actually Free Dating - here to help!', 'dee@actuallyfreedating.ca', $1, '[]', TRUE),
-          ('Sarah', 28, 'Edmonton', 'Woman', 'Love hiking in River Valley!', 'sarah.e@example.com', $1, '[]', FALSE),
-          ('Mike', 32, 'Calgary', 'Man', 'Calgary born, love Flames.', 'mike.c@example.com', $1, '[]', FALSE)
-        `, [hash]);
-      }
-    }catch(e){ console.log('seed error', e.message); }
-
   }catch(e){ console.log('DB init error', e.message); }
 }
 initDb();
