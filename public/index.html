@@ -486,6 +486,10 @@ document.getElementById('chatInput')?.addEventListener('focus', ()=>{
   setTimeout(()=>{ document.getElementById('chatBody').scrollTop=document.getElementById('chatBody').scrollHeight; }, 300);
 });
 
+
+function scrollToFilters(){ const f=document.querySelector('.filters'); if(f) f.scrollIntoView({behavior:'smooth'}); }
+window.addEventListener('scroll', ()=>{ const c=document.getElementById('backToFilters'); if(c) c.classList.toggle('show', window.scrollY>500); });
+
 loadUsers();
 setInterval(loadUsers, 15000);
 </script>
