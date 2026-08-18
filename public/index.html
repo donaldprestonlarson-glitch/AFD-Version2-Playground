@@ -304,15 +304,38 @@ function openEdit(){
   openModal('edit');
 }
 
+
+let sFiles=[];
+document.getElementById('photoInput').addEventListener('change', (e)=>{
+  sFiles = Array.from(e.target.files).slice(0,4);
+  const grid=document.getElementById('photoGrid');
+  renderGridPreview(grid, sFiles.map(f=>URL.createObjectURL(f)), (i)=>{ sFiles.splice(i,1); renderGridPreview(grid, sFiles.map(f=>URL.createObjectURL(f)), arguments.callee); });
+});
+
 async function doSignup(){
   const msg=document.getElementById('s_msg'); msg.innerText='Creating...';
   const fd=new FormData();
-  fd.append('name',s_name.value); fd.append('email',s_email.value); fd.append('password',s_pass.value); fd.append('age',s_age.value); fd.append('city',s_city.value); fd.append('bio',s_bio.value);
-  sFiles.forEach(f=>fd.append('photos',f));
-  const res=await fetch('/api/signup',{method:'POST',body:fd});
-  const j=await res.json(); msg.innerText=j.message||j.error||'Done';
-  if(!j.error){ handleAuth(j); setTimeout(()=>{closeModals();loadUsers();},800); }
+  fd.append('name', document.getElementById('regName').value.trim());
+  fd.append('age', document.getElementById('regAge').value.trim());
+  fd.append('city', document.getElementById('regCity').value);
+  fd.append('gender', document.getElementById('regGender').value);
+  fd.append('email', document.getElementById('regEmail').value.trim());
+  fd.append('password', document.getElementById('regPass').value);
+  fd.append('bio', document.getElementById('regBio').value);
+  const h = document.getElementById('regHeight').value;
+  const w = document.getElementById('regWeight').value;
+  // append extra info to bio if needed but keep bio separate
+  // Use existing sFiles or photoInput files
+  const files = (window.sFiles && window.sFiles.length ? window.sFiles : Array.from(document.getElementById('photoInput').files));
+  files.slice(0,4).forEach(f=>fd.append('photos',f));
+  try{
+    const res=await fetch('/api/signup',{method:'POST',body:fd});
+    const j=await res.json();
+    msg.innerText=j.message||j.error||'Done';
+    if(!j.error){ handleAuth(j); setTimeout(()=>{closeModals();loadUsers();},800); }
+  }catch(e){ msg.innerText='Create failed '+e.message; }
 }
+
 async function doUpdate(){
   const msg=document.getElementById('e_msg'); msg.innerText='Saving...';
   const fd=new FormData();
