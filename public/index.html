@@ -180,6 +180,24 @@ input,textarea,select{width:100%;padding:12px;border-radius:10px;border:1px soli
   </div>
 </div>
 
+
+<div class="modal" id="editModal">
+  <div class="modal-box wide">
+    <div style="display:flex;justify-content:space-between"><h3>Edit Profile — 4 Photos Max</h3><button class="btn btn-ghost" onclick="closeModals()">✕</button></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+      <input id="e_name" placeholder="Name">
+      <input id="e_age" placeholder="Age" type="number">
+      <select id="e_city"><option>Edmonton</option><option>Calgary</option></select>
+    </div>
+    <textarea id="e_bio" placeholder="Bio..." rows="3" style="margin-top:10px"></textarea>
+    <div style="margin-top:12px"><b>Your photos (tap X to remove, then Save)</b><div class="photo-grid" id="e_existing"></div></div>
+    <div style="margin-top:12px"><b>Add more photos</b><input type="file" id="e_photos" multiple accept="image/*" style="display:none"><button class="btn btn-ghost" type="button" onclick="document.getElementById('e_photos').click()">+ Add Photos (up to 4)</button><div class="photo-grid" id="e_preview"></div></div>
+    <div id="e_msg" style="color:#ef4444;font-size:13px;margin-top:8px"></div>
+    <button class="btn btn-primary" style="width:100%;margin-top:12px" onclick="saveEdit()">Save</button>
+    <button class="btn btn-ghost" style="width:100%;margin-top:8px;color:#ef4444" onclick="deleteMyAccount()">Delete My Account</button>
+  </div>
+</div>
+
 <div class="chat" id="chat"><div class="chat-head"><b id="chatName">Messages</b><div><span id="inboxBtn" style="cursor:pointer;margin-right:12px;font-size:12px;color:var(--teal)" onclick="showInbox()">Inbox</span><span style="cursor:pointer" onclick="closeChat()">X</span></div></div><div id="inboxView" style="display:none;max-height:300px;overflow:auto;padding:8px"></div><div id="chatView"><div style="padding:8px 12px;background:var(--teal2);font-size:11px;text-align:center">This conversation is 100% FREE. Always will be.</div><div class="chat-body" id="chatBody"></div><div style="padding:10px;display:flex;gap:8px"><input id="chatInput" placeholder="Type a message..." style="margin:0" onkeydown="if(event.key==='Enter')sendMsg()"><button class="btn btn-primary" onclick="sendMsg()">Send</button></div></div></div>
 
 <script>
@@ -478,46 +496,24 @@ document.getElementById('chatInput')?.addEventListener('focus', ()=>{
 
 // BACK TO TOP FILTERS CHIP - v1.8.4
 
-let pendingPhotos=[];
-document.getElementById('photoInput')?.addEventListener('change', e=>{
-  const files = Array.from(e.target.files).slice(0,4);
-  pendingPhotos = files.slice(0,4);
-  const grid = document.getElementById('photoGrid');
-  grid.innerHTML='';
-  pendingPhotos.forEach((file,i)=>{
-    const slot=document.createElement('div'); slot.className='photo-slot';
-    const img=document.createElement('img'); img.src=URL.createObjectURL(file);
-    const rm=document.createElement('button'); rm.className='remove'; rm.innerText='×';
-    rm.onclick=(ev)=>{ ev.stopPropagation(); pendingPhotos.splice(i,1); grid.innerHTML=''; pendingPhotos.forEach((f,j)=>{ const s=document.createElement('div'); s.className='photo-slot'; const im=document.createElement('img'); im.src=URL.createObjectURL(f); const r=document.createElement('button'); r.className='remove'; r.innerText='×'; r.onclick=(e2)=>{ e2.stopPropagation(); pendingPhotos.splice(j,1); s.remove(); }; s.appendChild(im); s.appendChild(r); grid.appendChild(s); }); };
-    slot.appendChild(img); slot.appendChild(rm); grid.appendChild(slot);
-  });
-});
-
-async function doRegister(){
+async function saveEdit(){
   const fd=new FormData();
-  fd.append('name', document.getElementById('regName').value.trim());
-  fd.append('age', document.getElementById('regAge').value.trim());
-  fd.append('city', document.getElementById('regCity').value);
-  fd.append('gender', document.getElementById('regGender').value);
-  fd.append('email', document.getElementById('regEmail').value.trim());
-  fd.append('password', document.getElementById('regPass').value);
-  fd.append('bio', document.getElementById('regBio').value);
-  fd.append('height', document.getElementById('regHeight')?.value || 'All');
-  fd.append('weight', document.getElementById('regWeight')?.value || 'All');
-  fd.append('smoking', document.getElementById('regSmoking')?.value || 'All');
-  fd.append('drinking', document.getElementById('regDrinking')?.value || 'All');
-  fd.append('cannabis', document.getElementById('regCannabis')?.value || 'All');
-  fd.append('job', document.getElementById('regJob')?.value || 'All');
-  pendingPhotos.forEach(f=> fd.append('photos', f));
-  if(!fd.get('name')||!fd.get('email')||!fd.get('password')){ document.getElementById('s_msg').innerText='Name, email, password required'; return; }
+  fd.append('name', document.getElementById('e_name').value.trim());
+  fd.append('age', document.getElementById('e_age').value.trim());
+  fd.append('city', document.getElementById('e_city').value);
+  fd.append('bio', document.getElementById('e_bio').value);
+  fd.append('keepPhotos', JSON.stringify(editKeepPhotos));
+  eNewFiles.forEach(f=> fd.append('photos', f));
   try{
-    const res=await fetch('/api/signup',{method:'POST',body:fd});
+    const headers = authHeaders();
+    delete headers['Content-Type'];
+    const res=await fetch('/api/update-profile',{method:'POST',headers:headers,body:fd});
     const j=await res.json();
-    if(j.error){ document.getElementById('s_msg').innerText=j.error; return; }
-    localStorage.setItem('afd_token', j.token);
-    localStorage.setItem('afd_user', JSON.stringify(j.user));
-    closeModals(); location.reload();
-  }catch(e){ document.getElementById('s_msg').innerText='Create failed '+e.message; }
+    if(j.error){ document.getElementById('e_msg').innerText=j.error; return; }
+    currentUser=j.user;
+    localStorage.setItem('afd_user', JSON.stringify(currentUser));
+    closeModals(); loadUsers();
+  }catch(e){ document.getElementById('e_msg').innerText='Save failed '+e.message; }
 }
 
 function scrollToFilters(){
