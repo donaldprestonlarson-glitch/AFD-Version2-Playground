@@ -267,7 +267,7 @@ async function loadUsers(){
     if(i===3){ const ad=document.createElement('div'); ad.className='ad'; ad.innerHTML='Advertisement<br>This is how we stay free'; grid.appendChild(ad); }
     const d=document.createElement('div'); d.className='card'; d.onclick=()=>openProfile(u.id);
     const photo=u.photo_url|| (u.photos&&u.photos[0]) || ''; const av=photo?`<div class="avatar"><img src="${photo}"></div>`:`<div class="avatar">${u.name[0]}</div>`;
-    d.innerHTML=`<div class="online"></div><div style="display:flex;gap:12px;align-items:center">${av}<div><b>${u.name}, ${u.age}</b><div style="color:var(--muted);font-size:13px">${u.gender||''} • ${u.city} - ${u.photos?.length||0} photos</div></div></div><p style="margin:12px 0;color:var(--muted);font-size:14px;min-height:40px">${(u.bio||'').slice(0,90)}...</p><button class="btn btn-primary" style="width:100%" onclick="event.stopPropagation();openChat(${u.id},'${u.name.replace(/'/g,"\'")}')">Message Free</button>`;
+    d.innerHTML=`<div class="online"></div><div style="display:flex;gap:12px;align-items:center">${av}<div><b>${u.name}, ${u.age}</b><div style="color:var(--muted);font-size:13px">${u.gender||''} • ${u.city} - ${u.photos?.length||0} photos</div></div></div><p style="margin:12px 0;color:var(--muted);font-size:14px;min-height:40px">${(u.bio||'').slice(0,90)}...</p><button class="btn btn-primary" style="width:100%" onclick="event.stopPropagation();openChat(${u.id},'${u.name.replace(/'/g,"\\'")}')">Message Free</button>`;
     grid.appendChild(d);
   });
 }
@@ -314,13 +314,23 @@ async function doSignup(){
 async function doUpdate(){
   const msg=document.getElementById('e_msg'); msg.innerText='Saving...';
   const fd=new FormData();
-  fd.append('name',e_name.value); fd.append('age',e_age.value); fd.append('city',e_city.value); fd.append('bio',e_bio.value);
+  fd.append('name', document.getElementById('e_name').value.trim());
+  fd.append('age', document.getElementById('e_age').value.trim());
+  fd.append('city', document.getElementById('e_city').value);
+  fd.append('bio', document.getElementById('e_bio').value);
   fd.append('keepPhotos', JSON.stringify(editKeepPhotos));
   eNewFiles.forEach(f=>fd.append('photos',f));
-  const res=await fetch('/api/update-profile',{method:'POST',headers:authHeaders(),body:fd});
-  const j=await res.json(); msg.innerText=j.message||j.error||'Updated!';
-  if(!j.error){ currentUser={...currentUser,...j}; localStorage.setItem('afd_token', token); setTimeout(()=>{closeModals();loadUsers();},600); }
+  try{
+    const headers = authHeaders();
+    delete headers['Content-Type'];
+    const res=await fetch('/api/update-profile',{method:'POST',headers:headers,body:fd});
+    const j=await res.json();
+    msg.innerText=j.message||j.error||'Updated!';
+    if(!j.error){ currentUser={...currentUser,...j.user}; localStorage.setItem('afd_user', JSON.stringify(currentUser)); setTimeout(()=>{closeModals();loadUsers();},600); }
+  }catch(e){ msg.innerText='Save failed '+e.message; }
 }
+async function saveEdit(){ return doUpdate(); }
+
 async function doLogin(){
   const res=await fetch('/api/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:l_email.value,password:l_pass.value})});
   const j=await res.json(); if(j.error){ l_msg.innerText=j.error; return; } handleAuth(j); closeModals(); 
@@ -485,6 +495,10 @@ if(window.visualViewport){
 document.getElementById('chatInput')?.addEventListener('focus', ()=>{
   setTimeout(()=>{ document.getElementById('chatBody').scrollTop=document.getElementById('chatBody').scrollHeight; }, 300);
 });
+
+
+function scrollToFilters(){ const f=document.querySelector('.filters'); if(f) f.scrollIntoView({behavior:'smooth'}); }
+window.addEventListener('scroll', ()=>{ const c=document.getElementById('backToFilters'); if(c) c.classList.toggle('show', window.scrollY>500); });
 
 loadUsers();
 setInterval(loadUsers, 15000);
