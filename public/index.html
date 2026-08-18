@@ -7,28 +7,20 @@
 :root{--bg:#0a0f14;--card:#141c23;--card2:#1c2732;--teal:#14b8a6;--teal2:#0f766e;--text:#e6f0ef;--muted:#8aa0a8;--border:#23323f}
 *{box-sizing:border-box;margin:0;padding:0;font-family:Inter,system-ui,sans-serif}
 body{background:var(--bg);color:var(--text);line-height:1.5}
-/* HEADER - FIXED Z-INDEX SO LOGIN BUTTONS NEVER GET COVERED */
-header{position:sticky;top:0;z-index:100;background:rgba(10,15,20,.95);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:12px 20px;display:flex;justify-content:space-between;align-items:center}
-.logo{font-weight:900;letter-spacing:-.5px;pointer-events:none}.logo span{color:var(--teal)}.logo .sub{font-weight:400;color:var(--muted);font-size:.9em;margin-left:8px}
-.badge{background:var(--teal2);color:white;padding:3px 8px;border-radius:20px;font-size:11px;font-weight:700;letter-spacing:.5px;margin-left:10px;pointer-events:none}
-nav{display:flex;gap:10px;align-items:center;position:relative;z-index:101}
-.btn{border:0;padding:10px 18px;border-radius:10px;font-weight:600;cursor:pointer;pointer-events:auto !important;position:relative;z-index:102}
+header{position:static;top:0;z-index:110;background:rgba(10,15,20,.9);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:12px 20px;display:flex;justify-content:space-between;align-items:center}
+.logo{font-weight:900;letter-spacing:-.5px}.logo span{color:var(--teal)}.logo .sub{font-weight:400;color:var(--muted);font-size:.9em;margin-left:8px}
+.badge{background:var(--teal2);color:white;padding:3px 8px;border-radius:20px;font-size:11px;font-weight:700;letter-spacing:.5px;margin-left:10px}
+nav{display:flex;gap:10px;align-items:center;position:relative;z-index:111}
+.btn{border:0;padding:10px 18px;border-radius:10px;font-weight:600;cursor:pointer;pointer-events:auto !important;position:relative;z-index:112}
 .btn-primary{background:var(--teal);color:#001211}.btn-primary:hover{background:#2dd4bf}
 .btn-ghost{background:var(--card2);color:var(--text);border:1px solid var(--border)}
 .hero{max-width:1100px;margin:0 auto;padding:60px 20px 30px;display:grid;grid-template-columns:1.2fr .8fr;gap:30px}
 .hero h1{font-size: clamp(32px,5vw,54px);line-height:.95;letter-spacing:-1.5px}
 .hero h1 em{color:var(--teal);font-style:normal}
 .hero p{color:var(--muted);margin:16px 0 22px;font-size:18px}
-
-/* BALANCED FILTER BAR - LOCKED v1.8 */
-.filters-top{position:static;max-width:1100px;margin:0 auto;padding:12px 20px 6px;display:flex;gap:10px;flex-wrap:wrap;position:static;background:rgba(10,15,20,.92);backdrop-filter:blur(10px);border-bottom:1px solid transparent}
-.filters-bottom{position:static;max-width:1100px;margin:0 auto;padding:6px 20px 12px;display:flex;gap:10px;flex-wrap:wrap;position:static;background:rgba(10,15,20,.92);backdrop-filter:blur(10px);border-bottom:1px solid var(--border)}
-.filters-label{font-size:11px;color:var(--muted);width:100%;letter-spacing:.5px;font-weight:700;margin-bottom:2px}
-.chip{padding:8px 16px;border-radius:100px;border:1px solid var(--border);background:var(--card);color:var(--muted);cursor:pointer;font-size:14px}
+.filters{max-width:1100px;margin:0 auto;padding:12px 20px;display:flex;gap:10px;flex-wrap:wrap;position:static;background:rgba(10,15,20,.92);backdrop-filter:blur(10px);border-bottom:1px solid var(--border)}
+.chip{padding:8px 16px;border-radius:100px;border:1px solid var(--border);background:var(--card);color:var(--muted);cursor:pointer}
 .chip.active{background:var(--teal2);color:white;border-color:var(--teal2)}
-.chip-select{padding:8px 12px;border-radius:100px;border:1px solid var(--border);background:var(--card);color:var(--text);cursor:pointer;min-width:110px;font-size:13px}
-.chip-select:focus{outline:1px solid var(--teal)}
-
 .grid{max-width:1100px;margin:0 auto;padding:20px;display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:16px}
 .card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:16px;position:relative;overflow:hidden;cursor:pointer;transition:.15s}
 .card:hover{transform:translateY(-3px);border-color:var(--teal2)}
@@ -39,32 +31,24 @@ nav{display:flex;gap:10px;align-items:center;position:relative;z-index:101}
 .avatar.big{width:140px;height:140px;font-size:48px;border:4px solid var(--teal2)}
 .online{width:10px;height:10px;background:#22c55e;border-radius:50%;position:absolute;top:18px;right:18px;box-shadow:0 0 0 3px var(--card)}
 .ad{background:repeating-linear-gradient(45deg,#141c23,#141c23 10px,#17202a 10px,#17202a 20px);border:1px dashed var(--border);border-radius:16px;display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:12px;text-align:center;padding:20px}
-.modal{position:fixed;inset:0;background:rgba(0,0,0,.75);display:none;align-items:center;justify-content:center;z-index:200;padding:20px}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.7);display:none;align-items:center;justify-content:center;z-index:200;padding:20px}
 .modal.open{display:flex}
 .modal-box{background:var(--card2);border:1px solid var(--border);border-radius:16px;width:100%;max-width:480px;padding:20px;max-height:94vh;overflow:auto}
-.modal-box.wide{max-width:600px;overflow:hidden !important; display:flex; flex-direction:column}
+.modal-box.wide{max-width:600px}
 input,textarea,select{width:100%;padding:12px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);margin-top:8px}
 .photo-upload{margin-top:12px;border:2px dashed var(--border);border-radius:12px;padding:14px;text-align:center;background:var(--bg)}
-.photo-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:10px 0}
+.photo-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:10px auto;max-width:400px;justify-content:center}
 .photo-slot{aspect-ratio:1;border:2px dashed var(--border);border-radius:10px;display:flex;align-items:center;justify-content:center;overflow:hidden;background:#0a0f14;position:relative;box-sizing:border-box}
 .photo-slot img{width:100%;height:100%;object-fit:contain;object-position:center;background:#0a0f14}
 .photo-slot .remove{position:absolute;top:2px;right:2px;background:#ef4444;color:white;border:0;border-radius:50%;width:22px;height:22px;cursor:pointer}
 .profile-photo{width:100%;max-height:50vh;object-fit:contain;object-position:center;border-radius:14px;background:#0a0f14;border:1px solid var(--border);display:block;box-sizing:border-box}
-.thumbs{display:flex;gap:8px;margin-top:10px;overflow:auto;max-width:100%;box-sizing:border-box;padding-bottom:4px}
-.thumbs img{width:72px;height:72px;border-radius:10px;object-fit:contain;object-position:center;background:#0a0f14;cursor:pointer;border:2px solid var(--border);box-sizing:border-box;flex-shrink:0}
+.thumbs{display:flex;gap:8px;margin:10px auto 0;overflow:auto;max-width:100%;box-sizing:border-box;justify-content:center;flex-wrap:wrap}
+.thumbs img{width:72px;height:72px;border-radius:10px;object-fit:contain;object-position:center;background:#0a0f14;cursor:pointer;border:2px solid var(--border);box-sizing:border-box}
 .thumbs img.active{border-color:var(--teal)}
-
-/* BIO BOX HALF DEE 160PX SCROLLING - LOCKED */
-#pv_bio{max-height:160px !important;min-height:80px;overflow-y:auto !important;overflow-x:hidden;padding:10px;background:var(--bg);border:1px solid var(--border);border-radius:10px;margin-top:10px;white-space:pre-wrap;font-size:14px;line-height:1.4}
-#pv_bio::-webkit-scrollbar{width:5px}
-#pv_bio::-webkit-scrollbar-thumb{background:#23323f;border-radius:3px}
-#profileContent{overflow-y:auto;max-height:70vh}
-
 .chat{position:fixed;bottom:20px;right:20px;width:360px;max-width:92vw;background:var(--card2);border:1px solid var(--border);border-radius:16px;display:none;flex-direction:column;z-index:90;box-shadow:0 20px 50px rgba(0,0,0,.5)}
 .chat.open{display:flex}.chat-head{padding:14px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between}
 .chat-body{height:300px;overflow:auto;padding:14px;display:flex;flex-direction:column;gap:8px;resize:vertical;min-height:200px;max-height:60vh}
 .msg{max-width:80%;padding:8px 12px;border-radius:12px;font-size:14px}.me{align-self:flex-end;background:var(--teal);color:#001211}.them{align-self:flex-start;background:var(--card);border:1px solid var(--border)}
-
 @media(max-width:800px){
   .hero{grid-template-columns:1fr}
   header{padding:8px 12px;gap:8px;flex-wrap:wrap}
@@ -74,120 +58,107 @@ input,textarea,select{width:100%;padding:12px;border-radius:10px;border:1px soli
   nav{width:100%;justify-content:flex-end;gap:6px;flex-wrap:wrap}
   #navUser{display:block !important;width:100%;text-align:right;font-size:12px;color:var(--teal) !important;margin-bottom:2px;order:-1}
   nav .btn{padding:8px 12px;font-size:13px}
-  .filters-top{position:static;top:78px}
-  .filters-bottom{position:static;top:128px}
+  
   .chat{left:0;right:0;bottom:0;width:100%;max-width:100%;border-radius:16px 16px 0 0;max-height:85vh;max-height:85dvh}
   .chat-body{height:50vh;max-height:50dvh}
-  #chatInput{font-size:16px}
+  #chatInput{font-size:16px;resize:vertical;min-height:44px;max-height:150px}
 }
 @media(max-width:380px){
   .logo{font-size:14px}
   nav .btn{padding:7px 10px;font-size:12px}
 }
-
+#profileModal #pv_bio{max-height:160px!important;overflow-y:auto!important} .modal-box.wide{overflow:hidden} #pv_bio::-webkit-scrollbar{width:5px} #pv_bio::-webkit-scrollbar-thumb{background:#23323f;border-radius:3px} 
 #backToFilters{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--card2);border:1px solid var(--teal);color:var(--teal);padding:10px 20px;border-radius:100px;font-weight:700;font-size:13px;cursor:pointer;z-index:80;display:none;box-shadow:0 10px 30px rgba(0,0,0,.4)}
 #backToFilters.show{display:flex}
 </style>
 </head>
 <body>
 <header>
-  <div class="logo">Actually<span>Free</span>Dating <span class="sub">Always Will Be</span><span class="badge">EDM • CAL</span></div>
-  <nav id="mainNav">
-    <span id="navUser" style="display:none;color:var(--teal);font-weight:600"></span>
-    <button class="btn btn-ghost" id="loginBtn" type="button">Log In</button>
-    <button class="btn btn-primary" id="createBtn" type="button">Create Profile</button>
-    <button class="btn btn-ghost" id="editBtn" style="display:none" type="button">Edit</button>
-    <button class="btn btn-ghost" id="inboxTopBtn" style="display:none;position:relative" type="button">Messages <span id="inboxBadge" style="display:none;position:absolute;top:-6px;right:-6px;background:#ef4444;color:white;border-radius:50%;width:18px;height:18px;font-size:11px;align-items:center;justify-content:center"></span></button>
-    <button class="btn btn-ghost" id="logoutBtn" style="display:none" type="button">Logout</button>
+  <div class="logo">Actually Free <span>DATING</span> <span class="sub">Always Will Be</span> <span class="badge">AFD • EDM • YYC</span></div>
+  <nav>
+    <button class="btn btn-ghost" id="inboxTopBtn" style="display:none;position:relative" onclick="openInboxTop()">Messages <span id="inboxBadge" style="display:none;position:absolute;top:-6px;right:-6px;background:#ef4444;color:white;border-radius:50%;width:18px;height:18px;font-size:11px;align-items:center;justify-content:center">0</span></button>
+    <span id="navUser" style="color:var(--muted);font-size:13px;display:none"></span>
+    <button class="btn btn-ghost" id="editBtn" style="display:none" onclick="openEdit()">Edit Profile</button>
+    <button class="btn btn-ghost" id="loginBtn" onclick="openModal('login')">Log In</button>
+    <button class="btn btn-primary" id="joinBtn" onclick="openModal('signup')">Join Free</button>
+    <button class="btn btn-ghost" id="logoutBtn" style="display:none" onclick="logout()">Logout</button>
   </nav>
 </header>
 
 <section class="hero">
   <div>
-    <h1>Actually Free Dating. <em>Always Will Be.</em></h1>
+    <h1>Actually Free Dating.<br><em>Always Will Be.</em></h1>
     <p>Remember when dating sites were actually free? We do. No $29.99 to read a message. No credits. No paywalls. Message anyone in <b>Edmonton & Calgary</b> for free — and it always will be.</p>
-    <div style="display:flex;gap:10px"><button class="btn btn-primary" onclick="document.getElementById('grid').scrollIntoView({behavior:'smooth'})">Browse Free</button><span style="color:var(--muted);font-size:13px;align-self:center">Launch cities: Edmonton & Calgary. 100% free, ads supported.</span></div>
+    <div style="display:flex;gap:12px;flex-wrap:wrap">
+      <button class="btn btn-primary" onclick="openModal('signup')">Create Free Account →</button>
+      <button class="btn btn-ghost" onclick="document.getElementById('browse').scrollIntoView({behavior:'smooth'})">Browse Free Singles</button>
+    </div>
+    <p style="font-size:13px;margin-top:12px">Launch cities: Edmonton & Calgary. Expanding soon. 100% free, supported by simple ads.</p>
   </div>
-  <div class="ad">Ad space - keeps us free<br>Your ad here soon</div>
+  <div class="card" style="cursor:default">
+    <h3 style="margin-bottom:8px">Why Actually Free?</h3>
+    <ul style="color:var(--muted);padding-left:18px;display:grid;gap:8px">
+      <li>Free to message — always</li>
+      <li>No algorithm hiding people</li>
+      <li>Local first — real Albertans</li>
+      <li>Ad-supported like old POF, not investor paywalls</li>
+      <li>Up to 4 photos — no extra charge</li>
+    </ul>
+  </div>
 </section>
 
-<!-- BALANCED FILTER BAR 5 TOP + 7 BOTTOM - LOCKED -->
-<div class="filters-top">
-  <div class="filters-label">TOP FILTERS</div>
-  <button class="chip active" data-city="All" id="chipAll">All</button>
-  <button class="chip" data-city="Edmonton" id="chipEdm">Edmonton</button>
-  <button class="chip" data-city="Calgary" id="chipCal">Calgary</button>
-  <select class="chip-select" id="genderFilter" title="Gender">
-    <option value="All">Gender: All</option>
-    <option value="Woman">Woman</option>
-    <option value="Man">Man</option>
-    <option value="Non-binary">Non-binary</option>
-  </select>
-  <select class="chip-select" id="ageFilter" title="Age">
-    <option value="All">Age: All</option>
-    <option value="18-25">18-25</option>
-    <option value="26-35">26-35</option>
-    <option value="36-45">36-45</option>
-    <option value="46-55">46-55</option>
-    <option value="56+">56+</option>
-  </select>
-</div>
-<div class="filters-bottom">
-  <div class="filters-label">MORE FILTERS (wire up next)</div>
-  <select class="chip-select" id="heightFilter"><option value="All">Height: All</option><option>5'0"-5'4"</option><option>5'5"-5'8"</option><option>5'9"-6'0"</option><option>6'1"+</option></select>
-  <select class="chip-select" id="weightFilter"><option value="All">Weight: All</option><option>Slim</option><option>Average</option><option>Athletic</option><option>Curvy</option><option>Heavyset</option></select>
-  <select class="chip-select" id="smokingFilter"><option value="All">Smoking: All</option><option>Never</option><option>Occasionally</option><option>Daily</option></select>
-  <select class="chip-select" id="drinkingFilter"><option value="All">Drinking: All</option><option>Never</option><option>Social</option><option>Regular</option></select>
-  <select class="chip-select" id="cannabisFilter"><option value="All">Cannabis: All</option><option>Never</option><option>Occasionally</option><option>Regular</option></select>
-  <select class="chip-select" id="jobFilter"><option value="All">Job: All</option><option>Student</option><option>Professional</option><option>Trades</option><option>Healthcare</option><option>Tech</option><option>Other</option></select>
-  <button class="chip" id="clearBtn">Clear Filters</button><span id="count" style="color:var(--muted);font-size:12px;margin-left:10px;white-space:nowrap;align-self:center">0 singles</span>
-</div>
-
-<div class="grid" id="grid"></div>
-
-<!-- PROFILE MODAL -->
-<div class="modal" id="profileModal">
-  <div class="modal-box wide">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px"><h3 id="pv_name"></h3><button class="btn btn-ghost" onclick="closeModals()">✕</button></div>
-    <div id="profileContent">
-      <div style="display:flex;gap:20px;flex-wrap:wrap">
-        <div class="avatar big" id="pv_avatar"></div>
-        <div style="flex:1;min-width:200px">
-          <div id="pv_meta" style="color:var(--muted);font-size:14px"></div>
-          <div id="pv_bio"></div>
-          <div id="pv_thumbs" class="thumbs"></div>
-        </div>
-      </div>
-    </div>
-    <div style="display:flex;gap:10px;margin-top:16px">
-      <button class="btn btn-primary" style="flex:1" id="pv_messageBtn" onclick="startChatFromProfile()">Message</button>
-      <button class="btn btn-ghost" onclick="blockUser()">Block</button>
-    </div>
+<div class="filters" id="browse" style="flex-direction:column;gap:8px;align-items:stretch">
+  <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+    <button class="chip active" onclick="filterCity('All',this)">All Alberta</button>
+    <button class="chip" onclick="filterCity('Edmonton',this)">Edmonton</button>
+    <button class="chip" onclick="filterCity('Calgary',this)">Calgary</button>
+    <select id="filterGender" onchange="loadUsers()" style="width:auto;margin:0;padding:7px 12px;border-radius:20px;background:var(--card);border:1px solid var(--border);color:var(--text);font-size:13px"><option value="All">All Genders</option><option value="Woman">Women Only</option><option value="Man">Men Only</option></select>
+    <div style="display:flex;gap:4px;align-items:center"><select id="filterAgeMin" onchange="loadUsers()" style="width:auto;margin:0;padding:7px 10px;border-radius:20px;background:var(--card);border:1px solid var(--border);color:var(--text);font-size:13px"><option value="">Min Age</option><option value="18">18</option><option value="25">25</option><option value="30">30</option><option value="35">35</option><option value="40">40</option><option value="45">45</option><option value="50">50</option></select><span style="color:var(--muted)">-</span><select id="filterAgeMax" onchange="loadUsers()" style="width:auto;margin:0;padding:7px 10px;border-radius:20px;background:var(--card);border:1px solid var(--border);color:var(--text);font-size:13px"><option value="">Max Age</option><option value="30">30</option><option value="35">35</option><option value="40">40</option><option value="45">45</option><option value="50">50</option><option value="60">60</option><option value="99">99</option></select></div>
+    
+  </div>
+  <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+    <select id="filterHeight" style="width:auto;margin:0;padding:7px 10px;border-radius:20px;background:var(--card);border:1px solid var(--border);color:var(--text);font-size:13px"><option value="All">Any Height</option><option value="Under 5ft4">Under 5ft4</option><option value="5ft4-5ft7">5ft4-5ft7</option><option value="5ft8-5ft11">5ft8-5ft11</option><option value="6ft+">6ft+</option></select>
+    <select id="filterWeight" style="width:auto;margin:0;padding:7px 10px;border-radius:20px;background:var(--card);border:1px solid var(--border);color:var(--text);font-size:13px"><option value="All">Any Weight</option><option value="Slim">Slim</option><option value="Athletic">Athletic</option><option value="Average">Average</option><option value="Curvy">Curvy</option><option value="Large">Large</option></select>
+    <select id="filterSmoking" style="width:auto;margin:0;padding:7px 10px;border-radius:20px;background:var(--card);border:1px solid var(--border);color:var(--text);font-size:13px"><option value="All">Smoking Any</option><option value="Never">Non-Smoker</option><option value="Socially">Social</option><option value="Daily">Daily</option></select>
+    <select id="filterAlcohol" style="width:auto;margin:0;padding:7px 10px;border-radius:20px;background:var(--card);border:1px solid var(--border);color:var(--text);font-size:13px"><option value="All">Drinking Any</option><option value="Never">Never</option><option value="Socially">Social</option><option value="Weekly">Weekly</option><option value="Daily">Daily</option></select>
+    <select id="filterCannabis" style="width:auto;margin:0;padding:7px 10px;border-radius:20px;background:var(--card);border:1px solid var(--border);color:var(--text);font-size:13px"><option value="All">Cannabis Any</option><option value="Never">No</option><option value="Socially">Social</option><option value="Weekly">Weekly</option><option value="Daily">Daily</option></select>
+    <select id="filterOccupation" style="width:auto;margin:0;padding:7px 10px;border-radius:20px;background:var(--card);border:1px solid var(--border);color:var(--text);font-size:13px"><option value="All">Any Job</option><option value="Trades">Trades</option><option value="Professional">Professional</option><option value="Healthcare">Healthcare</option><option value="Education">Education</option><option value="Hospitality">Hospitality</option><option value="Retired">Retired</option><option value="Student">Student</option></select>
+    <button class="btn btn-ghost" style="padding:7px 14px;font-size:12px;border-radius:20px;border:1px solid var(--border)" onclick="clearFilters()">Clear Filters</button>
   </div>
 </div>
+<div style="max-width:1100px;margin:0 auto;padding:0 20px 6px;text-align:right;color:var(--muted);font-size:12px" id="count">0 singles</div>
+<div class="grid" id="grid"></div>
 
-<!-- LOGIN MODAL -->
+
+<!-- PROFILE VIEW -->
+<div class="modal" id="profileModal"><div class="modal-box wide" style="max-height:90vh;display:flex;flex-direction:column;overflow:hidden">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-shrink:0"><h3 id="pv_name">Profile</h3><span style="cursor:pointer;font-size:22px" onclick="closeModals()">✕</span></div>
+  <img id="pv_photo" class="profile-photo" style="display:none;flex-shrink:0">
+  <div id="pv_noPhoto" class="avatar big" style="margin:0 auto 12px;display:none;flex-shrink:0"></div>
+  <div class="thumbs" id="pv_thumbs" style="flex-shrink:0"></div>
+  <div style="margin:12px 0;flex-shrink:0"><b id="pv_age_city" style="color:var(--muted)"></b></div>
+  <div id="pv_bio" style="white-space:pre-wrap;background:#0a0f14;padding:12px;border-radius:10px;border:1px solid #23323f;max-height:160px;min-height:80px;overflow-y:auto;line-height:1.5;font-size:14px;display:block;flex-shrink:1;-webkit-overflow-scrolling:touch;overscroll-behavior:contain"></div>
+  <div style="display:flex;gap:10px;margin-top:16px;flex-shrink:0"><button class="btn btn-primary" style="flex:1" onclick="messageFromProfile()">Message Free</button><button class="btn btn-ghost" onclick="closeModals()">Close</button><button class="btn btn-ghost" style="color:#f87171" onclick="blockUser()">Block</button></div>
+</div></div>
+
+
 <div class="modal" id="loginModal">
   <div class="modal-box">
     <div style="display:flex;justify-content:space-between"><h3>Log In</h3><button class="btn btn-ghost" onclick="closeModals()">✕</button></div>
-    <input id="loginEmail" placeholder="Email" type="email" autocomplete="email">
-    <input id="loginPass" placeholder="Password" type="password" autocomplete="current-password">
+    <input id="l_email" placeholder="Email" type="email">
+    <input id="l_pass" placeholder="Password" type="password">
+    <div id="l_msg" style="color:#ef4444;font-size:13px;margin-top:8px"></div>
     <button class="btn btn-primary" style="width:100%;margin-top:12px" onclick="doLogin()">Log In</button>
-    <div style="text-align:center;margin-top:10px;color:var(--muted);font-size:13px">No account? <a href="#" onclick="closeModals(); openCreate(); return false;" style="color:var(--teal)">Create one free</a></div>
   </div>
 </div>
-
-<!-- CREATE MODAL -->
-<div class="modal" id="createModal">
+<div class="modal" id="signupModal">
   <div class="modal-box wide">
     <div style="display:flex;justify-content:space-between"><h3>Create Free Profile</h3><button class="btn btn-ghost" onclick="closeModals()">✕</button></div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
-      <input id="regName" placeholder="Name">
-      <input id="regAge" placeholder="Age" type="number" min="18" max="99">
-      <select id="regCity"><option value="Edmonton">Edmonton</option><option value="Calgary">Calgary</option></select>
+      <input id="regName" placeholder="Name"><input id="regAge" placeholder="Age" type="number">
+      <select id="regCity"><option>Edmonton</option><option>Calgary</option></select>
       <select id="regGender"><option>Woman</option><option>Man</option><option>Non-binary</option></select>
-      <input id="regEmail" placeholder="Email" type="email">
-      <input id="regPass" placeholder="Password" type="password">
+      <input id="regEmail" placeholder="Email"><input id="regPass" placeholder="Password" type="password">
       <select id="regHeight"><option value="All">Height</option><option>5'0"-5'4"</option><option>5'5"-5'8"</option><option>5'9"-6'0"</option><option>6'1"+</option></select>
       <select id="regWeight"><option value="All">Weight</option><option>Slim</option><option>Average</option><option>Athletic</option><option>Curvy</option><option>Heavyset</option></select>
       <select id="regSmoking"><option value="All">Smoking</option><option>Never</option><option>Occasionally</option><option>Daily</option></select>
@@ -195,311 +166,189 @@ input,textarea,select{width:100%;padding:12px;border-radius:10px;border:1px soli
       <select id="regCannabis"><option value="All">Cannabis</option><option>Never</option><option>Occasionally</option><option>Regular</option></select>
       <select id="regJob"><option value="All">Job</option><option>Student</option><option>Professional</option><option>Trades</option><option>Healthcare</option><option>Tech</option><option>Other</option></select>
     </div>
-    <textarea id="regBio" placeholder="Bio - tell us about you..." rows="3"></textarea>
-    <div class="photo-upload">
-      <input type="file" id="photoInput" multiple accept="image/*" style="display:none">
-      <button class="btn btn-ghost" type="button" onclick="document.getElementById('photoInput').click()">+ Add Photos (up to 6)</button>
-      <div class="photo-grid" id="photoGrid"></div>
-      <div style="font-size:11px;color:var(--muted)">Photos auto-resize to 800px, kept intact (no crop)</div>
-    </div>
-    <button class="btn btn-primary" style="width:100%;margin-top:12px" onclick="doRegister()">Create Profile - 100% Free</button>
+    <textarea id="regBio" placeholder="Bio..." rows="3"></textarea>
+    <div class="photo-upload"><input type="file" id="photoInput" multiple accept="image/*" style="display:none"><button class="btn btn-ghost" type="button" onclick="document.getElementById('photoInput').click()">+ Add Photos</button><div class="photo-grid" id="photoGrid"></div></div>
+    <div id="s_msg" style="color:#ef4444;font-size:13px"></div>
+    <button class="btn btn-primary" style="width:100%;margin-top:12px" onclick="doRegister()">Create Profile</button>
   </div>
 </div>
 
-<!-- EDIT MODAL (simplified) -->
 <div class="modal" id="editModal">
-  <div class="modal-box">
-    <div style="display:flex;justify-content:space-between"><h3>Edit Profile</h3><button class="btn btn-ghost" onclick="closeModals()">✕</button></div>
-    <input id="editBio" placeholder="Bio">
-    <div id="blockedList" style="display:none;margin-top:12px"><h4>Blocked Users</h4><div id="blockedItems" style="display:flex;flex-direction:column;gap:6px;margin-top:6px"></div></div>
+  <div class="modal-box wide">
+    <div style="display:flex;justify-content:space-between"><h3>Edit Profile — 4 Photos Max</h3><button class="btn btn-ghost" onclick="closeModals()">✕</button></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+      <input id="e_name" placeholder="Name">
+      <input id="e_age" placeholder="Age" type="number">
+      <select id="e_city"><option>Edmonton</option><option>Calgary</option></select>
+    </div>
+    <textarea id="e_bio" placeholder="Bio..." rows="3" style="margin-top:10px"></textarea>
+    <div style="margin-top:12px"><b>Your photos (tap X to remove, then Save)</b><div class="photo-grid" id="e_existing"></div></div>
+    <div style="margin-top:12px"><b>Add more photos</b><input type="file" id="e_photos" multiple accept="image/*" style="display:none"><button class="btn btn-ghost" type="button" onclick="document.getElementById('e_photos').click()">+ Add Photos (up to 4)</button><div class="photo-grid" id="e_preview"></div></div>
+    <div id="e_msg" style="color:#ef4444;font-size:13px;margin-top:8px"></div>
     <button class="btn btn-primary" style="width:100%;margin-top:12px" onclick="saveEdit()">Save</button>
     <button class="btn btn-ghost" style="width:100%;margin-top:8px;color:#ef4444" onclick="deleteMyAccount()">Delete My Account</button>
   </div>
 </div>
 
-<div class="chat" id="chat">
-  <div class="chat-head"><span id="chatName"></span><div><button class="btn btn-ghost" style="padding:4px 8px" onclick="showInbox()">Inbox</button><button class="btn btn-ghost" style="padding:4px 8px" onclick="closeChat()">✕</button></div></div>
-  <div id="inboxView" style="display:none;overflow:auto;max-height:400px"></div>
-  <div id="chatView" style="display:flex;flex-direction:column;flex:1">
-    <div class="chat-body" id="chatBody"></div>
-    <div style="padding:10px;border-top:1px solid var(--border);display:flex;gap:8px"><input id="chatInput" placeholder="Type message... free forever" style="margin:0"><button class="btn btn-primary" onclick="sendMsg()">Send</button></div>
-  </div>
-</div>
+<div class="chat" id="chat"><div class="chat-head"><b id="chatName">Messages</b><div><span id="inboxBtn" style="cursor:pointer;margin-right:12px;font-size:12px;color:var(--teal)" onclick="showInbox()">Inbox</span><span style="cursor:pointer" onclick="closeChat()">X</span></div></div><div id="inboxView" style="display:none;max-height:300px;overflow:auto;padding:8px"></div><div id="chatView"><div style="padding:8px 12px;background:var(--teal2);font-size:11px;text-align:center">This conversation is 100% FREE. Always will be.</div><div class="chat-body" id="chatBody"></div><div style="padding:10px;display:flex;gap:8px"><input id="chatInput" placeholder="Type a message..." style="margin:0" onkeydown="if(event.key==='Enter')sendMsg()"><button class="btn btn-primary" onclick="sendMsg()">Send</button></div></div></div>
+<div class="chat" id="chat"><div class="chat-head"><b id="chatName">Messages</b><div><span id="inboxBtn" style="cursor:pointer;margin-right:12px;font-size:12px;color:var(--teal)" onclick="showInbox()">Inbox</span><span style="cursor:pointer" onclick="closeChat()">X</span></div></div><div id="inboxView" style="display:none;max-height:300px;overflow:auto;padding:8px"></div><div id="chatView"><div style="padding:8px 12px;background:var(--teal2);font-size:11px;text-align:center">This conversation is 100% FREE. Always will be.</div><div class="chat-body" id="chatBody"></div><div style="padding:10px;display:flex;gap:8px"><input id="chatInput" placeholder="Type a message..." style="margin:0" onkeydown="if(event.key==='Enter')sendMsg()"><button class="btn btn-primary" onclick="sendMsg()">Send</button></div></div></div>
 
 <script>
-// ===== STATE & PERSISTENCE - REFRESH PERFECT LIKE MAIN SITE =====
-let currentUser = null;
-let token = localStorage.getItem('afd_token');
-let viewingUser = null;
-let chatWith = null;
-let pendingPhotos = [];
-let cityFilter = localStorage.getItem('afd_city') || 'All';
-let genderFilter = localStorage.getItem('afd_gender') || 'All';
-let ageFilter = localStorage.getItem('afd_age') || 'All';
-// Bottom row (not yet filtering, just UI for v1.8.1)
-let heightFilter = localStorage.getItem('afd_height') || 'All';
-let weightFilter = localStorage.getItem('afd_weight') || 'All';
-let smokingFilter = localStorage.getItem('afd_smoking') || 'All';
-let drinkingFilter = localStorage.getItem('afd_drinking') || 'All';
-let cannabisFilter = localStorage.getItem('afd_cannabis') || 'All';
-let jobFilter = localStorage.getItem('afd_job') || 'All';
+let users=[], currentUser=null, token=null, activeCity='All', chatWith=null, viewingUser=null;
+let editKeepPhotos=[], sFiles=[], eNewFiles=[];
 
-function saveFilters(){
-  localStorage.setItem('afd_city', cityFilter);
-  localStorage.setItem('afd_gender', genderFilter);
-  localStorage.setItem('afd_age', ageFilter);
-  localStorage.setItem('afd_height', heightFilter);
-  localStorage.setItem('afd_weight', weightFilter);
-  localStorage.setItem('afd_smoking', smokingFilter);
-  localStorage.setItem('afd_drinking', drinkingFilter);
-  localStorage.setItem('afd_cannabis', cannabisFilter);
-  localStorage.setItem('afd_job', jobFilter);
-}
-function authHeaders(){ return token ? { 'Authorization': 'Bearer '+token } : {}; }
+function authHeaders(){ return token ? { 'Authorization':'Bearer '+token } : {}; }
 
-// ===== FIXED LOGIN BUTTONS - DIRECT EVENT LISTENERS =====
-document.getElementById('loginBtn').addEventListener('click', openLogin);
-document.getElementById('createBtn').addEventListener('click', openCreate);
-document.getElementById('logoutBtn').addEventListener('click', logout);
-document.getElementById('editBtn').addEventListener('click', openEdit);
-document.getElementById('inboxTopBtn').addEventListener('click', openInboxTop);
-
-function openLogin(){ document.getElementById('loginModal').classList.add('open'); }
-function openCreate(){ document.getElementById('createModal').classList.add('open'); }
-function closeModals(){ document.querySelectorAll('.modal').forEach(m=>m.classList.remove('open')); }
-function openEdit(){ 
-  if(!currentUser) return;
-  document.getElementById('editBio').value = currentUser.bio || '';
-  document.getElementById('editModal').classList.add('open');
-  setTimeout(loadBlocked,200);
+function handleAuth(u){
+  currentUser=u; token=u.token||token; if(token) localStorage.setItem('afd_token', token);
+  document.getElementById('navUser').innerText='Hi, '+u.name; document.getElementById('navUser').style.display='block';
+  document.getElementById('editBtn').style.display='inline-block'; 
+  document.getElementById('logoutBtn').style.display='inline-block';
+  document.getElementById('inboxTopBtn').style.display='inline-block';
+  document.getElementById('loginBtn').style.display='none'; document.getElementById('joinBtn').style.display='none';
+  checkInbox(); 
+  setInterval(checkInbox, 5000);
 }
 
-function saveEdit(){
-  alert('Edit save wired in next build - bio saved locally for now');
-  currentUser.bio = document.getElementById('editBio').value;
+function logout(){ 
+  localStorage.removeItem('afd_token'); 
+  currentUser=null; token=null; activeCity='All';
+  document.querySelectorAll('.chip').forEach((x,i)=>{ x.classList.remove('active'); if(i===0) x.classList.add('active'); });
+  const navU=document.getElementById('navUser'); if(navU){ navU.innerText=''; navU.style.display='none'; }
+  const eb=document.getElementById('editBtn'); if(eb) eb.style.display='none';
+  const lob=document.getElementById('logoutBtn'); if(lob) lob.style.display='none';
+  const ib=document.getElementById('inboxTopBtn'); if(ib) ib.style.display='none';
+  const lb=document.getElementById('loginBtn'); if(lb) lb.style.display='inline-block';
+  const jb=document.getElementById('joinBtn'); if(jb) jb.style.display='inline-block';
   closeModals();
+  loadUsers();
 }
 
-// ===== FILTER BAR LOGIC - BALANCED =====
-function setChipActive(){
-  document.querySelectorAll('[data-city]').forEach(ch=>{
-    ch.classList.toggle('active', ch.dataset.city===cityFilter);
-  });
-  document.getElementById('genderFilter').value = genderFilter;
-  document.getElementById('ageFilter').value = ageFilter;
-  document.getElementById('heightFilter').value = heightFilter;
-  document.getElementById('weightFilter').value = weightFilter;
-  document.getElementById('smokingFilter').value = smokingFilter;
-  document.getElementById('drinkingFilter').value = drinkingFilter;
-  document.getElementById('cannabisFilter').value = cannabisFilter;
-  document.getElementById('jobFilter').value = jobFilter;
+async function tryAutoLogin(){
+  const t=localStorage.getItem('afd_token'); if(!t) return; token=t;
+  try{ const r=await fetch('/api/me',{headers:authHeaders()}); if(r.ok){ const u=await r.json(); u.token=t; handleAuth(u); } }catch{}
 }
+tryAutoLogin();
 
-document.querySelectorAll('[data-city]').forEach(btn=>{
-  btn.addEventListener('click', ()=>{
-    cityFilter = btn.dataset.city;
-    saveFilters(); setChipActive(); loadUsers();
-  });
-});
-document.getElementById('genderFilter').addEventListener('change', e=>{ genderFilter=e.target.value; saveFilters(); loadUsers(); });
-document.getElementById('ageFilter').addEventListener('change', e=>{ ageFilter=e.target.value; saveFilters(); loadUsers(); });
-document.getElementById('heightFilter').addEventListener('change', e=>{ heightFilter=e.target.value; saveFilters(); /* wire next */ });
-document.getElementById('weightFilter').addEventListener('change', e=>{ weightFilter=e.target.value; saveFilters(); });
-document.getElementById('smokingFilter').addEventListener('change', e=>{ smokingFilter=e.target.value; saveFilters(); });
-document.getElementById('drinkingFilter').addEventListener('change', e=>{ drinkingFilter=e.target.value; saveFilters(); });
-document.getElementById('cannabisFilter').addEventListener('change', e=>{ cannabisFilter=e.target.value; saveFilters(); });
-document.getElementById('jobFilter').addEventListener('change', e=>{ jobFilter=e.target.value; saveFilters(); });
-document.getElementById('clearBtn').addEventListener('click', ()=>{
-  cityFilter='All'; genderFilter='All'; ageFilter='All'; heightFilter='All'; weightFilter='All'; smokingFilter='All'; drinkingFilter='All'; cannabisFilter='All'; jobFilter='All';
-  saveFilters(); setChipActive(); loadUsers();
-});
-
-setChipActive();
-
-// ===== USERS LOAD - REFRESH PERFECT + DEE PINNED FIRST =====
-async function loadUsers(){
-  try{
-    let url = '/api/users?';
-    if(cityFilter!=='All') url += `city=${cityFilter}&`;
-    if(genderFilter!=='All') url += `gender=${genderFilter}&`;
-    if(ageFilter!=='All'){
-      const [min,max] = ageFilter==='56+' ? [56,99] : ageFilter.split('-').map(Number);
-      url += `ageMin=${min}&ageMax=${max||99}&`;
-    }
-    if(currentUser) url += `myId=${currentUser.id}`;
-    const res = await fetch(url);
-    let list = await res.json();
-    // Dee pinned first - LOCKED
-    const dee = list.find(u=> u.pinned || (u.name||'').toLowerCase()==='dee');
-    const others = list.filter(u=> !(u.pinned || (u.name||'').toLowerCase()==='dee'));
-    list = dee ? [dee, ...others] : others;
-    renderUsers(list);
-  }catch(e){ console.log('load err', e); }
-}
-
-function renderUsers(list){
-  const grid = document.getElementById('grid');
-  grid.innerHTML='';
-  list.forEach(u=>{
-    const card=document.createElement('div');
-    card.className='card'+(u.pinned?' pinned':'');
-    const photo = u.photo_url || (u.photos&&u.photos[0]) || '';
-    const initial = (u.name||'?')[0].toUpperCase();
-    card.innerHTML=`
-      <div style="display:flex;gap:12px;align-items:center">
-        <div class="avatar">${photo?`<img src="${photo}" loading="lazy">`:initial}</div>
-        <div style="flex:1;min-width:0">
-          <div style="font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${u.name} ${u.pinned?'★':''}</div>
-          <div style="font-size:12px;color:var(--muted)">${u.age||''} • ${u.city||''} • ${u.gender||''}</div>
-        </div>
-        <div class="online"></div>
-      </div>
-      <div style="font-size:13px;color:var(--muted);margin-top:10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${(u.bio||'').slice(0,70)}</div>
-    `;
-    card.onclick=()=>openProfile(u);
-    grid.appendChild(card);
-  });
-}
-
-let currentProfilePhotos = [];
-function openProfile(u){
-  viewingUser = u;
-  document.getElementById('pv_name').innerText = u.name + (u.pinned?' ★ Admin':'' );
-  document.getElementById('pv_meta').innerText = `${u.age||''} • ${u.city||''} • ${u.gender||''} ${u.height&&u.height!=='All'?' • '+u.height:''} ${u.job&&u.job!=='All'?' • '+u.job:''}`;
-  document.getElementById('pv_bio').innerText = u.bio || 'No bio yet';
-  const avatar = document.getElementById('pv_avatar');
-  const photo = u.photo_url || (u.photos&&u.photos[0]) || '';
-  avatar.innerHTML = photo?`<img src="${photo}" style="width:100%;height:100%;object-fit:contain;background:#0a0f14">`:(u.name||'?')[0];
-  currentProfilePhotos = u.photos || (photo?[photo]:[]);
-  const thumbs = document.getElementById('pv_thumbs');
-  thumbs.innerHTML='';
-  if(currentProfilePhotos.length){
-    document.querySelector('.profile-photo')?.remove();
-    const main = document.createElement('img'); main.className='profile-photo'; main.id='pv_mainPhoto'; main.src=currentProfilePhotos[0];
-    document.getElementById('profileContent').prepend(main);
-    currentProfilePhotos.forEach((p,i)=>{
-      const t=document.createElement('img'); t.src=p; if(i===0) t.classList.add('active');
-      t.onclick=()=>{ document.getElementById('pv_mainPhoto').src=p; thumbs.querySelectorAll('img').forEach(x=>x.classList.remove('active')); t.classList.add('active'); };
-      thumbs.appendChild(t);
-    });
+function renderGridPreview(container, files, onRemove){
+  container.innerHTML='';
+  for(let i=0;i<4;i++){
+    const slot=document.createElement('div'); slot.className='photo-slot';
+    if(files[i]){
+      const img=document.createElement('img'); img.src=typeof files[i]==='string'?files[i]:URL.createObjectURL(files[i]); slot.appendChild(img);
+      if(onRemove){ const b=document.createElement('button'); b.className='remove'; b.innerText='X'; b.onclick=()=>onRemove(i); slot.appendChild(b); }
+    } else { slot.innerText='+'; slot.style.color='#4a5a66'; }
+    container.appendChild(slot);
   }
-  document.getElementById('profileModal').classList.add('open');
-  document.getElementById('pv_bio').scrollTop=0;
 }
 
-// ===== AUTH - LOGIN / CREATE FIXED =====
-async function doLogin(){
-  const email=document.getElementById('loginEmail').value.trim();
-  const pass=document.getElementById('loginPass').value;
-  if(!email||!pass) return alert('Enter email + password');
-  try{
-    const res=await fetch('/api/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email,password:pass})});
-    const j=await res.json();
-    if(j.error) return alert(j.error);
-    token=j.token; localStorage.setItem('afd_token', token);
-    currentUser=j.user;
-    localStorage.setItem('afd_user', JSON.stringify(currentUser));
-    closeModals(); updateAuthUI(); loadUsers(); checkInbox();
-  }catch(e){ alert('Login failed '+e.message); }
-}
-
-async function doRegister(){
-  const fd=new FormData();
-  fd.append('name', document.getElementById('regName').value.trim());
-  fd.append('age', document.getElementById('regAge').value.trim());
-  fd.append('city', document.getElementById('regCity').value);
-  fd.append('gender', document.getElementById('regGender').value);
-  fd.append('email', document.getElementById('regEmail').value.trim());
-  fd.append('password', document.getElementById('regPass').value);
-  fd.append('bio', document.getElementById('regBio').value);
-  fd.append('height', document.getElementById('regHeight').value);
-  fd.append('weight', document.getElementById('regWeight').value);
-  fd.append('smoking', document.getElementById('regSmoking').value);
-  fd.append('drinking', document.getElementById('regDrinking').value);
-  fd.append('cannabis', document.getElementById('regCannabis').value);
-  fd.append('job', document.getElementById('regJob').value);
-  pendingPhotos.forEach(f=> fd.append('photos', f));
-  if(!fd.get('name')||!fd.get('email')||!fd.get('password')) return alert('Name, email, password');
-  try{
-    const res=await fetch('/api/register',{method:'POST',body:fd});
-    const j=await res.json();
-    if(j.error) return alert(j.error);
-    token=j.token; localStorage.setItem('afd_token', token);
-    currentUser=j.user;
-    localStorage.setItem('afd_user', JSON.stringify(currentUser));
-    pendingPhotos=[]; document.getElementById('photoGrid').innerHTML='';
-    closeModals(); updateAuthUI(); loadUsers();
-  }catch(e){ alert('Create failed '+e.message); }
-}
-
-// LOGOUT NO-RELOAD - LOCKED
-function logout(){
-  token=null; currentUser=null;
-  localStorage.removeItem('afd_token');
-  localStorage.removeItem('afd_user');
-  updateAuthUI();
-  closeModals();
-  closeChat();
-  // NO reload - perfect
-}
-
-function updateAuthUI(){
-  const logged = !!currentUser;
-  document.getElementById('loginBtn').style.display = logged?'none':'inline-block';
-  document.getElementById('createBtn').style.display = logged?'none':'inline-block';
-  document.getElementById('logoutBtn').style.display = logged?'inline-block':'none';
-  document.getElementById('editBtn').style.display = logged?'inline-block':'none';
-  document.getElementById('inboxTopBtn').style.display = logged?'inline-block':'none';
-  document.getElementById('navUser').style.display = logged?'block':'none';
-  document.getElementById('navUser').innerText = logged ? `Hi, ${currentUser.name}` : '';
-}
-
-(function restore(){
-  try{
-    const saved = localStorage.getItem('afd_user');
-    if(saved && token){ currentUser=JSON.parse(saved); updateAuthUI(); }
-  }catch{}
-})();
-
-// Photo handling intact
-document.getElementById('photoInput').addEventListener('change', e=>{
-  const files=Array.from(e.target.files||[]).slice(0,6-pendingPhotos.length);
-  files.forEach(f=> pendingPhotos.push(f));
-  renderPending();
+document.getElementById('s_photos')?.addEventListener('change', e=>{
+  sFiles=Array.from(e.target.files).slice(0,4); renderGridPreview(document.getElementById('s_preview'), sFiles, i=>{ sFiles.splice(i,1); renderGridPreview(document.getElementById('s_preview'), sFiles, (idx)=>{ sFiles.splice(idx,1); renderGridPreview(document.getElementById('s_preview'), sFiles, arguments.callee); }); });
 });
-function renderPending(){
-  const g=document.getElementById('photoGrid'); g.innerHTML='';
-  pendingPhotos.forEach((f,i)=>{
-    const div=document.createElement('div'); div.className='photo-slot';
-    const url=URL.createObjectURL(f);
-    div.innerHTML=`<img src="${url}"><button class="remove" onclick="removePending(${i})">✕</button>`;
-    g.appendChild(div);
+document.getElementById('e_photos')?.addEventListener('change', e=>{
+  eNewFiles=Array.from(e.target.files).slice(0,4); renderGridPreview(document.getElementById('e_preview'), eNewFiles, i=>{ eNewFiles.splice(i,1); renderGridPreview(document.getElementById('e_preview'), eNewFiles, arguments.callee); });
+});
+
+async function loadUsers(){
+  const gender = document.getElementById('filterGender')?.value || 'All';
+  const ageMin = document.getElementById('filterAgeMin')?.value || '';
+  const ageMax = document.getElementById('filterAgeMax')?.value || '';
+  const cityParam=activeCity==='All'?'':`city=${activeCity}`;
+  const myParam=currentUser?`myId=${currentUser.id}`:'';
+  const genderParam=gender!=='All'?`gender=${gender}`:'';
+  const ageMinParam=ageMin?`ageMin=${ageMin}`:'';
+  const ageMaxParam=ageMax?`ageMax=${ageMax}`:'';
+  const q=[cityParam, myParam, genderParam, ageMinParam, ageMaxParam].filter(Boolean).join('&');
+  const url='/api/users'+(q?'?'+q:'');
+  const res=await fetch(url); users=await res.json();
+  document.getElementById('count').innerText=users.length+' singles in '+(activeCity==='All'?'Alberta':activeCity);
+  const grid=document.getElementById('grid'); grid.innerHTML='';
+  users.forEach((u,i)=>{
+    if(i===3){ const ad=document.createElement('div'); ad.className='ad'; ad.innerHTML='Advertisement<br>This is how we stay free'; grid.appendChild(ad); }
+    const d=document.createElement('div'); d.className='card'; d.onclick=()=>openProfile(u.id);
+    const photo=u.photo_url|| (u.photos&&u.photos[0]) || ''; const av=photo?`<div class="avatar"><img src="${photo}"></div>`:`<div class="avatar">${u.name[0]}</div>`;
+    d.innerHTML=`<div class="online"></div><div style="display:flex;gap:12px;align-items:center">${av}<div><b>${u.name}, ${u.age}</b><div style="color:var(--muted);font-size:13px">${u.gender||''} • ${u.city} - ${u.photos?.length||0} photos</div></div></div><p style="margin:12px 0;color:var(--muted);font-size:14px;min-height:40px">${(u.bio||'').slice(0,90)}...</p><button class="btn btn-primary" style="width:100%" onclick="event.stopPropagation();openChat(${u.id},'${u.name.replace(/'/g,"\\'")}')">Message Free</button>`;
+    grid.appendChild(d);
   });
 }
-function removePending(i){ pendingPhotos.splice(i,1); renderPending(); }
 
-// Chat minimal
-async function startChatFromProfile(){
-  if(!currentUser) return openLogin();
-  if(!viewingUser) return;
-  chatWith = viewingUser.id;
-  document.getElementById('chatName').innerText = viewingUser.name;
-  document.getElementById('chat').classList.add('open');
-  loadChat();
+function openProfile(id){
+  const u=users.find(x=>x.id==id); if(!u) return; viewingUser=u;
+  document.getElementById('pv_name').innerText=`${u.name}, ${u.age}`;
+  document.getElementById('pv_age_city').innerText=`${u.gender||''} • ${u.city} - ${u.photos?.length||0} photos - Online now`;
+  document.getElementById('pv_bio').innerText=u.bio||'No bio yet';
+  const photos=u.photos&&u.photos.length?u.photos:(u.photo_url?[u.photo_url]:[]);
+  const main=document.getElementById('pv_photo'); const no=document.getElementById('pv_noPhoto');
+  const thumbs=document.getElementById('pv_thumbs'); thumbs.innerHTML='';
+  if(photos.length){ main.src=photos[0]; main.style.display='block'; no.style.display='none'; photos.forEach((p,i)=>{ const im=document.createElement('img'); im.src=p; if(i===0) im.className='active'; im.onclick=()=>{ main.src=p; thumbs.querySelectorAll('img').forEach(x=>x.classList.remove('active')); im.classList.add('active'); }; thumbs.appendChild(im); }); }
+  else { main.style.display='none'; no.innerText=u.name[0]; no.style.display='flex'; }
+  document.getElementById('profileModal').classList.add('open');
 }
-function openInboxTop(){ document.getElementById('chat').classList.add('open'); showInbox(); }
-function closeChat(){ document.getElementById('chat').classList.remove('open'); chatWith=null; }
+function messageFromProfile(){ closeModals(); setTimeout(()=>openChat(viewingUser.id, viewingUser.name),200); }
+function blockUser(){ alert('Reported! Admin will review and remove if nude/inappropriate. Thanks for keeping AFD clean.'); closeModals(); }
+
+function clearFilters(){ document.getElementById('filterGender').value='All'; document.getElementById('filterAgeMin').value=''; document.getElementById('filterAgeMax').value=''; const h=document.getElementById('filterHeight'); if(h) h.value='All'; const w=document.getElementById('filterWeight'); if(w) w.value='All'; const s=document.getElementById('filterSmoking'); if(s) s.value='All'; const a=document.getElementById('filterAlcohol'); if(a) a.value='All'; const c=document.getElementById('filterCannabis'); if(c) c.value='All'; const o=document.getElementById('filterOccupation'); if(o) o.value='All'; activeCity='All'; document.querySelectorAll('.chip').forEach((x,i)=>{ x.classList.remove('active'); if(i===0) x.classList.add('active'); }); loadUsers(); }
+function filterCity(c,el){ activeCity=c; document.querySelectorAll('.chip').forEach(x=>x.classList.remove('active')); if(el) el.classList.add('active'); loadUsers(); }
+function openModal(t){ document.getElementById(t+'Modal').classList.add('open'); }
+function closeModals(){ document.querySelectorAll('.modal').forEach(m=>m.classList.remove('open')); }
+function openEdit(){
+  if(!currentUser) return openModal('login');
+  document.getElementById('e_name').value=currentUser.name||''; document.getElementById('e_age').value=currentUser.age||''; document.getElementById('e_city').value=currentUser.city||'Edmonton'; document.getElementById('e_bio').value=currentUser.bio||'';
+  editKeepPhotos=[...(currentUser.photos||[])]; 
+  const existingDiv=document.getElementById('e_existing');
+  const renderKeep=()=>{ renderGridPreview(existingDiv, editKeepPhotos, (i)=>{ editKeepPhotos.splice(i,1); renderKeep(); }); };
+  renderKeep();
+  eNewFiles=[]; renderGridPreview(document.getElementById('e_preview'), [], null);
+  openModal('edit');
+}
+
+async function doSignup(){
+  const msg=document.getElementById('s_msg'); msg.innerText='Creating...';
+  const fd=new FormData();
+  fd.append('name',s_name.value); fd.append('email',s_email.value); fd.append('password',s_pass.value); fd.append('age',s_age.value); fd.append('city',s_city.value); fd.append('bio',s_bio.value);
+  sFiles.forEach(f=>fd.append('photos',f));
+  const res=await fetch('/api/signup',{method:'POST',body:fd});
+  const j=await res.json(); msg.innerText=j.message||j.error||'Done';
+  if(!j.error){ handleAuth(j); setTimeout(()=>{closeModals();loadUsers();},800); }
+}
+async function doUpdate(){
+  const msg=document.getElementById('e_msg'); msg.innerText='Saving...';
+  const fd=new FormData();
+  fd.append('name',e_name.value); fd.append('age',e_age.value); fd.append('city',e_city.value); fd.append('bio',e_bio.value);
+  fd.append('keepPhotos', JSON.stringify(editKeepPhotos));
+  eNewFiles.forEach(f=>fd.append('photos',f));
+  const res=await fetch('/api/update-profile',{method:'POST',headers:authHeaders(),body:fd});
+  const j=await res.json(); msg.innerText=j.message||j.error||'Updated!';
+  if(!j.error){ currentUser={...currentUser,...j}; localStorage.setItem('afd_token', token); setTimeout(()=>{closeModals();loadUsers();},600); }
+}
+async function doLogin(){
+  const res=await fetch('/api/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:l_email.value,password:l_pass.value})});
+  const j=await res.json(); if(j.error){ l_msg.innerText=j.error; return; } handleAuth(j); closeModals(); 
+}
+let chatInterval=null;
+function openChat(id,name){
+  if(!currentUser){ openModal('login'); return; }
+  if(currentUser.id===id){ alert('That is you!'); return; }
+  chatWith=id; document.getElementById('chatName').innerText=name; 
+  document.getElementById('chat').classList.add('open');
+  document.getElementById('chatView').style.display='block';
+  document.getElementById('inboxView').style.display='none';
+  loadChat();
+  if(chatInterval) clearInterval(chatInterval);
+  chatInterval=setInterval(loadChat, 2000);
+}
+function closeChat(){ document.getElementById('chat').classList.remove('open'); chatWith=null; if(chatInterval) clearInterval(chatInterval); }
 async function loadChat(){
   if(!chatWith||!currentUser) return;
   try{
-    const res=await fetch(`/api/messages/${currentUser.id}?with=${chatWith}`);
+    const res=await fetch(`/api/messages/${currentUser.id}?with=${chatWith}`); 
     const msgs=await res.json();
-    const body=document.getElementById('chatBody'); body.innerHTML='';
-    msgs.forEach(m=>{
-      const d=document.createElement('div'); d.className='msg '+(m.from_id===currentUser.id?'me':'them'); d.innerText=m.text; body.appendChild(d);
-    });
+    const body=document.getElementById('chatBody'); 
+    if(!msgs.length){ body.innerHTML='<div style="color:var(--muted);font-size:13px;text-align:center;padding:20px">No messages yet. Say hi — it is free!</div>'; return; }
+    body.innerHTML='';
+    msgs.forEach(m=>{ const d=document.createElement('div'); d.className='msg '+(m.from_id===currentUser.id?'me':'them'); d.innerText=m.text; body.appendChild(d); });
     body.scrollTop=body.scrollHeight;
-  }catch{}
+  }catch(e){ console.log('chat load err',e); }
 }
 async function sendMsg(){
   const input=document.getElementById('chatInput');
@@ -508,7 +357,7 @@ async function sendMsg(){
   try{
     await fetch('/api/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({from_id:currentUser.id,to_id:chatWith,text:t})});
     loadChat();
-  }catch(e){ alert('Send failed'); }
+  }catch(e){ alert('Send failed: '+e.message); }
 }
 async function showInbox(){
   if(!currentUser) return;
@@ -520,31 +369,53 @@ async function showInbox(){
   try{
     const res=await fetch(`/api/inbox/${currentUser.id}`);
     const items=await res.json();
-    if(!items.length){ inboxDiv.innerHTML='<div style="padding:20px;color:var(--muted);text-align:center">No messages yet.</div>'; return; }
+    if(!items.length){ inboxDiv.innerHTML='<div style="padding:20px;color:var(--muted);text-align:center">No messages yet. Browse and message someone!</div>'; return; }
     inboxDiv.innerHTML='';
     items.forEach(it=>{
       const row=document.createElement('div'); row.style.cssText='display:flex;gap:10px;align-items:center;padding:10px;border-bottom:1px solid var(--border);cursor:pointer';
-      row.onclick=()=>{ chatWith=it.otherId; document.getElementById('chatName').innerText=it.name; inboxDiv.style.display='none'; chatView.style.display='flex'; loadChat(); };
-      row.innerHTML=`<div class="avatar" style="width:36px;height:36px;font-size:14px">${it.photo?`<img src="${it.photo}">`:it.name[0]}</div><div style="flex:1"><b style="font-size:13px">${it.name}</b><div style="font-size:12px;color:var(--muted)">${it.lastMsg}</div></div>`;
+      row.onclick=()=>openChat(it.otherId, it.name);
+      row.innerHTML=`<div class="avatar" style="width:36px;height:36px;font-size:14px">${it.photo?`<img src="${it.photo}">`:it.name[0]}</div><div style="flex:1"><b style="font-size:13px">${it.name}</b><div style="font-size:12px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:180px">${it.lastMsg}</div></div><div style="font-size:10px;color:var(--muted)">${new Date(it.at).toLocaleTimeString()}</div>`;
       inboxDiv.appendChild(row);
     });
-  }catch(e){ inboxDiv.innerHTML='Inbox error'; }
+  }catch(e){ inboxDiv.innerHTML='Inbox error: '+e.message; }
 }
+
+
+
 async function blockUser(){
-  if(!viewingUser||!currentUser) return;
-  if(!confirm(`Block ${viewingUser.name}?`)) return;
+  if(!viewingUser || !currentUser) return;
+  if(!confirm(`Block ${viewingUser.name}? You won't see each other again. You can unblock in Edit Profile.`)) return;
   try{
     const res=await fetch('/api/block',{method:'POST',headers:{'Content-Type':'application/json', ...authHeaders()},body:JSON.stringify({targetId: viewingUser.id})});
-    const j=await res.json(); if(j.error) return alert(j.error);
-    alert('Blocked'); closeModals(); loadUsers();
-  }catch{}
+    const j=await res.json();
+    if(j.error){ alert(j.error); return; }
+    alert(`${viewingUser.name} blocked. They won't appear again.`);
+    closeModals(); loadUsers(); checkInbox();
+  }catch(e){ alert('Block failed: '+e.message); }
 }
 function deleteMyAccount(){
-  if(!confirm('Delete account?')) return;
-  fetch('/api/delete-account',{method:'POST',headers:{'Content-Type':'application/json', ...authHeaders()}}).then(r=>r.json()).then(j=>{
-    alert('Deleted'); logout();
-  });
+  if(!confirm('Delete your account? This removes your profile, photos & messages. You can re-join anytime.')) return;
+  if(!confirm('Are you sure? This cannot be undone.')) return;
+  try{
+    fetch('/api/delete-account',{method:'POST',headers:{'Content-Type':'application/json', ...authHeaders()}}).then(r=>r.json()).then(j=>{
+      if(j.error) throw new Error(j.error);
+      alert(j.message||'Account deleted');
+      logout();
+    }).catch(e=>alert('Delete failed: '+(e.message||'Unknown')));
+  }catch(e){ alert('Delete failed: '+(e.message||'Unknown')); }
 }
+async function deleteMyAccount2(){
+  if(!confirm('Delete your account? This removes your profile, photos & messages. You can re-join anytime.')) return;
+  if(!confirm('Are you sure? This cannot be undone.')) return;
+  try{
+    const res=await fetch('/api/delete-account',{method:'POST',headers:{'Content-Type':'application/json', ...authHeaders()}});
+    const j=await res.json();
+    if(j.error) throw new Error(j.error);
+    alert(j.message||'Account deleted');
+    logout();
+  }catch(e){ alert('Delete failed: '+(e.message||'Unknown')); }
+}
+
 async function loadBlocked(){
   try{
     const res=await fetch('/api/blocks',{headers:authHeaders()});
@@ -552,16 +423,30 @@ async function loadBlocked(){
     const container=document.getElementById('blockedList');
     const items=document.getElementById('blockedItems');
     if(!list.length){ container.style.display='none'; return; }
-    container.style.display='block'; items.innerHTML='';
+    container.style.display='block';
+    items.innerHTML='';
     list.forEach(u=>{
       const row=document.createElement('div'); row.style.cssText='display:flex;justify-content:space-between;align-items:center;background:var(--bg);padding:8px;border-radius:8px;border:1px solid var(--border)';
-      row.innerHTML=`<span>${u.name}</span><button class="btn btn-ghost" style="padding:4px 10px" onclick="unblockUser(${u.id})">Unblock</button>`;
+      row.innerHTML=`<span style="font-size:13px">${u.name} - ${u.city||''}</span><button class="btn btn-ghost" style="padding:4px 10px;font-size:12px" onclick="unblockUser(${u.id})">Unblock</button>`;
       items.appendChild(row);
     });
   }catch{}
 }
 async function unblockUser(id){
-  try{ await fetch('/api/block',{method:'POST',headers:{'Content-Type':'application/json', ...authHeaders()},body:JSON.stringify({targetId:id, action:'unblock'})}); loadBlocked(); loadUsers(); }catch{}
+  try{
+    await fetch('/api/block',{method:'POST',headers:{'Content-Type':'application/json', ...authHeaders()},body:JSON.stringify({targetId:id, action:'unblock'})});
+    loadBlocked(); loadUsers();
+  }catch{}
+}
+const origOpenEdit = openEdit;
+openEdit = function(){
+  origOpenEdit();
+  setTimeout(loadBlocked, 200);
+}
+
+function openInboxTop(){
+  document.getElementById('chat').classList.add('open');
+  showInbox();
 }
 async function checkInbox(){
   if(!currentUser) return;
@@ -569,17 +454,37 @@ async function checkInbox(){
     const res=await fetch(`/api/inbox/${currentUser.id}`);
     const items=await res.json();
     const badge=document.getElementById('inboxBadge');
-    if(items.length){ badge.innerText=items.length; badge.style.display='flex'; } else badge.style.display='none';
+    if(items.length){
+      badge.innerText=items.length;
+      badge.style.display='flex';
+      document.getElementById('inboxTopBtn').innerHTML=`Messages <span id="inboxBadge" style="display:flex;position:absolute;top:-6px;right:-6px;background:#ef4444;color:white;border-radius:50%;width:18px;height:18px;font-size:11px;align-items:center;justify-content:center">${items.length}</span>`;
+    } else {
+      badge.style.display='none';
+    }
   }catch{}
 }
 
-document.querySelectorAll('.modal').forEach(m=>{
-  m.addEventListener('click', e=>{ if(e.target===m) closeModals(); });
+
+// Fix keyboard covering input on mobile
+if(window.visualViewport){
+  const chatEl=document.getElementById('chat');
+  const updateChatPos=()=>{
+    const vh=window.visualViewport.height;
+    const off=window.innerHeight - vh;
+    if(off>100){ // keyboard open
+      chatEl.style.bottom=off+'px';
+      chatEl.style.maxHeight=(vh*0.9)+'px';
+    } else {
+      chatEl.style.bottom='0px';
+      chatEl.style.maxHeight='85dvh';
+    }
+  };
+  window.visualViewport.addEventListener('resize', updateChatPos);
+  window.visualViewport.addEventListener('scroll', updateChatPos);
+}
+document.getElementById('chatInput')?.addEventListener('focus', ()=>{
+  setTimeout(()=>{ document.getElementById('chatBody').scrollTop=document.getElementById('chatBody').scrollHeight; }, 300);
 });
-
-
-function scrollToFilters(){ const f=document.querySelector('.filters-top')||document.querySelector('.filters'); if(f) f.scrollIntoView({behavior:'smooth'}); }
-window.addEventListener('scroll', ()=>{ const c=document.getElementById('backToFilters'); if(!c) return; c.classList.toggle('show', window.scrollY>500); });
 
 loadUsers();
 setInterval(loadUsers, 15000);
