@@ -18,7 +18,7 @@ nav{display:flex;gap:10px;align-items:center;position:relative;z-index:111}
 .hero h1{font-size: clamp(32px,5vw,54px);line-height:.95;letter-spacing:-1.5px}
 .hero h1 em{color:var(--teal);font-style:normal}
 .hero p{color:var(--muted);margin:16px 0 22px;font-size:18px}
-.filters{max-width:1100px;margin:0 auto;padding:12px 20px;display:flex;gap:10px;flex-wrap:wrap;position:sticky;top:56px;z-index:30;background:rgba(10,15,20,.92);backdrop-filter:blur(10px);border-bottom:1px solid var(--border);pointer-events:auto}
+.filters{max-width:1100px;margin:0 auto;padding:12px 20px;display:flex;gap:10px;flex-wrap:wrap;position:sticky;top:56px;z-index:30;background:rgba(10,15,20,.92);backdrop-filter:blur(10px);border-bottom:1px solid var(--border)}
 .chip{padding:8px 16px;border-radius:100px;border:1px solid var(--border);background:var(--card);color:var(--muted);cursor:pointer}
 .chip.active{background:var(--teal2);color:white;border-color:var(--teal2)}
 .grid{max-width:1100px;margin:0 auto;padding:20px;display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:16px}
@@ -136,6 +136,47 @@ input,textarea,select{width:100%;padding:12px;border-radius:10px;border:1px soli
   <div id="pv_bio" style="white-space:pre-wrap;background:#0a0f14;padding:12px;border-radius:10px;border:1px solid #23323f;max-height:160px;min-height:80px;overflow-y:auto;line-height:1.5;font-size:14px;display:block;flex-shrink:1;-webkit-overflow-scrolling:touch;overscroll-behavior:contain"></div>
   <div style="display:flex;gap:10px;margin-top:16px;flex-shrink:0"><button class="btn btn-primary" style="flex:1" onclick="messageFromProfile()">Message Free</button><button class="btn btn-ghost" onclick="closeModals()">Close</button><button class="btn btn-ghost" style="color:#f87171" onclick="blockUser()">Block</button></div>
 </div></div>
+
+
+<!-- LOGIN MODAL - RESTORED FROM WORKING BUILD -->
+<div class="modal" id="loginModal">
+  <div class="modal-box">
+    <div style="display:flex;justify-content:space-between"><h3>Log In</h3><button class="btn btn-ghost" onclick="closeModals()">✕</button></div>
+    <input id="l_email" placeholder="Email" type="email" autocomplete="email">
+    <input id="l_pass" placeholder="Password" type="password" autocomplete="current-password">
+    <div id="l_msg" style="color:#ef4444;font-size:13px;margin-top:8px"></div>
+    <button class="btn btn-primary" style="width:100%;margin-top:12px" onclick="doLogin()">Log In</button>
+    <div style="text-align:center;margin-top:10px;color:var(--muted);font-size:13px">No account? <a href="#" onclick="closeModals(); openModal('signup'); return false;" style="color:var(--teal)">Create one free</a></div>
+  </div>
+</div>
+<div class="modal" id="signupModal">
+  <div class="modal-box wide">
+    <div style="display:flex;justify-content:space-between"><h3>Create Free Profile - 100% Free</h3><button class="btn btn-ghost" onclick="closeModals()">✕</button></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+      <input id="regName" placeholder="Name">
+      <input id="regAge" placeholder="Age" type="number" min="18" max="99">
+      <select id="regCity"><option value="Edmonton">Edmonton</option><option value="Calgary">Calgary</option></select>
+      <select id="regGender"><option>Woman</option><option>Man</option><option>Non-binary</option></select>
+      <input id="regEmail" placeholder="Email" type="email">
+      <input id="regPass" placeholder="Password" type="password">
+      <select id="regHeight"><option value="All">Height</option><option>5'0"-5'4"</option><option>5'5"-5'8"</option><option>5'9"-6'0"</option><option>6'1"+</option></select>
+      <select id="regWeight"><option value="All">Weight</option><option>Slim</option><option>Average</option><option>Athletic</option><option>Curvy</option><option>Heavyset</option></select>
+      <select id="regSmoking"><option value="All">Smoking</option><option>Never</option><option>Occasionally</option><option>Daily</option></select>
+      <select id="regDrinking"><option value="All">Drinking</option><option>Never</option><option>Social</option><option>Regular</option></select>
+      <select id="regCannabis"><option value="All">Cannabis</option><option>Never</option><option>Occasionally</option><option>Regular</option></select>
+      <select id="regJob"><option value="All">Job</option><option>Student</option><option>Professional</option><option>Trades</option><option>Healthcare</option><option>Tech</option><option>Other</option></select>
+    </div>
+    <textarea id="regBio" placeholder="Bio - tell us about you..." rows="3"></textarea>
+    <div class="photo-upload">
+      <input type="file" id="photoInput" multiple accept="image/*" style="display:none">
+      <button class="btn btn-ghost" type="button" onclick="document.getElementById('photoInput').click()">+ Add Photos (up to 6)</button>
+      <div class="photo-grid" id="photoGrid"></div>
+      <div style="font-size:11px;color:var(--muted)">Photos auto-resize intact</div>
+    </div>
+    <div id="s_msg" style="color:#ef4444;font-size:13px;margin-top:8px"></div>
+    <button class="btn btn-primary" style="width:100%;margin-top:12px" onclick="doRegister()">Create Profile - 100% Free</button>
+  </div>
+</div>
 
 <div class="chat" id="chat"><div class="chat-head"><b id="chatName">Messages</b><div><span id="inboxBtn" style="cursor:pointer;margin-right:12px;font-size:12px;color:var(--teal)" onclick="showInbox()">Inbox</span><span style="cursor:pointer" onclick="closeChat()">X</span></div></div><div id="inboxView" style="display:none;max-height:300px;overflow:auto;padding:8px"></div><div id="chatView"><div style="padding:8px 12px;background:var(--teal2);font-size:11px;text-align:center">This conversation is 100% FREE. Always will be.</div><div class="chat-body" id="chatBody"></div><div style="padding:10px;display:flex;gap:8px"><input id="chatInput" placeholder="Type a message..." style="margin:0" onkeydown="if(event.key==='Enter')sendMsg()"><button class="btn btn-primary" onclick="sendMsg()">Send</button></div></div></div>
 
